@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, List, Optional
+from typing import Iterable, List, Optional, Sequence
 import sqlite3
 import time
 
@@ -81,12 +81,12 @@ def mark_dead_letter(path: str, clip_id: str, video_id: str, error: str) -> None
         conn.commit()
 
 
-def get_pending_clips(path: str, limit: int = 1000) -> List[str]:
+def get_resumable_clips(path: str, statuses: Optional[Sequence[str]] = None) -> List[str]:
+    statuses = statuses or ("Pending", "Failed", "Writing", "Running")
+    placeholders = ",".join(["?"] * len(statuses))
+    query = f"SELECT clip_id FROM clip_status WHERE status IN ({placeholders})"
     with sqlite3.connect(path) as conn:
-        rows = conn.execute(
-            "SELECT clip_id FROM clip_status WHERE status IN ('Pending','Failed') LIMIT ?",
-            (limit,),
-        ).fetchall()
+        rows = conn.execute(query, tuple(statuses)).fetchall()
     return [row[0] for row in rows]
 
 

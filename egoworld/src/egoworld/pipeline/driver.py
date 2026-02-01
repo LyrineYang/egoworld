@@ -17,6 +17,7 @@ from egoworld.pipeline.queues import enforce_in_flight
 from egoworld.pipeline.scheduler import sort_clips_by_duration
 from egoworld.pipeline.state_store import (
     bulk_insert_pending,
+    get_resumable_clips,
     init_db,
     mark_dead_letter,
     upsert_clip_status,
@@ -26,6 +27,7 @@ from egoworld.operators.sam2_op import Sam2Operator
 from egoworld.operators.hamer_op import HamerOperator
 from egoworld.operators.foundationpose_op import FoundationPoseOperator
 from egoworld.operators.dex_retarget_op import DexRetargetOperator
+from egoworld.operators.fast3r_op import Fast3ROperator
 
 
 @dataclass
@@ -142,31 +144,57 @@ class _ActorInitMixin:
 class Sam2Actor(_ActorInitMixin):
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
-        from egoworld.config import ParquetConfig
+        operators = config.get("operators", {})
+        self.sam2_cfg = operators.get("sam2", {})
+        self.hamer_cfg = operators.get("hamer", {})
+        self.foundation_cfg = operators.get("foundationpose", {})
+        self.retarget_cfg = operators.get("dex_retarget", {})
+        self.fast3r_cfg = operators.get("fast3r", {})
 
-        self.parquet = ParquetConfig(**config.get("parquet", {}))
-        self.sam2 = Sam2Operator()
-        self.hamer = HamerOperator()
-        self.foundation = FoundationPoseOperator()
-        self.retarget = DexRetargetOperator()
+        self.sam2 = Sam2Operator(self.sam2_cfg.get("params", {}).get("model_path"))
+        self.hamer = HamerOperator(self.hamer_cfg.get("params", {}).get("model_path"))
+        self.foundation = FoundationPoseOperator(self.foundation_cfg.get("params", {}).get("model_path"))
+        self.retarget = DexRetargetOperator(self.retarget_cfg.get("params", {}).get("model_path"))
+        self.fast3r = Fast3ROperator(self.fast3r_cfg.get("params", {}).get("model_name_or_path"))
 
     def process(self, clip: Dict[str, Any]) -> Dict[str, Any]:
-        masks = self.sam2.run(clip["video_path"], clip["start_s"], clip["end_s"])
-        hand_pose = self.hamer.run(clip["video_path"], clip["start_s"], clip["end_s"])
-        object_pose = self.foundation.run(clip["video_path"], clip["start_s"], clip["end_s"])
-        mapping = self.retarget.run(hand_pose)
+        masks = {}
+        hand_pose = {}
+        object_pose = {}
+        mapping = {}
+        fast3r = {}
+
+        if self.sam2_cfg.get("enabled", True):
+            masks = self.sam2.run(clip["video_path"], clip["start_s"], clip["end_s"])
+        if self.hamer_cfg.get("enabled", False):
+            hand_pose = self.hamer.run(clip["video_path"], clip["start_s"], clip["end_s"])
+        if self.foundation_cfg.get("enabled", False):
+            object_pose = self.foundation.run(clip["video_path"], clip["start_s"], clip["end_s"])
+        if self.retarget_cfg.get("enabled", False):
+            mapping = self.retarget.run(hand_pose)
+        if self.fast3r_cfg.get("enabled", False):
+            fast3r = self.fast3r.run(
+                clip["video_path"],
+                clip["start_s"],
+                clip["end_s"],
+                params=self.fast3r_cfg.get("params", {}),
+            )
         return {
             "clip": clip,
             "masks": masks,
             "hand_pose": hand_pose,
             "object_pose": object_pose,
             "mapping": mapping,
+            "fast3r": fast3r,
         }
 
 
 class WriterActor(_ActorInitMixin):
     def __init__(self, config: Dict[str, Any]):
         super().__init__(config)
+        from egoworld.config import ParquetConfig
+
+        self.parquet = ParquetConfig(**config.get("parquet", {}))
 
     def write(self, result: Dict[str, Any]) -> Dict[str, Any]:
         clip = result["clip"]
@@ -210,6 +238,14 @@ class WriterActor(_ActorInitMixin):
             schema=_pose_schema(),
             parquet=self.parquet,
         )
+        fast3r_rows = result.get("fast3r", {}).get("camera_poses", [])
+        if fast3r_rows:
+            write_parquet_table(
+                str(out_dir / "fast3r_pose.parquet"),
+                fast3r_rows,
+                schema=_pose_schema(),
+                parquet=self.parquet,
+            )
 
         return {"clip_id": clip["clip_id"], "status": "written"}
 
@@ -229,11 +265,14 @@ def run_pipeline(
     video_index = _load_video_index(video_manifest_path)
     clip_rows = load_manifest(clip_manifest_path)
     bulk_insert_pending(state_db, clip_rows)
+    resumable = set(get_resumable_clips(state_db))
+    clip_rows = [row for row in clip_rows if row.get("clip_id") in resumable]
     clip_tasks = _build_clip_tasks(clip_rows, video_index)
     clip_tasks = sort_clips_by_duration([_clip_to_dict(t) for t in clip_tasks])
     clip_tasks = [ClipTask(**task) for task in clip_tasks]
 
     run_manifest = config.to_run_manifest()
+    run_manifest["config_path"] = config_path
     run_manifest["created_at"] = datetime.utcnow().isoformat() + "Z"
     run_root = run_dir(config.paths.output_root, run_id)
     run_root.mkdir(parents=True, exist_ok=True)

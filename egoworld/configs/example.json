@@ -46,18 +46,27 @@
     "state_db_path": "./state/pipeline.db",
     "runlog_path": "./runlog.md"
   },
+  "operators": {
+    "sam2": { "enabled": true, "params": { "model_path": "./models/sam2" } },
+    "hamer": { "enabled": false, "params": { "model_path": "./models/hamer" } },
+    "foundationpose": { "enabled": false, "params": { "model_path": "./models/foundationpose" } },
+    "dex_retarget": { "enabled": false, "params": { "model_path": "./models/dex_retarget" } },
+    "fast3r": {
+      "enabled": true,
+      "params": {
+        "model_name_or_path": "jedyang97/Fast3R_ViT_Large_512",
+        "image_size": 512,
+        "dtype": "bf16",
+        "max_views": 8,
+        "frame_sampling": { "method": "uniform", "num_frames": 8, "stride": 4 }
+      }
+    }
+  },
   "model_versions": {
     "sam2": "TBD",
     "hamer": "TBD",
     "foundationpose": "TBD",
-    "dex_retarget": "TBD"
-  },
-  "extra": {
-    "model_paths": {
-      "sam2": "./models/sam2",
-      "hamer": "./models/hamer",
-      "foundationpose": "./models/foundationpose",
-      "dex_retarget": "./models/dex_retarget"
-    }
+    "dex_retarget": "TBD",
+    "fast3r": "TBD"
   }
 }
