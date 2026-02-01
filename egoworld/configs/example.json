@@ -1,0 +1,63 @@
+{
+  "num_gpus": 4,
+  "parquet": {
+    "compression": "zstd",
+    "row_group_size": 268435456,
+    "data_page_size": 8388608,
+    "partition": ["run_id", "video_id", "clip_id"]
+  },
+  "backpressure": {
+    "max_in_flight_cpu": 8,
+    "max_in_flight_gpu": 8,
+    "max_in_flight_write": 8
+  },
+  "retry": {
+    "max_retries": 3,
+    "base_delay_s": 5.0,
+    "backoff": 3.0
+  },
+  "scenedetect": {
+    "method": "scenedetect",
+    "min_scene_len_s": 1.0,
+    "fallback_full_clip": true,
+    "overlap_s": 1.0
+  },
+  "coordinates": {
+    "spec_version": "v1",
+    "time_base": "seconds",
+    "mask_encoding": "rle",
+    "length_unit": "meters",
+    "handedness": "right",
+    "quat_order": "wxyz",
+    "frame_index_base": 0,
+    "axis_order": "x,y,z",
+    "coord_frame": "camera"
+  },
+  "metrics": {
+    "gpu_util_min": 0.6,
+    "gpu_util_window_s": 600,
+    "failure_rate_max": 0.01,
+    "empty_mask_rate_max": 0.2
+  },
+  "paths": {
+    "data_root": "./data",
+    "output_root": "./output",
+    "manifest_path": "./manifests",
+    "state_db_path": "./state/pipeline.db",
+    "runlog_path": "./runlog.md"
+  },
+  "model_versions": {
+    "sam2": "TBD",
+    "hamer": "TBD",
+    "foundationpose": "TBD",
+    "dex_retarget": "TBD"
+  },
+  "extra": {
+    "model_paths": {
+      "sam2": "./models/sam2",
+      "hamer": "./models/hamer",
+      "foundationpose": "./models/foundationpose",
+      "dex_retarget": "./models/dex_retarget"
+    }
+  }
+}
