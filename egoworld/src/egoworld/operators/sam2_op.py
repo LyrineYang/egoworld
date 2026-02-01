@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List
+from typing import Any, Dict
 
 from egoworld.operators.base import Operator
 
@@ -10,10 +10,17 @@ from egoworld.operators.base import Operator
 class Sam2Operator(Operator):
     name = "sam2"
 
-    def __init__(self, model_path: str | None = None):
-        self.model_path = model_path
+    def __init__(self, **params: Any):
+        self.params = params
 
-    def run(self, video_path: str, start_s: float, end_s: float) -> Dict[str, Any]:
+    def run(
+        self,
+        video_path: str,
+        start_s: float,
+        end_s: float,
+        params: Dict[str, Any] | None = None,
+    ) -> Dict[str, Any]:
+        params = params or self.params
         return {
             "frames": [],
             "mask_encoding": "rle",
@@ -21,4 +28,5 @@ class Sam2Operator(Operator):
             "start_s": start_s,
             "end_s": end_s,
             "video_path": video_path,
+            "params_used": params,
         }

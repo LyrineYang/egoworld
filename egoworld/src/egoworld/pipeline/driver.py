@@ -100,12 +100,16 @@ def _pose_schema():  # pragma: no cover - optional dependency
 def _build_clip_tasks(clips: List[Dict[str, Any]], video_manifest: Dict[str, Dict[str, Any]]) -> List[ClipTask]:
     tasks: List[ClipTask] = []
     for clip in clips:
-        video = video_manifest.get(clip["video_id"], {})
+        video = video_manifest.get(clip["video_id"])
+        if not video:
+            raise RuntimeError(f"clip_manifest references missing video_id: {clip['video_id']}")
+        if not video.get("path"):
+            raise RuntimeError(f"video_manifest has empty path for video_id: {clip['video_id']}")
         tasks.append(
             ClipTask(
                 clip_id=clip["clip_id"],
                 video_id=clip["video_id"],
-                video_path=video.get("path", ""),
+                video_path=video["path"],
                 start_s=float(clip["start_s"]),
                 end_s=float(clip["end_s"]),
                 frame_start=int(clip["frame_start"]),
@@ -151,7 +155,7 @@ class Sam2Actor(_ActorInitMixin):
         self.retarget_cfg = operators.get("dex_retarget", {})
         self.fast3r_cfg = operators.get("fast3r", {})
 
-        self.sam2 = Sam2Operator(self.sam2_cfg.get("params", {}).get("model_path"))
+        self.sam2 = Sam2Operator(**self.sam2_cfg.get("params", {}))
         self.hamer = HamerOperator(self.hamer_cfg.get("params", {}).get("model_path"))
         self.foundation = FoundationPoseOperator(self.foundation_cfg.get("params", {}).get("model_path"))
         self.retarget = DexRetargetOperator(self.retarget_cfg.get("params", {}).get("model_path"))
@@ -165,7 +169,12 @@ class Sam2Actor(_ActorInitMixin):
         fast3r = {}
 
         if self.sam2_cfg.get("enabled", True):
-            masks = self.sam2.run(clip["video_path"], clip["start_s"], clip["end_s"])
+            masks = self.sam2.run(
+                clip["video_path"],
+                clip["start_s"],
+                clip["end_s"],
+                params=self.sam2_cfg.get("params", {}),
+            )
         if self.hamer_cfg.get("enabled", False):
             hand_pose = self.hamer.run(clip["video_path"], clip["start_s"], clip["end_s"])
         if self.foundation_cfg.get("enabled", False):
@@ -238,8 +247,13 @@ class WriterActor(_ActorInitMixin):
             schema=_pose_schema(),
             parquet=self.parquet,
         )
-        fast3r_rows = result.get("fast3r", {}).get("camera_poses", [])
-        if fast3r_rows:
+        fast3r_enabled = (
+            self.config.get("operators", {})
+            .get("fast3r", {})
+            .get("enabled", False)
+        )
+        if fast3r_enabled:
+            fast3r_rows = result.get("fast3r", {}).get("camera_poses", [])
             write_parquet_table(
                 str(out_dir / "fast3r_pose.parquet"),
                 fast3r_rows,

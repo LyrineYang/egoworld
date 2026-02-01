@@ -28,3 +28,18 @@
 - Added Fast3R operator stub and optional output (`fast3r_pose.parquet`).
 - Updated README with operator matrix and config reference; removed references to missing docs.
 - Updated example config to expose operator settings and Fast3R parameters.
+
+## 2026-02-01 22:51:25
+- Ensured fast3r_pose.parquet is always written when Fast3R is enabled, even if no poses are returned.
+
+## 2026-02-01 23:22:04
+- Chose SAM2.1 small as default for 1000h-scale hand segmentation on 4×H100: prioritizes throughput while preserving strong quality; larger variants reserved for hard clips.
+- Defined prompt strategy for egocentric datasets (EgoProceL/EPIC/HD-EPIC/EgoDex/EgoMimic/Ego4D): low-frequency prompts + video propagation to reduce compute while keeping temporal consistency.
+- Set prompt interval to 2s with max 60 prompts/clip to bound long clips; limits per-frame boxes (6) to reduce GPU load and false positives.
+- Selected prompt text list centered on hands plus common handheld kitchen objects to maximize recall on egocentric manipulation without exploding open-vocab search space.
+- Threshold defaults (box 0.35/text 0.25/NMS 0.5/min area 256) chosen to balance recall for small hands/utensils vs. noise; intended to be tuned on a small validation subset.
+- Resource settings: bf16 + vos_optimized enabled to exploit H100 throughput and reduce memory pressure.
+- Updated example config + README to expose these operator parameters to users.
+
+## 2026-02-01 23:25:32
+- Wired SAM2 operator params through the pipeline so prompt strategy and checkpoint settings are passed into the operator stub.

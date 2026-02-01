@@ -47,12 +47,32 @@
     "runlog_path": "./runlog.md"
   },
   "operators": {
-    "sam2": { "enabled": true, "params": { "model_path": "./models/sam2" } },
+    "sam2": {
+      "enabled": true,
+      "params": {
+        "checkpoint": "./models/sam2/sam2_small.pt",
+        "config": "./models/sam2/sam2_small.yaml",
+        "device": "cuda",
+        "precision": "bf16",
+        "vos_optimized": true,
+        "prompting": {
+          "source": "groundingdino",
+          "prompt_interval_s": 2.0,
+          "max_prompts_per_clip": 60,
+          "max_boxes_per_frame": 6,
+          "box_threshold": 0.35,
+          "text_threshold": 0.25,
+          "nms_iou": 0.5,
+          "min_box_area": 256,
+          "prompt_text": "hand . left hand . right hand . person hand . glove . utensil . knife . spoon . fork . spatula . ladle . tongs . cup . mug . bottle . bowl . plate . pan . pot . lid . cutting board . food . container . jar . can . package . bag . towel . sponge . soap . faucet . sink . stove . microwave . refrigerator . drawer . cabinet . phone . remote . key . pen . scissors"
+        }
+      }
+    },
     "hamer": { "enabled": false, "params": { "model_path": "./models/hamer" } },
     "foundationpose": { "enabled": false, "params": { "model_path": "./models/foundationpose" } },
     "dex_retarget": { "enabled": false, "params": { "model_path": "./models/dex_retarget" } },
     "fast3r": {
-      "enabled": true,
+      "enabled": false,
       "params": {
         "model_name_or_path": "jedyang97/Fast3R_ViT_Large_512",
         "image_size": 512,
@@ -63,7 +83,7 @@
     }
   },
   "model_versions": {
-    "sam2": "TBD",
+    "sam2": "sam2.1_small",
     "hamer": "TBD",
     "foundationpose": "TBD",
     "dex_retarget": "TBD",

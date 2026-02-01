@@ -34,6 +34,16 @@ Environment setup (H100 server)
 - Metrics are optional; install `prometheus_client` only if metrics are enabled.
 - If you need to build C++/CUDA extensions, install gcc/g++ + cmake + ninja + CUDA toolkit.
 - When lock files exist, create envs from `egoworld/env/` and do not upgrade without updating locks.
+- Base env (unlocked):
+  - `conda env create -f egoworld/env/base.yml`
+  - `conda activate egoworld-base`
+- Locked install (recommended):
+  - `pip install conda-lock`
+  - `conda-lock lock -f egoworld/env/base.yml -p linux-64 -o egoworld/env/locks/linux-64/base.lock`
+  - `conda-lock install --name egoworld-base egoworld/env/locks/linux-64/base.lock`
+- Model env (SAM2 template):
+  - Edit `egoworld/env/models/requirements-sam2.txt`
+  - `conda env create -f egoworld/env/models/sam2.yml`
 
 Quickstart (skeleton)
 1) Set Python path:
@@ -58,6 +68,14 @@ Operators (matrix)
 - `dex_retarget`: hand-to-robot mapping (CPU/GPU). Output: `mapping.parquet`
 - `fast3r`: multi-view 3D reconstruction (GPU). Output: `fast3r_pose.parquet` (if enabled)
 
+SAM2 prompt policy (default in example config)
+- Goal: hand segmentation with object context for egocentric kitchen-style datasets.
+- Strategy: low-frequency prompts + video propagation.
+- `prompt_interval_s`: 2.0 (keyframe prompts every ~2 seconds).
+- `max_prompts_per_clip`: 60 (bounds work on long clips).
+- `prompt_text`: hands + common handheld kitchen objects (override as needed).
+- Thresholds: `box_threshold=0.35`, `text_threshold=0.25`, `nms_iou=0.5`.
+
 Model checkpoints (recommended way to provide)
 - Keep model code and weights outside git. Store weights under `./models/` (ignored by `.gitignore`).
 - Provide paths or model names under `operators.<name>.params` (see example below).
@@ -66,12 +84,32 @@ Model checkpoints (recommended way to provide)
 Example (operator config + checkpoints)
 ```
 "operators": {
-  "sam2": { "enabled": true, "params": { "model_path": "./models/sam2" } },
+  "sam2": {
+    "enabled": true,
+    "params": {
+      "checkpoint": "./models/sam2/sam2_small.pt",
+      "config": "./models/sam2/sam2_small.yaml",
+      "device": "cuda",
+      "precision": "bf16",
+      "vos_optimized": true,
+      "prompting": {
+        "source": "groundingdino",
+        "prompt_interval_s": 2.0,
+        "max_prompts_per_clip": 60,
+        "max_boxes_per_frame": 6,
+        "box_threshold": 0.35,
+        "text_threshold": 0.25,
+        "nms_iou": 0.5,
+        "min_box_area": 256,
+        "prompt_text": "hand . left hand . right hand . person hand . glove . utensil . knife . spoon . fork . spatula . ladle . tongs . cup . mug . bottle . bowl . plate . pan . pot . lid . cutting board . food . container . jar . can . package . bag . towel . sponge . soap . faucet . sink . stove . microwave . refrigerator . drawer . cabinet . phone . remote . key . pen . scissors"
+      }
+    }
+  },
   "hamer": { "enabled": false, "params": { "model_path": "./models/hamer" } },
   "foundationpose": { "enabled": false, "params": { "model_path": "./models/foundationpose" } },
   "dex_retarget": { "enabled": false, "params": { "model_path": "./models/dex_retarget" } },
   "fast3r": {
-    "enabled": true,
+    "enabled": false,
     "params": {
       "model_name_or_path": "jedyang97/Fast3R_ViT_Large_512",
       "image_size": 512,
