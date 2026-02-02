@@ -17,6 +17,8 @@
 - Documented SAM2 prompt strategy and updated example config defaults for egocentric datasets.
 - Wired SAM2 operator params into the pipeline for future real model integration.
 - Implemented SAM2 + GroundingDINO integration with prompt sampling and RLE mask outputs.
+- Added model download script and aligned default SAM2/groundingdino paths.
+- Fixed download script control flow for dependency installs and fallback warnings.
 
 ## Next
 - Integrate real model checkpoints and inference wrappers.

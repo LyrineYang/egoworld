@@ -49,3 +49,13 @@
 - Added GroundingDINO operator wrapper (text-conditioned detection) and mask RLE encoding utility.
 - Added video sampling utilities for prompt frames and integrated prompt-driven propagation output (union masks per frame).
 - Updated README and example config to expose GroundingDINO config/checkpoint parameters and required deps.
+
+## 2026-02-02 13:09:08
+- Added `scripts/download_models.sh` to pull official weights into `./models/` using stable vendor URLs and repository scripts.
+- Defaulted SAM2 config to SAM2.1 small (`sam2.1_hiera_small.pt` + `sam2.1_hiera_s.yaml`) to match throughput goals.
+- Wired GroundingDINO config/weights download to match prompt-generation defaults.
+- Added Fast3R (HF), FoundationPose (GDrive folder), HaMeR (official repo script) download steps; noted DexRetargeting has no weights.
+
+## 2026-02-02 14:43:06
+- Fixed download_models.sh dependency probe to not exit under set -e, so missing modules trigger install as intended.
+- Fixed SAM2 config fallback warning line continuation so failure yields a warning instead of aborting.
