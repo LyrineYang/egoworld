@@ -4,7 +4,8 @@ Offline, TB-scale egocentric video processing pipeline for Embodied AI.
 
 Status
 - The pipeline skeleton is implemented (manifests, Ray driver, backpressure, retry/dead-letter, Parquet writer).
-- Model operators (SAM2/SAM3, Hamer, FoundationPose, DexRetarget, Fast3R) are currently stubs and require real checkpoints + inference wrappers.
+- SAM2 + GroundingDINO integration is implemented (requires local checkpoints).
+- Other model operators (Hamer, FoundationPose, DexRetarget, Fast3R) remain stubs and require real checkpoints + inference wrappers.
 
 Key capabilities (current)
 - Scene detect with fallback to full clip.
@@ -26,6 +27,9 @@ Requirements
 - FFmpeg/ffprobe
 - PyArrow (Parquet IO)
 - scenedetect (scene detection)
+- groundingdino (prompt generation for SAM2)
+- opencv-python (video frame sampling)
+- pycocotools (RLE encoding, optional fallback exists)
 - prometheus_client (metrics, optional if metrics disabled)
 
 Environment setup (H100 server)
@@ -101,6 +105,9 @@ Example (operator config + checkpoints)
         "text_threshold": 0.25,
         "nms_iou": 0.5,
         "min_box_area": 256,
+        "gd_config": "./models/groundingdino/GroundingDINO_SwinT_OGC.py",
+        "gd_checkpoint": "./models/groundingdino/groundingdino_swint_ogc.pth",
+        "gd_device": "cuda",
         "prompt_text": "hand . left hand . right hand . person hand . glove . utensil . knife . spoon . fork . spatula . ladle . tongs . cup . mug . bottle . bowl . plate . pan . pot . lid . cutting board . food . container . jar . can . package . bag . towel . sponge . soap . faucet . sink . stove . microwave . refrigerator . drawer . cabinet . phone . remote . key . pen . scissors"
       }
     }

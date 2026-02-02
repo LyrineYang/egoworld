@@ -16,6 +16,7 @@
 - Expanded README and example config to document operator usage and parameters.
 - Documented SAM2 prompt strategy and updated example config defaults for egocentric datasets.
 - Wired SAM2 operator params into the pipeline for future real model integration.
+- Implemented SAM2 + GroundingDINO integration with prompt sampling and RLE mask outputs.
 
 ## Next
 - Integrate real model checkpoints and inference wrappers.

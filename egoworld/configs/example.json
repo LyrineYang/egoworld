@@ -60,12 +60,15 @@
           "prompt_interval_s": 2.0,
           "max_prompts_per_clip": 60,
           "max_boxes_per_frame": 6,
-          "box_threshold": 0.35,
-          "text_threshold": 0.25,
-          "nms_iou": 0.5,
-          "min_box_area": 256,
-          "prompt_text": "hand . left hand . right hand . person hand . glove . utensil . knife . spoon . fork . spatula . ladle . tongs . cup . mug . bottle . bowl . plate . pan . pot . lid . cutting board . food . container . jar . can . package . bag . towel . sponge . soap . faucet . sink . stove . microwave . refrigerator . drawer . cabinet . phone . remote . key . pen . scissors"
-        }
+        "box_threshold": 0.35,
+        "text_threshold": 0.25,
+        "nms_iou": 0.5,
+        "min_box_area": 256,
+        "gd_config": "./models/groundingdino/GroundingDINO_SwinT_OGC.py",
+        "gd_checkpoint": "./models/groundingdino/groundingdino_swint_ogc.pth",
+        "gd_device": "cuda",
+        "prompt_text": "hand . left hand . right hand . person hand . glove . utensil . knife . spoon . fork . spatula . ladle . tongs . cup . mug . bottle . bowl . plate . pan . pot . lid . cutting board . food . container . jar . can . package . bag . towel . sponge . soap . faucet . sink . stove . microwave . refrigerator . drawer . cabinet . phone . remote . key . pen . scissors"
+      }
       }
     },
     "hamer": { "enabled": false, "params": { "model_path": "./models/hamer" } },

@@ -43,3 +43,9 @@
 
 ## 2026-02-01 23:25:32
 - Wired SAM2 operator params through the pipeline so prompt strategy and checkpoint settings are passed into the operator stub.
+
+## 2026-02-02 09:45:25
+- Implemented SAM2 video segmentation with GroundingDINO prompt generation; params now control checkpoints, prompting, and optimization flags.
+- Added GroundingDINO operator wrapper (text-conditioned detection) and mask RLE encoding utility.
+- Added video sampling utilities for prompt frames and integrated prompt-driven propagation output (union masks per frame).
+- Updated README and example config to expose GroundingDINO config/checkpoint parameters and required deps.
