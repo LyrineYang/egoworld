@@ -49,7 +49,7 @@ class Sam2Operator(Operator):
             raise RuntimeError("SAM2 is not installed or not on PYTHONPATH") from exc
 
         checkpoint = self.params.get("checkpoint")
-        model_cfg = self.params.get("config")
+        model_cfg = _resolve_model_cfg(self.params.get("config"))
         device = self.params.get("device", "cuda")
         vos_optimized = bool(self.params.get("vos_optimized", False))
 
@@ -361,3 +361,26 @@ def _empty_result(video_path: str, start_s: float, end_s: float) -> Dict[str, An
         "end_s": end_s,
         "video_path": video_path,
     }
+
+
+def _resolve_model_cfg(config_path: str | None) -> str | None:
+    if config_path and os.path.isfile(config_path):
+        return config_path
+    if config_path:
+        base_name = os.path.basename(config_path)
+    else:
+        base_name = ""
+    try:
+        import sam2  # type: ignore
+
+        root = os.path.dirname(sam2.__file__)
+        candidates = []
+        if base_name:
+            candidates.append(os.path.join(root, "configs", "sam2.1", base_name))
+            candidates.append(os.path.join(root, "configs", base_name))
+        for candidate in candidates:
+            if os.path.isfile(candidate):
+                return candidate
+    except Exception:
+        return config_path
+    return config_path

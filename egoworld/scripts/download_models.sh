@@ -77,8 +77,8 @@ GD_DIR="$MODELS_DIR/groundingdino"
 mkdir -p "$GD_DIR"
 GD_WEIGHTS_URL="https://github.com/IDEA-Research/GroundingDINO/releases/download/v0.1.0-alpha/groundingdino_swint_ogc.pth"
 GD_CFG_URL="https://raw.githubusercontent.com/IDEA-Research/GroundingDINO/main/groundingdino/config/GroundingDINO_SwinT_OGC.py"
-download "$GD_WEIGHTS_URL" "$GD_DIR/groundingdino_swint_ogc.pth"
-download "$GD_CFG_URL" "$GD_DIR/GroundingDINO_SwinT_OGC.py"
+download "$GD_WEIGHTS_URL" "$GD_DIR/groundingdino_swint_ogc.pth" 100000000
+download "$GD_CFG_URL" "$GD_DIR/GroundingDINO_SwinT_OGC.py" 1024
 
 # Fast3R (Hugging Face)
 FAST3R_DIR="$MODELS_DIR/fast3r"

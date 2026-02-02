@@ -50,8 +50,8 @@
     "sam2": {
       "enabled": true,
       "params": {
-        "checkpoint": "./models/sam2/sam2_small.pt",
-        "config": "./models/sam2/sam2_small.yaml",
+        "checkpoint": "./models/sam2/sam2.1_hiera_small.pt",
+        "config": "./models/sam2/sam2.1_hiera_s.yaml",
         "device": "cuda",
         "precision": "bf16",
         "vos_optimized": true,
