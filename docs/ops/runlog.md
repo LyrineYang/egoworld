@@ -63,7 +63,7 @@
 ## 2026-02-03 10:12:00
 - Added environment policy and compatibility matrix docs (`docs/env/policy.md`, `docs/env/matrix.md`) for the H100 offline server baseline.
 - Added conda env templates under `egoworld/env/` and a helper installer script (`egoworld/scripts/setup_env.sh`).
-- Reformatted `docs/index.md` for readability without changing content.
+- Reformatted `README.md` for readability without changing content.
 
 ## 2026-02-03 10:35:00
 - Unified documentation to state SAM2.1 small as the default segmentation model.
@@ -74,5 +74,11 @@
 - Updated plan diagram to reflect SAM2.1 small as the segmentation model.
 
 ## 2026-02-03 11:18:00
-- Moved primary documentation to `docs/index.md` and added a root `README.md` entry point.
+- Moved primary documentation to `README.md` and kept `docs/` as the structured reference.
 - Organized docs into `docs/env`, `docs/ops`, and `docs/design` and updated references accordingly.
+
+## 2026-02-03 11:35:00
+- Moved the main README content to the repository root and updated docs references.
+
+## 2026-02-03 12:05:00
+- Added `docs/ops/active-context.md` and updated doc references to keep a single source of truth for current focus.

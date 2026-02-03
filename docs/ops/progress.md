@@ -19,14 +19,17 @@
 - Implemented SAM2 + GroundingDINO integration with prompt sampling and RLE mask outputs.
 - Added model download script and aligned default SAM2/groundingdino paths.
 - Fixed download script control flow for dependency installs and fallback warnings.
+- Added SAM2.1 smoke tests (integration + pipeline) to validate the segmentation path.
 
 ## 2026-02-03
 - Added environment policy + compatibility matrix docs for the H100 offline server baseline.
 - Added conda env templates under `egoworld/env/` and a `scripts/setup_env.sh` helper.
-- Reformatted `docs/index.md` for readability without changing content.
+- Reformatted `README.md` for readability without changing content.
 - Unified docs to the SAM2.1 small default and added a documentation map.
 - Aligned plan diagram to SAM2.1 small.
 - Restructured docs layout and added root README entry point.
+- Moved the main README content to repository root and refreshed doc references.
+- Added `docs/ops/active-context.md` to track current focus.
 
 ## Next
 - Integrate real model checkpoints and inference wrappers.
