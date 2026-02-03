@@ -1,6 +1,6 @@
 我现在要针对egocentric的视频数据集开发一个TB级别的数据清洗流程：包含以下主要算子：1. Sam3
   object detection 2. 3d reconstruction 3. Scenedetect 4. Object masks 5. Object movements 6.
-  Hand masks 7.hand-action2robotics mapping: 主要的工作就是sam3做分割,然后做3d重建或3d坐标提
+  Hand masks 7.hand-action2robotics mapping: 主要的工作就是SAM2.1 small做分割,然后做3d重建或3d坐标提
   取，组合不同的sota模型来处理不同任务，如：用 SAM 3 搞定所有的 Mask (手和物体)。
  
   用 Hamer 搞定人手 3D 姿态。

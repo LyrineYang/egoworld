@@ -8,17 +8,17 @@ Python 3.10+ (类型提示强依赖)
 
 Ray: 分布式计算核心 (Actor 调度与 Shared Memory)
 
-PyTorch 2.x (CUDA 12.x)
+PyTorch 2.x (CUDA 12.x，具体以兼容矩阵为准)
 
 核心算法模型栈 (Core Model Stack):
 
 检测与分割 (Detection & Segmentation):
 
-SAM3: 核心骨干，负责检测、分割与视频跟踪一体化。
+SAM2.1 (small): 默认骨干，负责检测、分割与视频跟踪一体化。
 
-SAM3 (concept=hand): 专门配置用于手部区域的高精度分割与提取。
+SAM2.1 (concept=hand): 专门配置用于手部区域的高精度分割与提取。
 
-Grounding DINO 1.5: 开放词汇检测 (Open-vocabulary Detection)，用于为 SAM3 提供语义提示。
+Grounding DINO 1.5: 开放词汇检测 (Open-vocabulary Detection)，用于为 SAM2.1 提供语义提示。
 
 3D 重建与 SLAM (3D & SLAM):
 
@@ -43,3 +43,7 @@ CoTracker3: SOTA 点轨迹跟踪 (Point Trajectory Tracking)，用于捕获物�
 监控与观测:
 
 Prometheus, Grafana, Ray Dashboard
+
+环境与兼容矩阵:
+
+见 `docs/env-policy.md` 与 `docs/env-matrix.md`（在线 H100 单机离线环境）。

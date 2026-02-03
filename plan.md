@@ -105,7 +105,7 @@ output/
 ## 3. 核心流水线（离线单机）
 ```
 CPU: 读取视频 -> ffprobe 元信息 -> SceneDetect -> 生成 clip_manifest
-GPU: SAM2 mask -> 3D/6D/hand 处理（CPU 或 GPU） -> Writer
+GPU: SAM2.1 small mask -> 3D/6D/hand 处理（CPU 或 GPU） -> Writer
 ```
 关键原则：跨进程只传“文件路径 + 时间段”，避免搬运大帧。
 

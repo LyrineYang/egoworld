@@ -59,3 +59,16 @@
 ## 2026-02-02 14:43:06
 - Fixed download_models.sh dependency probe to not exit under set -e, so missing modules trigger install as intended.
 - Fixed SAM2 config fallback warning line continuation so failure yields a warning instead of aborting.
+
+## 2026-02-03 10:12:00
+- Added environment policy and compatibility matrix docs (`docs/env-policy.md`, `docs/env-matrix.md`) for the H100 offline server baseline.
+- Added conda env templates under `egoworld/env/` and a helper installer script (`egoworld/scripts/setup_env.sh`).
+- Reformatted `egoworld/README.md` for readability without changing content.
+
+## 2026-02-03 10:35:00
+- Unified documentation to state SAM2.1 small as the default segmentation model.
+- Updated environment docs to reference SAM2.1 small (Base + model env).
+- Added a documentation map and ownership rules to reduce duplication and improve maintenance.
+
+## 2026-02-03 10:48:00
+- Updated plan diagram to reflect SAM2.1 small as the segmentation model.

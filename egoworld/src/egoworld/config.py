@@ -131,13 +131,18 @@ class PipelineConfig:
         return resolved
 
     def to_run_manifest(self) -> Dict[str, Any]:
-        data = asdict(self)
-        data["parquet_params"] = json.dumps(asdict(self.parquet), ensure_ascii=True)
-        data["model_versions"] = json.dumps(self.model_versions, ensure_ascii=True)
-        data["coordinate_spec_version"] = self.coordinates.spec_version
-        data["mask_encoding"] = self.coordinates.mask_encoding
-        data["time_base"] = self.coordinates.time_base
-        return data
+        return {
+            "run_id": self.run_id or "",
+            "created_at": "",
+            "config_path": "",
+            "code_git_hash": self.code_git_hash or "",
+            "model_versions": json.dumps(self.model_versions, ensure_ascii=True),
+            "dataset_hash": self.dataset_hash or "",
+            "parquet_params": json.dumps(asdict(self.parquet), ensure_ascii=True),
+            "coordinate_spec_version": self.coordinates.spec_version,
+            "mask_encoding": self.coordinates.mask_encoding,
+            "time_base": self.coordinates.time_base,
+        }
 
 
 def load_config(path: str) -> PipelineConfig:

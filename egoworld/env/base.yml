@@ -1,0 +1,25 @@
+name: egoworld-base
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+channel_priority: strict
+dependencies:
+  - python=3.10
+  - pip
+  - pytorch>=2.2,<2.5
+  - pytorch-cuda>=12.1,<13
+  - torchvision
+  - torchaudio
+  - opencv
+  - pycocotools
+  - pyarrow>=12,<16
+  - ffmpeg
+  - numpy>=1.24,<2.0
+  - pip:
+      - -c constraints.txt
+      - ray[default]>=2.8,<3.0
+      - scenedetect>=0.6,<0.7
+      - prometheus-client>=0.16,<1.0
+      - git+https://github.com/facebookresearch/sam2.git@main
+      - git+https://github.com/IDEA-Research/GroundingDINO.git@main
