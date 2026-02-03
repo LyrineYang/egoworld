@@ -82,3 +82,6 @@
 
 ## 2026-02-03 12:05:00
 - Added `docs/ops/active-context.md` and updated doc references to keep a single source of truth for current focus.
+
+## 2026-02-03 12:28:00
+- Removed stale `egoworld/activeContext.md` to avoid conflicting active-context sources.

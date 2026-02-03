@@ -30,6 +30,7 @@
 - Restructured docs layout and added root README entry point.
 - Moved the main README content to repository root and refreshed doc references.
 - Added `docs/ops/active-context.md` to track current focus.
+- Removed stale `egoworld/activeContext.md` to keep a single active-context source.
 
 ## Next
 - Integrate real model checkpoints and inference wrappers.
