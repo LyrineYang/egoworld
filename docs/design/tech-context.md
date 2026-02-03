@@ -46,4 +46,4 @@ Prometheus, Grafana, Ray Dashboard
 
 环境与兼容矩阵:
 
-见 `docs/env-policy.md` 与 `docs/env-matrix.md`（在线 H100 单机离线环境）。
+见 `docs/env/policy.md` 与 `docs/env/matrix.md`（在线 H100 单机离线环境）。

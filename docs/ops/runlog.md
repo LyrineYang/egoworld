@@ -61,9 +61,9 @@
 - Fixed SAM2 config fallback warning line continuation so failure yields a warning instead of aborting.
 
 ## 2026-02-03 10:12:00
-- Added environment policy and compatibility matrix docs (`docs/env-policy.md`, `docs/env-matrix.md`) for the H100 offline server baseline.
+- Added environment policy and compatibility matrix docs (`docs/env/policy.md`, `docs/env/matrix.md`) for the H100 offline server baseline.
 - Added conda env templates under `egoworld/env/` and a helper installer script (`egoworld/scripts/setup_env.sh`).
-- Reformatted `egoworld/README.md` for readability without changing content.
+- Reformatted `docs/index.md` for readability without changing content.
 
 ## 2026-02-03 10:35:00
 - Unified documentation to state SAM2.1 small as the default segmentation model.
@@ -72,3 +72,7 @@
 
 ## 2026-02-03 10:48:00
 - Updated plan diagram to reflect SAM2.1 small as the segmentation model.
+
+## 2026-02-03 11:18:00
+- Moved primary documentation to `docs/index.md` and added a root `README.md` entry point.
+- Organized docs into `docs/env`, `docs/ops`, and `docs/design` and updated references accordingly.

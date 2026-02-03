@@ -23,9 +23,10 @@
 ## 2026-02-03
 - Added environment policy + compatibility matrix docs for the H100 offline server baseline.
 - Added conda env templates under `egoworld/env/` and a `scripts/setup_env.sh` helper.
-- Reformatted `egoworld/README.md` for readability without changing content.
+- Reformatted `docs/index.md` for readability without changing content.
 - Unified docs to the SAM2.1 small default and added a documentation map.
 - Aligned plan diagram to SAM2.1 small.
+- Restructured docs layout and added root README entry point.
 
 ## Next
 - Integrate real model checkpoints and inference wrappers.

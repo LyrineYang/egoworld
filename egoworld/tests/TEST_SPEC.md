@@ -7,7 +7,7 @@
 
 ## 分层与范围
 1) 环境自检（env-smoke）
-- 参考 `docs/env-policy.md` 的启动前自检。
+- 参考 `docs/env/policy.md` 的启动前自检。
 - GPU、CUDA/Torch、FFmpeg、路径权限等必须先通过。
 
 2) 单元/契约测试（unit）
@@ -61,7 +61,7 @@
 - 跳过 smoke：`EGOWORLD_ENV_SMOKE=0 EGOWORLD_PIPELINE_SMOKE=0 pytest -q`
 
 ## 服务器执行建议
-1) 按 `docs/env-policy.md` 完成环境自检。
+1) 按 `docs/env/policy.md` 完成环境自检。
 2) 先跑 unit，再跑 resume/io，最后跑 pipeline-smoke。
 3) 若进入 Phase B，补充 model-env 相关测试。
 

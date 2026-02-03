@@ -15,11 +15,11 @@ Offline, TB-scale egocentric video processing pipeline for Embodied AI.
 - SQLite state store for Pending/Running/Done/Failed + dead-letter.
 
 ## Project layout
-- `src/egoworld/`: core pipeline code.
-- `scripts/`: CLI entry points.
-- `configs/`: example configs.
-- `tests/`: basic validation tests.
-- `runlog.md`, `progress.md`: engineering log and progress tracking.
+- `egoworld/src/egoworld/`: core pipeline code.
+- `egoworld/scripts/`: CLI entry points.
+- `egoworld/configs/`: example configs.
+- `egoworld/tests/`: basic validation tests.
+- `docs/`: documentation and ops logs.
 
 ## Requirements
 - Python 3.10+
@@ -34,7 +34,7 @@ Offline, TB-scale egocentric video processing pipeline for Embodied AI.
 - prometheus_client (metrics, optional if metrics disabled)
 
 ## Environment setup (H100 server)
-- Follow `docs/env-policy.md` and `docs/env-matrix.md` (scope: Rocky Linux 8.8 + CUDA 12.8).
+- Follow `docs/env/policy.md` and `docs/env/matrix.md` (scope: Rocky Linux 8.8 + CUDA 12.8).
 - Base env must include: Python 3.10, Ray, PyTorch GPU build, pyarrow, scenedetect, ffmpeg, SAM2 + GroundingDINO.
 - Metrics are optional; install `prometheus_client` only if metrics are enabled.
 - If you need to build C++/CUDA extensions, install gcc/g++ + cmake + ninja + CUDA toolkit.
@@ -51,7 +51,7 @@ Offline, TB-scale egocentric video processing pipeline for Embodied AI.
 - Use `--glob` in `make-manifest` to filter file types (default: `**/*.mp4`).
 
 ## Model checkpoints & paths
-- Use `scripts/download_models.sh` to download official weights into `./models/`.
+- Use `egoworld/scripts/download_models.sh` to download official weights into `./models/`.
 - Set paths under `operators.<name>.params` in your config.
 - SAM2 requires both checkpoint + config; GroundingDINO requires config + checkpoint.
 - If SAM2 config path is missing locally, it may resolve from the installed `sam2` package.
@@ -60,25 +60,26 @@ Offline, TB-scale egocentric video processing pipeline for Embodied AI.
 - Ensure at least one video file exists under `./data/` (or your chosen input dir).
 - Ensure `ffmpeg`/`ffprobe` are on PATH.
 - Ensure SAM2 + GroundingDINO packages are installed in the active env.
+- Run commands from the repo root unless noted otherwise.
 
 ## Minimal runnable (SAM2 pipeline)
 1) Set Python path:
    ```bash
-   export PYTHONPATH=$PWD/src
+   export PYTHONPATH=$PWD/egoworld/src
    ```
 2) Download model weights:
    ```bash
-   bash scripts/download_models.sh
+   bash egoworld/scripts/download_models.sh
    ```
 3) Build manifests + run pipeline:
    ```bash
-   python scripts/make_manifest.py make-manifest --config configs/example.json --input-dir ./data --output-dir ./manifests
-   python scripts/run_pipeline.py run --config configs/example.json --video-manifest ./manifests/video_manifest.jsonl --clip-manifest ./manifests/clip_manifest.jsonl
+   python egoworld/scripts/make_manifest.py make-manifest --config egoworld/configs/example.json --input-dir ./data --output-dir ./manifests
+   python egoworld/scripts/run_pipeline.py run --config egoworld/configs/example.json --video-manifest ./manifests/video_manifest.jsonl --clip-manifest ./manifests/clip_manifest.jsonl
    ```
 Advanced operational details (resume/ops tuning) are kept in internal docs.
 
 ## Configuration
-- See `configs/example.json` for all supported fields.
+- See `egoworld/configs/example.json` for all supported fields.
 - Backpressure controls: `backpressure.max_in_flight_*`
 - Retry policy: `retry.max_retries`, `retry.base_delay_s`, `retry.backoff`
 - Parquet params: `parquet.compression`, `parquet.row_group_size`, `parquet.data_page_size`
@@ -152,7 +153,7 @@ Advanced operational details (resume/ops tuning) are kept in internal docs.
 ## Manifests
 - `video_manifest`: video-level metadata (duration, fps, size, checksum)
 - `clip_manifest`: clip-level schedule and status
-- Schema and field specs: `src/egoworld/manifests/schema.py`
+- Schema and field specs: `egoworld/src/egoworld/manifests/schema.py`
 
 ## Output layout
 ```text
@@ -180,8 +181,8 @@ output/
 - Pipeline smoke (end-to-end + SAM2): `EGOWORLD_PIPELINE_SMOKE=1 pytest -q egoworld/tests/test_pipeline_smoke.py`
 
 ## Status tracking
-- `progress.md`: milestones and next steps
-- `runlog.md`: implementation log
+- `docs/ops/progress.md`: milestones and next steps
+- `docs/ops/runlog.md`: implementation log
 
 ## Roadmap
 - Integrate real model wrappers + checkpoints.
@@ -197,12 +198,13 @@ output/
 
 ## Documentation
 - `docs/README.md`: documentation map and ownership rules.
+- `docs/index.md`: quickstart and configuration overview.
 - `plan.md`: offline MVP implementation plan and milestones.
-- `techContext.md`: tech stack and model inventory.
+- `docs/design/tech-context.md`: tech stack and model inventory.
 - `activeContext.md`: current focus and short-term tasks.
-- `progress.md`: progress log and next steps.
-- `runlog.md`: implementation log.
-- `memory.md`: background notes and decisions.
+- `docs/ops/progress.md`: progress log and next steps.
+- `docs/ops/runlog.md`: implementation log.
+- `docs/design/memory.md`: background notes and decisions.
 
 ## License
 - TBD
