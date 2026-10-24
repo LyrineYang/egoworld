@@ -54,7 +54,8 @@ def smoke(args: argparse.Namespace) -> None:
     from egoworld.acceptance import single_gpu_smoke
 
     print(json.dumps(single_gpu_smoke(args.config, args.input_video, args.output_dir,
-                                     args.seconds, args.prompt, args.stages.split(",") if args.stages else None), indent=2))
+                                     args.seconds, args.prompt, args.stages.split(",") if args.stages else None,
+                                     profile=args.profile), indent=2))
 
 
 def plan(args):
@@ -137,6 +138,8 @@ def build_parser() -> argparse.ArgumentParser:
     smoke_cmd.add_argument("--seconds", type=float, default=3.0)
     smoke_cmd.add_argument("--prompt", default="left hand . right hand . cup .")
     smoke_cmd.add_argument("--stages", help="Comma-separated target stages; dependencies are enabled automatically")
+    smoke_cmd.add_argument("--profile", choices=("default", "16gb"), default="default",
+                           help="16gb: isolated model processes, batch=1, two Fast3R views; requires <=3s sample; memory fit still needs measurement")
     smoke_cmd.set_defaults(func=smoke)
 
     return parser

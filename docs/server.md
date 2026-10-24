@@ -103,7 +103,7 @@ launch 自动执行环境/资产预检、生成清单、检查输入覆盖并启
 | qc.status=pass | 通过当前自动规则；还需抽查手型、左右手、网格投影或点云 |
 | 分环境模型失败 | 查 output/run_id=<id>/.work/<clip>/<stage>/runner.log；成功片段默认清理临时目录 |
 | Ray CPUs 不足 | 降低 execution.cpu_workers / write_workers / cpu_operator_workers，留系统余量 |
-| CUDA OOM | 减小片段长度、Fast3R max_views/max_points 或 HaMeR batch_size；改变模型参数需新 run-id |
+| CUDA OOM | 先降低 HaMeR batch_size 或 Fast3R max_views，分阶段定位；max_points 只控制推理后导出，不降低前向峰值；改变模型参数需新 run-id |
 | 输入/模型/代码身份不符 | 新建 run-id；旧运行目录保留，不能混用结果 |
 
 paths.manifest_path/<run-id>/ 保存 sources.json、视频/片段清单、startup.json 和全绝对路径 config.resolved.json。
@@ -126,3 +126,39 @@ egoworld make-manifest --config config.local/job.json \
 深度使用原视频 frame_index；相对深度路径以 assets JSON 所在目录为基准。填 objects 的网格路径和米制换算比例。
 FoundationPose 源码 weights 下需保留两个版本子目录及各自的 model_best.pth/config.yml，见环境说明。
 launch 检查视频 ID 覆盖和首个深度尺寸/数值，后续每帧在执行时继续校验。
+
+## 7. 16GB 单卡 smoke
+
+16GB 是本轮小样本验证的目标配置，**尚无实测的显存适配保证**。能否完整跑通还取决于卡型、模型环境和输入资产。
+普通 RGB 使用已填写资产/runner_command 的 rgb.json 副本；已有 RGB-D/网格时才使用 full.json 副本。
+
+```bash
+export CUDA_VISIBLE_DEVICES=0
+egoworld smoke --config config.local/job.json \
+  --input-video /absolute/videos/sample.mp4 --seconds 2 --profile 16gb
+```
+
+无需先逐阶段验收才运行整图；失败时可直接加 --stages sam2 / hamer / fast3r / dex_retarget / foundationpose 定位。
+用一只明确可见的手、一个目标物体、适度相机运动的短样本。普通 RGB 建议先用约 640×480 的恒定帧率视频；
+FoundationPose 的 RGB、深度、内参必须保持对齐，不能单独缩放 RGB。
+
+| 16gb profile 的设置 | 目的 |
+| --- | --- |
+| 单 GPU、单活动片段、在途任务上限 1 | 只验证可用性，避免多个片段占内存 |
+| 每个 GPU 阶段独立进程；保留用户指定的模型环境 | 阶段结束释放显存，避免多个模型驻留叠加 |
+| HaMeR batch=1；SAM2 每次最多 3 个检测框；关闭 SAM2 编译 | 限制首次推理工作量 |
+| Fast3R 两个视图、BF16、pytorch_auto attention | 减少输入和避开强制 FlashAttention 的路径；仍需原生环境兼容 |
+| 最长 3 秒，重试 0 次，保留临时目录 | 快速暴露错误并保留 runner.log |
+
+配置只作用于本次 smoke，完整内容写入验收目录 config.json；不会修改 job.json，也不会自动修改 launch 的配置。
+同一报告记录启用阶段、实际配置路径、非空输出行数和恢复检查。没有机器人/RGB-D 资产时关闭对应分支，报告仅代表所启用的阶段。
+
+**卡型限制：** 当前官方 Fast3R 注意力内部使用 BF16，即使外层 dtype=fp16 也如此；
+T4 等不支持 BF16 的卡不能凭“有 16GB”就承诺整图可跑。doctor 会返回明确失败，需要验证上游适配后再启用 Fast3R，
+可先检查其它分支，但不能将其记为五阶段全部通过。
+依据：[官方推理接口](https://github.com/facebookresearch/fast3r/blob/main/fast3r/dust3r/inference_multiview.py)、
+[官方注意力实现](https://github.com/facebookresearch/fast3r/blob/main/fast3r/croco/models/blocks.py)。
+
+成功标准为 acceptance.json 的 status=passed、各启用阶段输出非空且恢复不重写；再抽查少量实际内容。
+失败报告给出缺失环境/资产或错误，阶段日志保留。显存峰值在服务器运行时用 nvidia-smi 观察；
+降低导出点数、减少迭代时间或一次 CPU/Ray 通过都不能代替真实 GPU 的显存证据。

@@ -20,9 +20,21 @@ class Fast3ROperator:
         from fast3r.dust3r.inference_multiview import inference
         from fast3r.dust3r.utils.image import load_images
         from fast3r.dust3r.cloud_opt.init_im_poses import fast_pnp
-        device = self.params.get("device", "cuda")
+        device = torch.device(self.params.get("device", "cuda"))
         if self.model is None:
-            self.model = Fast3R.from_pretrained(self.params["model_name_or_path"]).to(device).eval()
+            model = Fast3R.from_pretrained(self.params["model_name_or_path"])
+            implementation = self.params.get("attn_implementation")
+            if implementation:
+                if implementation not in ("pytorch_auto", "pytorch_naive", "flash_attention"):
+                    raise ValueError("Unsupported Fast3R attention implementation")
+                changed = 0
+                for module in model.modules():
+                    if hasattr(module, "attn_implementation"):
+                        module.attn_implementation = implementation
+                        changed += 1
+                if not changed:
+                    raise ValueError("Fast3R version exposes no configurable attention modules")
+            self.model = model.to(device).eval()
         count = clip["frame_end"] - clip["frame_start"]
         views = min(int(self.params.get("max_views", 8)), count)
         if views < 2:
@@ -38,9 +50,15 @@ class Fast3ROperator:
                         raise IOError(f"Cannot write sampled view {path}")
                     files.append(path)
                 images = load_images(files, size=int(self.params.get("image_size", 512)), verbose=False)
-                dtype = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}[self.params.get("dtype", "fp32")]
+                # Upstream loss_of_one_batch interprets precision strings; a
+                # float32 dtype object does not disable its default autocast.
+                precision = {"fp32": "32", "fp16": "16-mixed", "bf16": "bf16-mixed"}[self.params.get("dtype", "fp32")]
                 with torch.inference_mode():
-                    result, _ = inference(images, self.model, device, dtype=dtype, verbose=False, profiling=False)
+                    result = inference(images, self.model, device, dtype=precision, verbose=False, profiling=False)
+                # Current upstream returns a dict when profiling=False. Some
+                # earlier snapshots return (dict, profiling_info).
+                if isinstance(result, tuple):
+                    result = result[0]
         finally:
             cap.release()
         scale = float(self.params.get("metric_scale", 1.0))

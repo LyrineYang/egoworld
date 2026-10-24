@@ -82,7 +82,8 @@ def test_provenance_changes_with_local_assets_and_manifests(tmp_path):
     assert provenance(config, str(videos), str(clips))["fingerprint"] != before
 
 
-def test_doctor_only_imports_selected_models(monkeypatch, tmp_path):
+@pytest.mark.parametrize("bf16_supported", [False, True])
+def test_doctor_only_imports_selected_models(monkeypatch, tmp_path, bf16_supported):
     from egoworld import preflight
     config = json.loads((Path(__file__).parents[1] / "configs/full.json").read_text())
     config["operators"]["fast3r"]["params"]["model_name_or_path"] = str(tmp_path / "snapshot")
@@ -91,13 +92,17 @@ def test_doctor_only_imports_selected_models(monkeypatch, tmp_path):
     (snapshot / "model.safetensors").write_bytes(b"fixture")
     cfg = tmp_path / "config.json"; cfg.write_text(json.dumps(config))
     imports = []
-    torch = SimpleNamespace(__version__="2.5.1", cuda=SimpleNamespace(device_count=lambda: 1, get_device_name=lambda _: "fixture"))
+    torch = SimpleNamespace(__version__="2.5.1", cuda=SimpleNamespace(device_count=lambda: 1,
+        get_device_name=lambda _: "fixture",
+        is_bf16_supported=lambda including_emulation=True: True if including_emulation else bf16_supported))
     def import_module(name):
         imports.append(name)
         return torch if name == "torch" else SimpleNamespace()
     monkeypatch.setattr(preflight.importlib, "import_module", import_module)
     report = preflight.runtime_report(str(cfg), gpu=True, stages=["fast3r"])
-    assert report["ok"] and not any(name.startswith(("sam2", "hamer", "estimater")) for name in imports)
+    assert report["ok"] == bf16_supported
+    assert not any(name.startswith(("sam2", "hamer", "estimater")) for name in imports)
+    assert any(c["name"] == "Fast3R BF16 attention" and c["ok"] == bf16_supported for c in report["checks"])
 
 
 def test_foundationpose_rejects_bad_calibration_before_gpu_load(monkeypatch, tmp_path):

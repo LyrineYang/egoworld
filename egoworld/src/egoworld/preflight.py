@@ -171,6 +171,13 @@ def runtime_report(config_path: str, *, gpu: bool = False, stages: list[str] | N
             precision = config.operators.sam2.params.get("precision", "fp16") if "sam2" in selected else "fp32"
             if precision == "bf16":
                 check("bf16", torch.cuda.is_bf16_supported(), "use precision=fp16 if unavailable")
+            if "fast3r" in selected and (not external or not config.operators.fast3r.params.get("runner_command")):
+                try:
+                    native_bf16 = torch.cuda.is_bf16_supported(including_emulation=False)
+                except TypeError:  # older isolated model environments
+                    native_bf16 = torch.cuda.is_bf16_supported()
+                check("Fast3R BF16 attention", native_bf16,
+                      "Official attention uses BF16 internally, even with dtype=fp16; older cards such as T4 require a separately verified upstream adaptation")
         native_modules = {
             "sam2": ["sam2.build_sam", "groundingdino.util.inference", "decord"],
             "hamer": ["hamer.models", "hamer.datasets.vitdet_dataset"],

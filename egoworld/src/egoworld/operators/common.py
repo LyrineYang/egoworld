@@ -6,7 +6,10 @@ import numpy as np
 
 def array(value):
     if hasattr(value, "detach"):
-        value = value.detach().cpu().numpy()
+        value = value.detach().cpu()
+        if str(getattr(value, "dtype", "")) == "torch.bfloat16":
+            value = value.float()  # NumPy has no native torch.bfloat16 representation.
+        value = value.numpy()
     return np.asarray(value)
 
 

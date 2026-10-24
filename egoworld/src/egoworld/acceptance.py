@@ -6,6 +6,7 @@ from dataclasses import asdict
 import json
 from pathlib import Path
 import time
+import sys
 
 from egoworld.config import load_config, SceneDetectConfig
 from egoworld.contracts import OUTPUT_SCHEMA_VERSION, STAGE_ARTIFACTS, enabled_stages
@@ -35,22 +36,12 @@ def inspect_run(root: Path) -> dict:
     return result
 
 
-def single_gpu_smoke(config_path: str, input_video: str, output_dir: str,
-                     seconds: float, prompt: str, stages: list[str] | None = None) -> dict:
-    from egoworld.manifests.build_manifest import build_manifests, write_manifest_json
-    from egoworld.pipeline.driver import make_run_id, run_pipeline
-    from egoworld.preflight import runtime_report
-
-    if not 0 < seconds <= 15:
-        raise ValueError("Acceptance sample duration must be in (0, 15] seconds")
-    video = Path(input_video).resolve()
-    if not video.is_file():
-        raise ValueError(f"Input video not found: {video}")
-    root = Path(output_dir).resolve() / make_run_id()
-    root.mkdir(parents=True)
-    cfg = load_config(config_path)
+def prepare_smoke_config(cfg, stages=None, profile="default"):
+    """Apply explicit smoke limits without changing the user's config file."""
+    from egoworld.contracts import STAGE_DEPENDENCIES, GPU_STAGES
+    if profile not in ("default", "16gb"):
+        raise ValueError("Unknown smoke profile")
     if stages:
-        from egoworld.contracts import STAGE_DEPENDENCIES
         selected = set(stages)
         if selected - STAGE_DEPENDENCIES.keys():
             raise ValueError("Unknown smoke stage")
@@ -60,14 +51,44 @@ def single_gpu_smoke(config_path: str, input_video: str, output_dir: str,
             selected = expanded
         for name in STAGE_DEPENDENCIES:
             getattr(cfg.operators, name).enabled = name in selected
-    cfg = cfg.resolved()
-    if not enabled_stages(cfg):
-        raise ValueError("Select at least one model stage for acceptance")
     cfg.num_gpus = 1
     cfg.execution.gpu_stage_groups = []
-    cfg.run_id = "single_gpu"
     cfg.backpressure.max_in_flight_gpu = 1
     cfg.backpressure.max_in_flight_write = 1
+    if profile == "16gb":
+        cfg.execution.cpu_workers = cfg.execution.write_workers = cfg.execution.cpu_operator_workers = 1
+        cfg.execution.max_active_clips = cfg.execution.max_cached_models = 1
+        cfg.execution.keep_prepared = True  # retain logs for the first real trial
+        cfg.backpressure.max_in_flight_cpu = 1
+        cfg.retry.max_retries = 0
+        cfg.operators.hamer.params["batch_size"] = 1
+        cfg.operators.fast3r.params.update(max_views=2, dtype="bf16", attn_implementation="pytorch_auto")
+        cfg.operators.sam2.params.setdefault("prompting", {})["max_boxes_per_frame"] = 3
+        for stage in GPU_STAGES & set(enabled_stages(cfg)):
+            getattr(cfg.operators, stage).params.setdefault("runner_command", [sys.executable, "-m", "egoworld.worker"])
+    return cfg.resolved()
+
+
+def single_gpu_smoke(config_path: str, input_video: str, output_dir: str,
+                     seconds: float, prompt: str, stages: list[str] | None = None,
+                     profile: str = "default") -> dict:
+    from egoworld.manifests.build_manifest import build_manifests, write_manifest_json
+    from egoworld.pipeline.driver import make_run_id, run_pipeline
+    from egoworld.preflight import runtime_report
+
+    if not 0 < seconds <= 15:
+        raise ValueError("Acceptance sample duration must be in (0, 15] seconds")
+    if profile == "16gb" and seconds > 3:
+        raise ValueError("16gb smoke profile requires --seconds <= 3")
+    video = Path(input_video).resolve()
+    if not video.is_file():
+        raise ValueError(f"Input video not found: {video}")
+    cfg = prepare_smoke_config(load_config(config_path), stages, profile)
+    if not enabled_stages(cfg):
+        raise ValueError("Select at least one model stage for acceptance")
+    root = Path(output_dir).resolve() / make_run_id()
+    root.mkdir(parents=True)
+    cfg.run_id = "single_gpu"
     cfg.paths.output_root = str(root / "output")
     cfg.paths.state_db_path = str(root / "state.db")
     params = cfg.operators.sam2.params
@@ -78,10 +99,12 @@ def single_gpu_smoke(config_path: str, input_video: str, output_dir: str,
     params["prompting"]["gd_device"] = "cuda"
     config_file = root / "config.json"
     write_json(str(config_file), asdict(cfg))
-    result = {"status": "failed", "validation_scope": "one GPU, one short video; not a scale benchmark",
+    result = {"status": "failed", "profile": profile,
+              "stages": list(enabled_stages(cfg)), "config_path": str(config_file),
+              "validation_scope": "one GPU, one short video; not a scale benchmark or a 16GB memory guarantee",
               "report_path": str(root / "acceptance.json")}
     try:
-        prerequisites = runtime_report(str(config_file), gpu=True)
+        prerequisites = runtime_report(str(config_file), gpu=True, assets=True)
         result["environment"] = prerequisites
         if not prerequisites["ok"]:
             raise RuntimeError("GPU prerequisites failed; see acceptance.json")

@@ -69,6 +69,11 @@ EGOWORLD_NATIVE_TEST=1 EGOWORLD_NATIVE_CONFIG=egoworld/configs/full.json \
   EGOWORLD_NATIVE_VIDEO=/absolute/real-video.mp4 pytest -q -m native_models
 ```
 
+16GB 服务器可在上述 pytest 命令中增加 EGOWORLD_NATIVE_PROFILE=16gb；
+直接跑整图可用 smoke --profile 16gb --seconds 2。具体限制见 [16GB 操作说明](server.md#7-16gb-单卡-smoke)。
+本地 test_smoke_profiles.py 用真实视频/Parquet/恢复和明确的模型替身验证 profile，不能视为已测显存。
+Fast3R 的测试同时覆盖当前上游的字典返回、旧版二元组返回、device.type 和 precision 字符串，防止替身再次掩盖接口错误。
+
 默认截取 3 秒，最多 15 秒，强制单 GPU、关闭 SAM2 编译。样本需有可见目标与可靠左右手标签。
 FoundationPose 的 assets manifest 必须以 make-manifest 生成的 video_id 为键；深度编号使用原视频源帧号。
 DexRetarget 默认目标右手，仅处理右手行；更换目标手需匹配 YAML/URDF。

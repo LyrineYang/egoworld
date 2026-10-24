@@ -55,6 +55,19 @@ class ModelActor:
         """Ray exposes status and payload as separate returns; the driver gets status only."""
         return None, self.process(job, prepared, inputs)
 
+    def _release_models(self, keep=0):
+        if len(self.cache) <= keep:
+            return
+        while len(self.cache) > keep:
+            self.cache.popitem(last=False)
+        gc.collect()
+        try:
+            import torch
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+        except ImportError:
+            pass
+
     def process(self, job, prepared, inputs):
         previous = Path.cwd()
         working_dir = self.config["operators"][job["stage"]]["params"].get("working_dir")
@@ -73,18 +86,12 @@ class ModelActor:
         params.pop("working_dir", None)
         started = time.perf_counter()
         if command:
+            # Native weights must not overlap an external runner on the same GPU.
+            self._release_models()
             packet = self._external(command, job, prepared, inputs)
         else:
             if stage not in self.cache:
-                while len(self.cache) >= self.config["execution"]["max_cached_models"]:
-                    self.cache.popitem(last=False)
-                    gc.collect()
-                    try:
-                        import torch
-                        if torch.cuda.is_available():
-                            torch.cuda.empty_cache()
-                    except ImportError:
-                        pass
+                self._release_models(self.config["execution"]["max_cached_models"] - 1)
                 self.cache[stage] = OPERATORS[stage](**params)
             self.cache.move_to_end(stage)
             operator = self.cache[stage]

@@ -121,3 +121,8 @@ wheel 在临时目录安装后，CLI 和外部 runner 也已检查。未运行�
 
 用户入口已整理为 [server.md](server.md) 的安装、配置、预检、短样本、目录处理、结果检查与恢复；
 下一步的交付结果与完成条件统一列在 [requirements.md](requirements.md)，不再增加第二套计划文档。
+
+16GB 试跑复核进一步发现：原 Fast3R 替身固定返回二元组，与当前上游默认返回字典不符；
+device 类型和精度参数也需要按官方源码修正。现已补回归，并清理原生缓存进入外部 runner 时的显存叠加。
+新增 smoke --profile 16gb，限制单片段、HaMeR batch=1 和 Fast3R 两视图，并隔离模型进程、检查原生 BF16 能力。
+本地完整回归为 **124 passed / 11 skipped，48.39 秒**；仍未观察真实 16GB GPU 推理，不能将 profile 名称视为显存测试结果。

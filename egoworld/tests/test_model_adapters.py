@@ -10,6 +10,21 @@ from egoworld.contracts import validate_rows
 CLIP = {"clip_id": "c", "video_id": "v", "frame_start": 10, "frame_end": 20, "fps": 10.}
 
 
+def test_bfloat16_outputs_are_converted_before_numpy():
+    from egoworld.operators.common import array
+    class Tensor:
+        dtype = "torch.bfloat16"
+        def detach(self): return self
+        def cpu(self): return self
+        def float(self):
+            self.dtype = "torch.float32"
+            return self
+        def numpy(self):
+            assert self.dtype == "torch.float32"
+            return np.ones((2, 3), dtype=np.float32)
+    assert array(Tensor()).dtype == np.float32
+
+
 def module(monkeypatch, name, **attrs):
     parts = name.split(".")
     for i in range(1, len(parts) + 1):
@@ -96,26 +111,37 @@ def test_foundationpose_uses_metric_depth_register_then_track(monkeypatch, tmp_p
     assert log == ["register", "track"] and output[0]["length_unit"] == "meters"
 
 
-def test_fast3r_relative_reconstruction_and_pnp_failure(monkeypatch):
+@pytest.mark.parametrize("return_tuple", [False, True])
+@pytest.mark.parametrize("precision,upstream_precision", [("fp32", "32"), ("fp16", "16-mixed"), ("bf16", "bf16-mixed")])
+def test_fast3r_relative_reconstruction_and_pnp_failure(monkeypatch, return_tuple, precision, upstream_precision):
     from egoworld.operators import fast3r_op as target
-    torch = SimpleNamespace(inference_mode=nullcontext, float32="fp32", float16="fp16", bfloat16="bf16", from_numpy=lambda a: a)
+    torch = SimpleNamespace(inference_mode=nullcontext, device=lambda name: SimpleNamespace(type=name), from_numpy=lambda a: a)
     monkeypatch.setitem(sys.modules, "torch", torch)
     class Model:
         @classmethod
         def from_pretrained(cls, name): return cls()
         def to(self, device): return self
         def eval(self): return self
+        def modules(self):
+            return [attention]
+    attention = SimpleNamespace(attn_implementation="flash_attention")
     pred = {"pts3d_in_other_view": np.ones((1, 3, 3, 3)), "conf": np.full((1, 3, 3), 2.)}
     module(monkeypatch, "fast3r.models.fast3r", Fast3R=Model)
-    module(monkeypatch, "fast3r.dust3r.inference_multiview", inference=lambda images, *args, **kwargs: ({"preds": [pred for _ in images]}, {}))
+    def inference(images, model, device, **kwargs):
+        assert device.type == "cuda" and kwargs["dtype"] == upstream_precision
+        result = {"views": images, "preds": [pred for _ in images], "loss": None}
+        return (result, {}) if return_tuple else result
+    module(monkeypatch, "fast3r.dust3r.inference_multiview", inference=inference)
     module(monkeypatch, "fast3r.dust3r.utils.image", load_images=lambda files, **kwargs: files)
     module(monkeypatch, "fast3r.dust3r.cloud_opt.init_im_poses", fast_pnp=lambda *args, **kwargs: (100., np.eye(4)))
     monkeypatch.setattr(target, "frame_reader", lambda *args: SimpleNamespace(release=lambda: None))
     monkeypatch.setattr(target, "read_frame", lambda *args: np.zeros((3, 3, 3), dtype=np.uint8))
-    operator = target.Fast3ROperator(model_name_or_path="not-read", max_views=2)
+    operator = target.Fast3ROperator(model_name_or_path="not-read", max_views=2,
+                                   dtype=precision, attn_implementation="pytorch_auto")
     packet = operator.run(CLIP, "unused", {})
     validate_rows("reconstruction", packet["tables"]["reconstruction"], CLIP)
     assert len(packet["tables"]["reconstruction"]) == 2
+    assert attention.attn_implementation == "pytorch_auto"
     assert packet["tables"]["reconstruction"][0]["length_unit"] == "relative"
     assert len(packet["arrays"]["reconstruction-pointcloud.npz"]["points"]) <= 100000
     module(monkeypatch, "fast3r.dust3r.cloud_opt.init_im_poses", fast_pnp=lambda *args, **kwargs: (None, None))

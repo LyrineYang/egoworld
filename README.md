@@ -41,6 +41,9 @@ egoworld inspect --run-dir /absolute/output/run_id=dataset_001
 中断后重新执行同一条 launch 命令、保持相同 run-id。正常 Ctrl+C 会进入清理；
 外部模型 runner 由独立守护进程在 worker 退出时清理。
 
+16GB 单卡试跑可给 smoke 加 `--profile 16gb --seconds 2`，设置单片段、模型进程隔离、HaMeR batch=1 和 Fast3R 两视图；
+卡型/BF16 与资产要求见 [16GB 说明](docs/server.md#7-16gb-单卡-smoke)，这不是已实测的显存适配保证。
+
 输出位于 `paths.output_root/run_id=<id>/`：
 
 - `run_summary.json`：运行成功/失败、完成/跳过/失败片段数、阶段耗时。

@@ -40,3 +40,23 @@ def test_external_runner_cleans_up_descendants_on_exit_and_timeout(tmp_path, han
         if pid_file.is_file():
             try: os.kill(int(pid_file.read_text()), signal.SIGKILL)
             except ProcessLookupError: pass
+
+
+def test_native_weights_are_released_before_external_runner(monkeypatch):
+    import weakref
+    from types import SimpleNamespace
+    config = asdict(PipelineConfig().resolved())
+    config["operators"]["sam2"]["params"]["runner_command"] = ["fixture-python"]
+    actor = ModelActor(config)
+    class Weights: pass
+    weights = Weights(); reference = weakref.ref(weights)
+    actor.cache["hamer"] = weights
+    del weights
+    emptied = []
+    monkeypatch.setitem(sys.modules, "torch", SimpleNamespace(cuda=SimpleNamespace(
+        is_available=lambda: True, empty_cache=lambda: emptied.append(True))))
+    def external(*args):
+        assert reference() is None and not actor.cache and emptied
+        return {"tables": {"masks": [], "instances": [], "tracks": []}}
+    monkeypatch.setattr(actor, "_external", external)
+    assert actor.process({"stage": "sam2", "clip": {}}, {}, {})["tables"]
