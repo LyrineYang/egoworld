@@ -85,3 +85,12 @@
 
 ## 2026-02-03 12:28:00
 - Removed stale `egoworld/activeContext.md` to avoid conflicting active-context sources.
+
+## 2026-02-03 12:50:00
+- Added observability specialization spec (`docs/design/observability-spec.md`) and implementation plan (`docs/ops/observability-plan.md`).
+
+## 2026-02-03 13:15:00
+- Refined observability spec/plan for metric naming, config separation, stage latency definitions, and CPU preproc metrics.
+
+## 2026-02-03 13:40:00
+- Added `docs/ops/observability-guidance.md` as a code-focused reference for implementing the observability layer.

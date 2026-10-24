@@ -1,7 +1,7 @@
 # egoworld 环境管理规范（离线 H100 服务器）
 
 状态：Draft（用于审核）
-范围：仅覆盖在线 H100 单机离线批处理服务器（Linux x86_64）。不考虑本地开发机或多机集群。
+当前范围（2026-10-23）：CPU 开发与回归测试 + 单卡 Linux 验收。CPU 安装使用根目录 `pyproject.toml`，不安装 Torch、Ray 或模型；GPU 模板使用 Torch 2.5.1 / CUDA 12.4，SAM2 与 GroundingDINO 固定上游 commit，并补充 MP4 解码依赖 eva-decord。GPU 环境模板尚待真实单卡验证；以下 H100 分阶段规划属于后续参考，不作为当前交付要求。
 
 ## 1. 目标与原则
 - 复现性：环境可重建、依赖可追溯、版本可核验。

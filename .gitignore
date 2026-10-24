@@ -1,0 +1,15 @@
+/data/
+/manifests/
+/models/
+/output/
+/state/
+/single-gpu-check/
+*.egg-info/
+/build/
+/.pytest_cache/
+/.venv/
+/external/
+/config.local/
+.DS_Store
+__pycache__/
+*.pyc

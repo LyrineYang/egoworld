@@ -1,23 +1,16 @@
-# Documentation Map
+# 文档入口
 
-Start here for usage and configuration: `README.md`.
+建议按下列顺序阅读：
 
-## Document roles (single source of truth)
-- `README.md`: quickstart, config surface, operator matrix, output layout.
-- `docs/env/policy.md`: environment strategy, phases, and rules.
-- `docs/env/matrix.md`: hardware/driver compatibility baseline.
-- `egoworld/env/README.md`: env creation and locking commands.
-- `egoworld/tests/TEST_SPEC.md`: test matrix and required smoke tests.
-- `docs/ops/progress.md`: milestone tracking.
-- `docs/ops/runlog.md`: implementation log.
-- `docs/ops/active-context.md`: current focus and short-term tasks.
-- `docs/design/tech-context.md`: model/stack inventory.
-- `docs/design/memory.md`: background notes and decisions.
-- `plan.md`: implementation plan and milestones.
+1. [服务器操作说明](server.md)：第一次使用的主流程；安装、配置、预检、处理、停止与恢复。
+2. [输出清单](outputs.md)：选择需要的数据；五阶段与输出对应，包含 SAM2/GroundingDINO。
+3. [需求与下一步](requirements.md)：R01–R11 对应代码/测试，产品开发优先级与完成条件。
+4. [测试与独立验证](testing.md)：可执行命令、反例回归、OpenAI 官方建议和验证流程。
+5. [调度与高吞吐设计](design.md)：当前路径、瓶颈风险、开源方案比较与待实施建议。
+6. [项目复盘](overview.md)：原设计、之前的实现、最近完成的工作与证据边界。
 
-## Documentation rules (efficiency)
-- One topic, one owner doc. Do not repeat the same rule in multiple files.
-- Update the owner doc first; other docs should only link back.
-- When changing config fields, update `README.md` and `egoworld/configs/example.json` together.
-- When changing environment dependencies, update `docs/env/policy.md`, `docs/env/matrix.md`, and `egoworld/env/*` together.
-- Always keep model baselines consistent (current default: SAM2.1 small).
+[环境说明](../egoworld/env/README.md)用于准备模型依赖和资产。
+[archive](archive/) 保留原设计/技术笔记/历史日志，不作为当前已实现能力。
+
+当前围绕已接入阶段收尾，不扩充传感器或复杂新模型；schema 3 保持不变。
+需求变化时一起更新对应代码与测试，保持“代码已接入”和“真模型已验证”的区别。

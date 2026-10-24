@@ -1,0 +1,17 @@
+{
+  "replace-with-video-id": {
+    "intrinsics": [
+      600,
+      0,
+      320,
+      0,
+      600,
+      240,
+      0,
+      0,
+      1
+    ],
+    "depth_pattern": "/absolute/path/depth/{frame_index:09d}.npy",
+    "depth_scale_to_meters": 0.001
+  }
+}

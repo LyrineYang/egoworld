@@ -1,210 +1,89 @@
-# egoworld
+# EgoWorld
 
-Offline, TB-scale egocentric video processing pipeline for Embodied AI.
+将第一视角视频批量转换为可读回的分割、手部姿态、物体姿态、机器人手关节和场景几何数据。
+产品入口为命令行，面向单台 NVIDIA 服务器：从输入目录启动，中断后用同一命令恢复。
 
-## Status
-- The pipeline skeleton is implemented (manifests, Ray driver, backpressure, retry/dead-letter, Parquet writer).
-- SAM2 + GroundingDINO integration is implemented (requires installed packages + local checkpoints).
-- Default segmentation model: SAM2.1 small.
-- Other model operators (Hamer, FoundationPose, DexRetarget, Fast3R) remain stubs and require real checkpoints + inference wrappers.
+**目前已实现五阶段适配、并发处理、结构化输出和恢复机制；本地 CPU 与真实 Ray 的模型替身测试可运行。
+真实模型、显存、标注效果与服务器吞吐仍待单卡验证。** Demo 暂缓。
 
-## Key capabilities (current)
-- Scene detect with fallback to full clip.
-- Clip-level scheduling with backpressure and retry policy.
-- Atomic Parquet output with fixed compression/row-group/page-size.
-- SQLite state store for Pending/Running/Done/Failed + dead-letter.
+## 能得到什么
 
-## Project layout
-- `egoworld/src/egoworld/`: core pipeline code.
-- `egoworld/scripts/`: CLI entry points.
-- `egoworld/configs/`: example configs.
-- `egoworld/tests/`: basic validation tests.
-- `docs/`: documentation and ops logs.
+| 阶段 | 直观输出 | 需要准备 |
+| --- | --- | --- |
+| SAM2.1 + GroundingDINO | 每个手/物体的 mask、类别、片段内 ID、二维轨迹 | RGB 视频、提示词、模型权重 |
+| HaMeR | 左右手、21 个三维关节点、手指关节旋转、手型 | SAM2 手框、HaMeR/MANO 资产 |
+| FoundationPose | 物体相对相机的位置和朝向 | 已有对齐 RGB-D、内参和带尺度网格 |
+| DexRetarget | 指定机器人手各关节的角度或位移 | HaMeR 输出、机器人 YAML/URDF 和坐标约定 |
+| Fast3R | 抽样相机位姿、内参、场景点云 | 多帧 RGB；默认相对尺度 |
 
-## Requirements
-- Python 3.10+
-- Ray
-- PyTorch (GPU builds for your CUDA version)
-- FFmpeg/ffprobe
-- PyArrow (Parquet IO)
-- scenedetect (scene detection)
-- groundingdino (prompt generation for SAM2)
-- opencv-python (video frame sampling)
-- pycocotools (RLE encoding, optional fallback exists)
-- prometheus_client (metrics, optional if metrics disabled)
+没有 RGB-D 时关闭 FoundationPose；没有机器人资产时可关闭 DexRetarget。
+本轮不接新传感器、不加复杂新模型、不做硬件控制。字段含义见[输出清单](docs/outputs.md)。
 
-## Environment setup (H100 server)
-- Follow `docs/env/policy.md` and `docs/env/matrix.md` (scope: Rocky Linux 8.8 + CUDA 12.8).
-- Base env must include: Python 3.10, Ray, PyTorch GPU build, pyarrow, scenedetect, ffmpeg, SAM2 + GroundingDINO.
-- Metrics are optional; install `prometheus_client` only if metrics are enabled.
-- If you need to build C++/CUDA extensions, install gcc/g++ + cmake + ninja + CUDA toolkit.
-- When lock files exist, create envs from `egoworld/env/` and do not upgrade without updating locks.
-- See `egoworld/env/README.md` for base env + SAM2 env templates.
-- One-command setup (recommended):
-  ```bash
-  bash egoworld/scripts/setup_env.sh --weights --smoke
-  ```
+## 第一次运行
 
-## Data placement
-- Put input videos under a directory such as `./data/` (any readable path works).
-- Supported inputs are whatever `ffprobe` + OpenCV can read (e.g., mp4, mov). If `ffprobe` fails, manifest build will fail.
-- Use `--glob` in `make-manifest` to filter file types (default: `**/*.mp4`).
+所有命令在仓库根目录执行。服务器的安装、资产路径和配置步骤见[服务器操作说明](docs/server.md)。
+准备好环境后，先复制单卡分割配置：
 
-## Model checkpoints & paths
-- Use `egoworld/scripts/download_models.sh` to download official weights into `./models/`.
-- Set paths under `operators.<name>.params` in your config.
-- SAM2 requires both checkpoint + config; GroundingDINO requires config + checkpoint.
-- If SAM2 config path is missing locally, it may resolve from the installed `sam2` package.
+```bash
+mkdir -p config.local
+cp egoworld/configs/example.json config.local/job.json
 
-## Before you run
-- Ensure at least one video file exists under `./data/` (or your chosen input dir).
-- Ensure `ffmpeg`/`ffprobe` are on PATH.
-- Ensure SAM2 + GroundingDINO packages are installed in the active env.
-- Run commands from the repo root unless noted otherwise.
+# 修改 job.json 的路径和提示词后检查
+# 无 GPU 可先执行此项；不启动模型、不写运行结果
+egoworld launch --config config.local/job.json --input-dir /absolute/videos --check-only
 
-## Minimal runnable (SAM2 pipeline)
-1) Set Python path:
-   ```bash
-   export PYTHONPATH=$PWD/egoworld/src
-   ```
-2) Download model weights:
-   ```bash
-   bash egoworld/scripts/download_models.sh
-   ```
-3) Build manifests + run pipeline:
-   ```bash
-   python egoworld/scripts/make_manifest.py make-manifest --config egoworld/configs/example.json --input-dir ./data --output-dir ./manifests
-   python egoworld/scripts/run_pipeline.py run --config egoworld/configs/example.json --video-manifest ./manifests/video_manifest.jsonl --clip-manifest ./manifests/clip_manifest.jsonl
-   ```
-Advanced operational details (resume/ops tuning) are kept in internal docs.
-
-## Configuration
-- See `egoworld/configs/example.json` for all supported fields.
-- Backpressure controls: `backpressure.max_in_flight_*`
-- Retry policy: `retry.max_retries`, `retry.base_delay_s`, `retry.backoff`
-- Parquet params: `parquet.compression`, `parquet.row_group_size`, `parquet.data_page_size`
-- Coordinate/time spec: `coordinates.*` (mask encoding, time base, coord frame, units)
-- Operator toggles and params: `operators.<name>.enabled` + `operators.<name>.params`
-  - SAM2 config path may be resolved from the installed `sam2` package if the local file is missing.
-
-## Operators (matrix)
-- `sam2`: segmentation/masks (GPU). Output: `masks.parquet`
-- `hamer`: hand pose (CPU/GPU). Output: `hand_pose.parquet`
-- `foundationpose`: object pose (CPU/GPU). Output: `object_pose.parquet`
-- `dex_retarget`: hand-to-robot mapping (CPU/GPU). Output: `mapping.parquet`
-- `fast3r`: multi-view 3D reconstruction (GPU). Output: `fast3r_pose.parquet` (if enabled)
-
-## SAM2 prompt policy (default in example config)
-- Goal: hand segmentation with object context for egocentric kitchen-style datasets.
-- Strategy: low-frequency prompts + video propagation.
-- `prompt_interval_s`: 2.0 (keyframe prompts every ~2 seconds).
-- `max_prompts_per_clip`: 60 (bounds work on long clips).
-- `prompt_text`: hands + common handheld kitchen objects (override as needed).
-- Thresholds: `box_threshold=0.35`, `text_threshold=0.25`, `nms_iou=0.5`.
-
-## Model checkpoints (recommended way to provide)
-- Keep model code and weights outside git. Store weights under `./models/` (ignored by `.gitignore`).
-- Provide paths or model names under `operators.<name>.params` (see example below).
-- Record versions in `model_versions` for reproducibility.
-
-## Example (operator config + checkpoints)
-```json
-"operators": {
-  "sam2": {
-    "enabled": true,
-    "params": {
-      "checkpoint": "./models/sam2/sam2.1_hiera_small.pt",
-      "config": "./models/sam2/sam2.1_hiera_s.yaml",
-      "device": "cuda",
-      "precision": "bf16",
-      "vos_optimized": true,
-      "prompting": {
-        "source": "groundingdino",
-        "prompt_interval_s": 2.0,
-        "max_prompts_per_clip": 60,
-        "max_boxes_per_frame": 6,
-        "box_threshold": 0.35,
-        "text_threshold": 0.25,
-        "nms_iou": 0.5,
-        "min_box_area": 256,
-        "gd_config": "./models/groundingdino/GroundingDINO_SwinT_OGC.py",
-        "gd_checkpoint": "./models/groundingdino/groundingdino_swint_ogc.pth",
-        "gd_device": "cuda",
-        "prompt_text": "hand . left hand . right hand . person hand . glove . utensil . knife . spoon . fork . spatula . ladle . tongs . cup . mug . bottle . bowl . plate . pan . pot . lid . cutting board . food . container . jar . can . package . bag . towel . sponge . soap . faucet . sink . stove . microwave . refrigerator . drawer . cabinet . phone . remote . key . pen . scissors"
-      }
-    }
-  },
-  "hamer": { "enabled": false, "params": { "model_path": "./models/hamer" } },
-  "foundationpose": { "enabled": false, "params": { "model_path": "./models/foundationpose" } },
-  "dex_retarget": { "enabled": false, "params": { "model_path": "./models/dex_retarget" } },
-  "fast3r": {
-    "enabled": false,
-    "params": {
-      "model_name_or_path": "jedyang97/Fast3R_ViT_Large_512",
-      "image_size": 512,
-      "dtype": "bf16",
-      "max_views": 8,
-      "frame_sampling": { "method": "uniform", "num_frames": 8, "stride": 4 }
-    }
-  }
-}
+# 在服务器上执行：短样本 → 目录处理 → 查看结果
+egoworld smoke --config config.local/job.json --input-video /absolute/videos/sample.mp4
+egoworld launch --config config.local/job.json --input-dir /absolute/videos --run-id dataset_001
+egoworld inspect --run-dir /absolute/output/run_id=dataset_001
 ```
 
-## Manifests
-- `video_manifest`: video-level metadata (duration, fps, size, checksum)
-- `clip_manifest`: clip-level schedule and status
-- Schema and field specs: `egoworld/src/egoworld/manifests/schema.py`
+中断后重新执行同一条 launch 命令、保持相同 run-id。正常 Ctrl+C 会进入清理；
+外部模型 runner 由独立守护进程在 worker 退出时清理。
 
-## Output layout
-```text
-output/
-  run_id=YYYYMMDD_HHMMSS/
-    video_id=.../clip_id=.../
-      masks.parquet
-      hand_pose.parquet
-      object_pose.parquet
-      mapping.parquet
-      fast3r_pose.parquet
-      meta.json
+输出位于 `paths.output_root/run_id=<id>/`：
+
+- `run_summary.json`：运行成功/失败、完成/跳过/失败片段数、阶段耗时。
+- `video_id=*/clip_id=*/`：启用阶段的 Parquet/NPZ、`qc.json`、最终 `meta.json`。
+- `events.jsonl`：失败阶段、错误与重试；分环境错误另看 `.work/<clip>/<stage>/runner.log`。
+
+命令成功只表示执行完成；`qc.status=review` 仍需检查空结果、覆盖率和模型效果。
+阶段 JSON 是提交依据，单独存在的 Parquet 可能是未完成或失效的旧结果。
+改变代码、模型或输入后使用新 run-id。吞吐数字包含启动与重叠帧，不代表大规模性能已验证。
+
+## 配置选择
+
+| 配置 | 用途 |
+| --- | --- |
+| `egoworld/configs/example.json` | 单卡 SAM2.1 + GroundingDINO；第一次启动的最短路径 |
+| `egoworld/configs/rgb.json` | RGB 的分割、人手、机器人手和场景；需对应模型/机器人资产 |
+| `egoworld/configs/full.json` | 加入已有 RGB-D/网格的物体姿态 |
+| `egoworld/configs/server.json` | 四卡固定分工模板；性能待实测 |
+
+可分别 smoke 任一阶段，不必等待其它分支验收通过。实际依赖用 `egoworld plan --config ...` 查看，
+运行时字段用 `egoworld schema` 查看。对象 ID 仅在片段内有效，各模型尚未融合为统一世界坐标。
+
+## 无 GPU 开发与回归
+
+Python 3.10+，系统需 FFmpeg/ffprobe；本层不安装 Torch 或模型权重。
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e '.[dev]'
+egoworld doctor
+pytest -q -m 'not env_smoke and not pipeline_smoke and not sam2_smoke and not native_models'
 ```
 
-## How to inspect outputs
-- `meta.json`: clip metadata + field specs + time/mask encoding.
-- `masks.parquet`: SAM2 masks (RLE, one row per frame).
-- `hand_pose.parquet`, `object_pose.parquet`, `mapping.parquet`: stubs unless those models are implemented.
-- `fast3r_pose.parquet`: only written when Fast3R is enabled.
+真实 Ray 联调需另装 Ray 并开启测试开关，详见[测试说明](docs/testing.md)。
 
-## Tests
-- Base unit tests: `pytest -q`
-- Environment smoke (GPU/ffmpeg/paths): `EGOWORLD_ENV_SMOKE=1 pytest -q egoworld/tests/test_env_smoke.py`
-- SAM2 runtime smoke (real weights): `EGOWORLD_SAM2_SMOKE=1 pytest -q egoworld/tests/test_sam2_integration.py`
-- Pipeline smoke (end-to-end + SAM2): `EGOWORLD_PIPELINE_SMOKE=1 pytest -q egoworld/tests/test_pipeline_smoke.py`
+## 文档与下一步
 
-## Status tracking
-- `docs/ops/progress.md`: milestones and next steps
-- `docs/ops/runlog.md`: implementation log
+- [服务器操作](docs/server.md)：安装、配置、预检、启动、停止、恢复与故障处理。
+- [输出清单](docs/outputs.md)：模型与数据要求对应。
+- [当前需求与产品推进顺序](docs/requirements.md)：验收条件、代码/测试对应和下一步。
+- [测试与验证边界](docs/testing.md)：无 GPU、Ray、真模型测试与独立验证。
+- [吞吐设计](docs/design.md)：当前实现、成熟方案比较与需要实测的优化。
+- [项目复盘](docs/overview.md)与[原设计归档](docs/archive/plan.md)：历史和现状对照。
 
-## Roadmap
-- Integrate real model wrappers + checkpoints.
-- Add QC thresholds and Prometheus exporter wiring.
-- Add multi-GPU tuning and micro-batching.
-- Expand schema with full 3D/6D pose fields.
-
-## What is NOT implemented yet
-- Hamer/FoundationPose/DexRetarget/Fast3R real inference (currently stubs).
-- QC metrics thresholds + Prometheus exporter wiring (metrics are no-op unless wired).
-- Multi-machine execution, Kafka/Redis middleware, exactly-once semantics.
-- NCCL/DCGM tooling or GPU utilization alerts (policy exists but not enforced in code).
-
-## Documentation
-- `docs/README.md`: documentation map and ownership rules.
-- `README.md`: quickstart and configuration overview.
-- `plan.md`: offline MVP implementation plan and milestones.
-- `docs/design/tech-context.md`: tech stack and model inventory.
-- `docs/ops/active-context.md`: current focus and short-term tasks.
-- `docs/ops/progress.md`: progress log and next steps.
-- `docs/ops/runlog.md`: implementation log.
-- `docs/design/memory.md`: background notes and decisions.
-
-## License
-- TBD
+项目许可证尚未确定；模型与资产沿用各自上游许可。

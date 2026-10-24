@@ -1,15 +1,19 @@
 {
-  "num_gpus": 4,
+  "num_gpus": 1,
   "parquet": {
     "compression": "zstd",
-    "row_group_size": 268435456,
+    "row_group_size": 65536,
     "data_page_size": 8388608,
-    "partition": ["run_id", "video_id", "clip_id"]
+    "partition": [
+      "run_id",
+      "video_id",
+      "clip_id"
+    ]
   },
   "backpressure": {
-    "max_in_flight_cpu": 8,
-    "max_in_flight_gpu": 8,
-    "max_in_flight_write": 8
+    "max_in_flight_cpu": 2,
+    "max_in_flight_gpu": 2,
+    "max_in_flight_write": 4
   },
   "retry": {
     "max_retries": 3,
@@ -20,7 +24,8 @@
     "method": "scenedetect",
     "min_scene_len_s": 1.0,
     "fallback_full_clip": true,
-    "overlap_s": 1.0
+    "overlap_s": 1.0,
+    "max_clip_duration_s": 15.0
   },
   "coordinates": {
     "spec_version": "v1",
@@ -53,35 +58,77 @@
         "checkpoint": "./models/sam2/sam2.1_hiera_small.pt",
         "config": "./models/sam2/sam2.1_hiera_s.yaml",
         "device": "cuda",
-        "precision": "bf16",
-        "vos_optimized": true,
+        "precision": "fp16",
+        "vos_optimized": false,
         "prompting": {
           "source": "groundingdino",
           "prompt_interval_s": 2.0,
           "max_prompts_per_clip": 60,
           "max_boxes_per_frame": 6,
-        "box_threshold": 0.35,
-        "text_threshold": 0.25,
-        "nms_iou": 0.5,
-        "min_box_area": 256,
-        "gd_config": "./models/groundingdino/GroundingDINO_SwinT_OGC.py",
-        "gd_checkpoint": "./models/groundingdino/groundingdino_swint_ogc.pth",
-        "gd_device": "cuda",
-        "prompt_text": "hand . left hand . right hand . person hand . glove . utensil . knife . spoon . fork . spatula . ladle . tongs . cup . mug . bottle . bowl . plate . pan . pot . lid . cutting board . food . container . jar . can . package . bag . towel . sponge . soap . faucet . sink . stove . microwave . refrigerator . drawer . cabinet . phone . remote . key . pen . scissors"
-      }
+          "box_threshold": 0.35,
+          "text_threshold": 0.25,
+          "nms_iou": 0.5,
+          "min_box_area": 256,
+          "gd_config": "./models/groundingdino/GroundingDINO_SwinT_OGC.py",
+          "gd_checkpoint": "./models/groundingdino/groundingdino_swint_ogc.pth",
+          "gd_device": "cuda",
+          "prompt_text": "left hand . right hand . cup . bottle . bowl ."
+        }
       }
     },
-    "hamer": { "enabled": false, "params": { "model_path": "./models/hamer" } },
-    "foundationpose": { "enabled": false, "params": { "model_path": "./models/foundationpose" } },
-    "dex_retarget": { "enabled": false, "params": { "model_path": "./models/dex_retarget" } },
+    "hamer": {
+      "enabled": false,
+      "params": {
+        "checkpoint": "./external/hamer/_DATA/hamer_ckpts/checkpoints/hamer.ckpt",
+        "frame_stride": 5,
+        "batch_size": 8,
+        "unknown_handedness": "error",
+        "working_dir": "./external/hamer"
+      }
+    },
+    "foundationpose": {
+      "enabled": false,
+      "params": {
+        "repo_path": "./external/FoundationPose",
+        "assets_manifest": "./egoworld/configs/assets.example.json",
+        "objects": {
+          "cup": {
+            "mesh_path": "./assets/cup.obj",
+            "mesh_scale_to_meters": 1.0
+          }
+        }
+      }
+    },
+    "dex_retarget": {
+      "enabled": false,
+      "params": {
+        "config": "./assets/robot-retarget.yaml",
+        "urdf_dir": "./assets/robots",
+        "robot_id": "configured-right-hand",
+        "handedness": "right",
+        "human_to_robot_rotation": [
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale_factor": 1.0,
+        "joint_units": "radians"
+      }
+    },
     "fast3r": {
       "enabled": false,
       "params": {
-        "model_name_or_path": "jedyang97/Fast3R_ViT_Large_512",
-        "image_size": 512,
-        "dtype": "bf16",
+        "model_name_or_path": "./models/fast3r",
         "max_views": 8,
-        "frame_sampling": { "method": "uniform", "num_frames": 8, "stride": 4 }
+        "image_size": 512,
+        "dtype": "fp32",
+        "max_points": 100000
       }
     }
   },
@@ -91,5 +138,17 @@
     "foundationpose": "TBD",
     "dex_retarget": "TBD",
     "fast3r": "TBD"
+  },
+  "execution": {
+    "cpu_workers": 2,
+    "write_workers": 2,
+    "cpu_operator_workers": 1,
+    "max_active_clips": 4,
+    "max_cached_models": 1,
+    "stage_timeout_s": 900,
+    "poll_timeout_s": 0.1,
+    "keep_prepared": false,
+    "verify_hashes_on_resume": true,
+    "gpu_stage_groups": []
   }
 }

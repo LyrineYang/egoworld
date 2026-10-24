@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import errno
 
 
 class RetryableError(Exception):
@@ -40,6 +41,8 @@ def classify_error(error: Exception) -> ErrorClassification:
         return ErrorClassification(True, error.__class__.__name__)
     if isinstance(error, (DecodeError, InvalidDataError, ModelMissingError)):
         return ErrorClassification(False, error.__class__.__name__)
+    if isinstance(error, OSError) and error.errno in (errno.EAGAIN, errno.EBUSY, errno.ETIMEDOUT, errno.ECONNRESET):
+        return ErrorClassification(True, "transient_io")
     message = str(error).lower()
     if "out of memory" in message:
         return ErrorClassification(True, "oom")

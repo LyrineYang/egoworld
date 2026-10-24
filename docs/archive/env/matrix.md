@@ -1,8 +1,10 @@
 # 环境兼容矩阵（H100 离线服务器）
 
 状态：Draft（用于审核）
-最后更新：2026-02-02
-范围：仅覆盖在线 H100 单机离线批处理服务器（Linux x86_64）。
+最后更新：2026-10-23
+当前基线：CPU 开发无需 CUDA；单卡验收模板 Python 3.10、Torch 2.5.1、TorchVision 0.20.1、CUDA runtime 12.4、SAM2.1 small + GroundingDINO（commit 固定在 env 文件）、eva-decord。真实 GPU 安装与推理待验证，使用 `egoworld smoke` 记录验收结果。
+
+以下 4×H100 系统信息是历史记录，尚未在本轮复核。
 
 ## 1. 硬件基线
 - GPU：4× NVIDIA H100 80GB HBM3

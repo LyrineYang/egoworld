@@ -65,13 +65,15 @@ class GroundingDINOOperator:
         model = self._model
         if not hasattr(model, "predict_with_caption"):
             return self._predict_with_functions(image_rgb, prompt, box_threshold, text_threshold, max_boxes)
-        boxes, scores, phrases = model.predict_with_caption(  # type: ignore[attr-defined]
-            image_rgb,
+        detections, phrases = model.predict_with_caption(  # type: ignore[attr-defined]
+            np.ascontiguousarray(image_rgb[:, :, ::-1]),
             prompt,
             box_threshold=box_threshold,
             text_threshold=text_threshold,
         )
-        return _to_detections(boxes, scores, phrases, image_rgb.shape[:2], max_boxes)
+        return _to_detections(
+            detections.xyxy, detections.confidence, phrases, image_rgb.shape[:2], max_boxes
+        )
 
     def _predict_with_functions(
         self,
@@ -89,13 +91,17 @@ class GroundingDINOOperator:
             _write_image(tmp_path, image_rgb)
             image_source, image = load_image(tmp_path)
             boxes, logits, phrases = predict(
-                model=self._model,
+                model=getattr(self._model, "model", self._model),
                 image=image,
                 caption=prompt,
                 box_threshold=box_threshold,
                 text_threshold=text_threshold,
+                device=self.device,
             )
-            return _to_detections(boxes, logits, phrases, image_source.shape[:2], max_boxes)
+            return _to_detections(
+                boxes, logits, phrases, image_source.shape[:2], max_boxes,
+                box_format="cxcywh", normalized=True,
+            )
         finally:
             try:
                 os.remove(tmp_path)
@@ -116,16 +122,18 @@ def _to_detections(
     phrases: Any,
     image_hw: Tuple[int, int],
     max_boxes: int,
+    box_format: str = "xyxy",
+    normalized: bool = False,
 ) -> List[Detection]:
     h, w = image_hw
     boxes = np.asarray(boxes)
     scores = np.asarray(scores).reshape(-1)
     phrases = list(phrases)
 
-    if boxes.size == 0:
+    if boxes.size == 0 or max_boxes <= 0:
         return []
 
-    boxes = _normalize_boxes(boxes, w, h)
+    boxes = _normalize_boxes(boxes, w, h, box_format, normalized)
     order = np.argsort(scores)[::-1]
     detections: List[Detection] = []
     for idx in order[:max_boxes]:
@@ -140,12 +148,14 @@ def _to_detections(
     return detections
 
 
-def _normalize_boxes(boxes: np.ndarray, width: int, height: int) -> np.ndarray:
+def _normalize_boxes(
+    boxes: np.ndarray, width: int, height: int,
+    box_format: str = "xyxy", normalized: bool = False,
+) -> np.ndarray:
     boxes = boxes.astype(np.float32)
     if boxes.ndim == 1:
         boxes = boxes.reshape(1, -1)
-    # Heuristic: if x2 < x1 for most rows, assume cxcywh
-    if np.mean(boxes[:, 2] < boxes[:, 0]) > 0.5:
+    if box_format == "cxcywh":
         cx = boxes[:, 0]
         cy = boxes[:, 1]
         w = boxes[:, 2]
@@ -155,8 +165,9 @@ def _normalize_boxes(boxes: np.ndarray, width: int, height: int) -> np.ndarray:
         x2 = cx + w / 2.0
         y2 = cy + h / 2.0
         boxes = np.stack([x1, y1, x2, y2], axis=1)
-    # If normalized, scale to pixel
-    if boxes.max() <= 1.5:
+    elif box_format != "xyxy":
+        raise ValueError(f"Unsupported box format: {box_format}")
+    if normalized:
         boxes[:, [0, 2]] *= width
         boxes[:, [1, 3]] *= height
     boxes[:, 0] = np.clip(boxes[:, 0], 0, width - 1)

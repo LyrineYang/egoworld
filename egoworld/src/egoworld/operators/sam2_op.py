@@ -3,15 +3,19 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Dict, List, Tuple
 import os
+import json
+import hashlib
 import subprocess
 import tempfile
 
 import numpy as np
 
 from egoworld.operators.base import Operator
-from egoworld.operators.groundingdino_op import GroundingDINOOperator
+from egoworld.operators.groundingdino_op import GroundingDINOOperator, Detection
+from egoworld.utils.errors import DecodeError
 from egoworld.utils.mask import encode_mask_rle
 from egoworld.utils.video import get_video_info, iter_frames, seconds_from_frames
 
@@ -56,15 +60,21 @@ class Sam2Operator(Operator):
         if not checkpoint or not model_cfg:
             raise RuntimeError("SAM2 requires 'checkpoint' and 'config' in params")
 
-        try:
-            self._predictor = build_sam2_video_predictor(
-                model_cfg,
-                checkpoint,
-                device=device,
-                vos_optimized=vos_optimized,
-            )
-        except TypeError:
-            self._predictor = build_sam2_video_predictor(model_cfg, checkpoint)
+        overrides = []
+        if os.path.isfile(model_cfg):
+            from hydra.core.config_store import ConfigStore
+            from omegaconf import OmegaConf
+
+            # Register the primary config before composition. A search-path override
+            # alone cannot recover a primary config Hydra has already cached as missing.
+            config_file = Path(model_cfg).resolve()
+            overrides = ["hydra.searchpath=" + json.dumps(["file://" + str(config_file.parent)])]
+            model_cfg = "egoworld_sam2_" + hashlib.sha256(config_file.read_bytes()).hexdigest()[:16]
+            ConfigStore.instance().store(name=model_cfg, node=OmegaConf.load(config_file))
+        self._predictor = build_sam2_video_predictor(
+            model_cfg, checkpoint, device=device, vos_optimized=vos_optimized,
+            hydra_overrides_extra=overrides,
+        )
 
     def _ensure_groundingdino(self, prompt_cfg: PromptConfig) -> GroundingDINOOperator:
         if self._gd is None:
@@ -86,39 +96,40 @@ class Sam2Operator(Operator):
         self._ensure_predictor()
         predictor = self._predictor
 
-        precision = params.get("precision", "bf16")
+        precision = params.get("precision", "fp16")
         device = params.get("device", "cuda")
         clip_path = _extract_clip(video_path, start_s, end_s)
-        video_info = get_video_info(clip_path)
-        fps = video_info.fps or 30.0
-
-        prompt_cfg = _load_prompt_config(params.get("prompting", {}))
-        prompt_frames = _collect_prompt_frames(
-            clip_path,
-            prompt_cfg.prompt_interval_s,
-            prompt_cfg.max_prompts_per_clip,
-        )
-
-        if not prompt_frames:
-            return _empty_result(video_path, start_s, end_s)
-
-        gd = None
-        if prompt_cfg.source == "groundingdino":
-            gd = self._ensure_groundingdino(prompt_cfg)
-
-        import torch
-
-        autocast_dtype = torch.bfloat16 if precision == "bf16" else torch.float16
-        device_type = "cuda" if "cuda" in device else "cpu"
-
         try:
+            video_info = get_video_info(clip_path)
+            fps = video_info.fps or 30.0
+
+            prompt_cfg = _load_prompt_config(params.get("prompting", {}))
+            prompt_frames = _collect_prompt_frames(
+                clip_path,
+                prompt_cfg.prompt_interval_s,
+                prompt_cfg.max_prompts_per_clip,
+            )
+
+            if not prompt_frames:
+                return _empty_result(video_path, start_s, end_s)
+
+            gd = None
+            if prompt_cfg.source == "groundingdino":
+                gd = self._ensure_groundingdino(prompt_cfg)
+
+            import torch
+
+            autocast_dtype = torch.bfloat16 if precision == "bf16" else torch.float16
+            device_type = "cuda" if "cuda" in device else "cpu"
+
             with torch.inference_mode(), torch.autocast(device_type=device_type, dtype=autocast_dtype):
                 state = _init_state_with_fallback(predictor, clip_path)
                 obj_id = 1
                 tracked_boxes: Dict[int, Tuple[float, float, float, float]] = {}
+                objects: Dict[int, Dict[str, Any]] = {}
 
                 for frame_idx, _, frame_rgb in prompt_frames:
-                    detections: List[Tuple[float, float, float, float]] = []
+                    detections: List[Detection] = []
                     if gd is not None:
                         results = gd.predict(
                             frame_rgb,
@@ -127,31 +138,41 @@ class Sam2Operator(Operator):
                             text_threshold=prompt_cfg.text_threshold,
                             max_boxes=prompt_cfg.max_boxes_per_frame,
                         )
-                        detections = [d.box_xyxy for d in results]
+                        detections = results
 
-                    detections = _filter_boxes(detections, prompt_cfg.min_box_area, prompt_cfg.nms_iou)
+                    detections = _filter_detections(detections, prompt_cfg.min_box_area, prompt_cfg.nms_iou)
+                    used_ids: set[int] = set()
 
-                    for box in detections:
-                        matched_id = _match_box(tracked_boxes, box, iou_threshold=0.5)
+                    for detection in detections:
+                        box = detection.box_xyxy
+                        label = getattr(detection, "phrase", "unknown").strip().lower() or "unknown"
+                        candidates = {key: value for key, value in tracked_boxes.items()
+                                      if key not in used_ids and objects[key]["label"] == label}
+                        matched_id = _match_box(candidates, box, iou_threshold=0.5)
                         if matched_id is None:
                             matched_id = obj_id
                             obj_id += 1
                         tracked_boxes[matched_id] = box
+                        used_ids.add(matched_id)
+                        objects[matched_id] = {"label": label, "detection_score": float(getattr(detection, "score", 0.0))}
                         _add_box_prompt(predictor, state, frame_idx, matched_id, box)
 
                 if not tracked_boxes:
                     return _empty_result(video_path, start_s, end_s)
 
                 frames: List[Dict[str, Any]] = []
+                instances: List[Dict[str, Any]] = []
                 empty_count = 0
                 total_count = 0
 
-                for out_frame_idx, _, out_mask_logits in predictor.propagate_in_video(state):
+                for out_frame_idx, out_obj_ids, out_mask_logits in predictor.propagate_in_video(state):
                     total_count += 1
                     mask = _union_masks(out_mask_logits)
                     if mask is None:
                         empty_count += 1
                         continue
+                    if not np.any(mask):
+                        empty_count += 1
                     rle = encode_mask_rle(mask)
                     frame_index = out_frame_idx + int(round(start_s * fps))
                     frames.append(
@@ -161,10 +182,26 @@ class Sam2Operator(Operator):
                             "mask_rle": rle,
                         }
                     )
+                    instance_masks = _instance_masks(out_mask_logits)
+                    if len(instance_masks) != len(out_obj_ids):
+                        raise ValueError("SAM2 object IDs and masks have different lengths")
+                    for object_id, object_mask in zip(out_obj_ids, instance_masks):
+                        ys, xs = np.nonzero(object_mask)
+                        info = objects.get(int(object_id), {"label": "unknown", "detection_score": None})
+                        instances.append({
+                            "frame_index": int(frame_index),
+                            "timestamp_s": float(seconds_from_frames(frame_index, fps)),
+                            "object_id": int(object_id), **info,
+                            "mask_rle": encode_mask_rle(object_mask),
+                            "area_px": int(object_mask.sum()),
+                            "bbox_xyxy": [int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1] if len(xs) else None,
+                        })
 
                 empty_rate = empty_count / max(1, total_count)
                 return {
                     "frames": frames,
+                    "instances": instances,
+                    "processed_frames": total_count,
                     "mask_encoding": "rle",
                     "empty_mask_rate": float(empty_rate),
                     "start_s": start_s,
@@ -215,52 +252,79 @@ def _collect_prompt_frames(
 
 
 def _extract_clip(video_path: str, start_s: float, end_s: float) -> str:
-    if start_s <= 0 and end_s <= 0:
+    if start_s == 0 and end_s == 0:
         return video_path
+    if start_s < 0 or end_s <= start_s:
+        raise DecodeError(f"Invalid clip interval: {start_s} to {end_s}")
     tmp = tempfile.NamedTemporaryFile(suffix=".mp4", delete=False)
     tmp.close()
     cmd = [
         "ffmpeg",
         "-y",
         "-ss",
-        str(max(0.0, start_s)),
-        "-to",
-        str(max(0.0, end_s)),
+        str(start_s),
         "-i",
         video_path,
-        "-c",
-        "copy",
+        "-t",
+        str(end_s - start_s),
+        "-c:v",
+        "libx264",
+        "-threads",
+        "1",
+        "-preset",
+        "ultrafast",
+        "-crf",
+        "0",
         "-an",
         tmp.name,
     ]
     try:
         subprocess.run(cmd, check=True, capture_output=True)
         return tmp.name
-    except Exception:
+    except Exception as exc:
         try:
             os.remove(tmp.name)
         except OSError:
             pass
-        return video_path
+        raise DecodeError(
+            f"Failed to extract clip {start_s} to {end_s} from {video_path}"
+        ) from exc
 
 
 def _init_state_with_fallback(predictor: Any, clip_path: str) -> Any:
-    try:
-        return predictor.init_state(clip_path)
-    except Exception:
-        return predictor.init_state(video_path=clip_path)
+    return predictor.init_state(clip_path, offload_video_to_cpu=True, offload_state_to_cpu=True)
 
 
 def _add_box_prompt(predictor: Any, state: Any, frame_idx: int, obj_id: int, box: Tuple[float, float, float, float]) -> None:
-    try:
-        predictor.add_new_points_or_box(
-            state,
-            frame_idx=frame_idx,
-            obj_id=obj_id,
-            box=np.array(box, dtype=np.float32),
-        )
-    except Exception:
-        predictor.add_new_points_or_box(state, frame_idx, obj_id, box)
+    predictor.add_new_points_or_box(
+        state, frame_idx=frame_idx, obj_id=obj_id, box=np.array(box, dtype=np.float32),
+    )
+
+
+def _instance_masks(mask_logits: Any) -> np.ndarray:
+    if hasattr(mask_logits, "detach"):
+        mask_logits = mask_logits.detach().cpu().numpy()
+    masks = np.asarray(mask_logits)
+    if masks.ndim == 2:
+        masks = masks[None]
+    elif masks.ndim == 4 and masks.shape[1] == 1:
+        masks = masks[:, 0]
+    if masks.ndim != 3:
+        raise ValueError(f"Unsupported mask shape: {masks.shape}")
+    return (masks > 0).astype(np.uint8)
+
+
+def _filter_detections(detections: List[Detection], min_area: float, nms_iou: float) -> List[Detection]:
+    # Keep semantic labels and confidence; suppress duplicates within the same class only.
+    kept: List[Detection] = []
+    for detection in sorted(detections, key=lambda d: getattr(d, "score", 0.0), reverse=True):
+        if _box_area(detection.box_xyxy) < min_area:
+            continue
+        if any(getattr(d, "phrase", "unknown") == getattr(detection, "phrase", "unknown")
+               and _iou(d.box_xyxy, detection.box_xyxy) >= nms_iou for d in kept):
+            continue
+        kept.append(detection)
+    return kept
 
 
 def _union_masks(mask_logits: Any) -> np.ndarray | None:
@@ -272,9 +336,9 @@ def _union_masks(mask_logits: Any) -> np.ndarray | None:
     masks = np.asarray(masks)
     if masks.size == 0:
         return None
-    if masks.ndim == 2:
-        return masks.astype(np.uint8)
-    union = np.any(masks > 0, axis=0)
+    if masks.ndim not in (2, 3, 4) or (masks.ndim == 4 and masks.shape[1] != 1):
+        raise ValueError(f"Unsupported mask shape: {masks.shape}")
+    union = np.any(masks > 0, axis=tuple(range(masks.ndim - 2)))
     return union.astype(np.uint8)
 
 
@@ -355,6 +419,8 @@ def _iou(a: Tuple[float, float, float, float], b: Tuple[float, float, float, flo
 def _empty_result(video_path: str, start_s: float, end_s: float) -> Dict[str, Any]:
     return {
         "frames": [],
+        "instances": [],
+        "processed_frames": 0,
         "mask_encoding": "rle",
         "empty_mask_rate": 1.0,
         "start_s": start_s,

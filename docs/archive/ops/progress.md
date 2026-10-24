@@ -31,6 +31,9 @@
 - Moved the main README content to repository root and refreshed doc references.
 - Added `docs/ops/active-context.md` to track current focus.
 - Removed stale `egoworld/activeContext.md` to keep a single active-context source.
+- Added observability specialization spec and implementation plan (no code yet).
+- Refined observability spec/plan for naming/config consistency and added CPU preproc metrics.
+- Added `docs/ops/observability-guidance.md` with code-level guidance.
 
 ## Next
 - Integrate real model checkpoints and inference wrappers.

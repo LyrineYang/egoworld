@@ -1,0 +1,19 @@
+name: egoworld-sam2
+channels:
+  - pytorch
+  - nvidia
+  - conda-forge
+channel_priority: strict
+dependencies:
+  - python=3.10
+  - pip
+  - pytorch=2.5.1
+  - pytorch-cuda=12.4
+  - torchvision=0.20.1
+  - torchaudio=2.5.1
+  - opencv
+  - pycocotools
+  - numpy>=1.24,<2.0
+  - pip:
+      - -c ../constraints.txt
+      - -r requirements-sam2.txt

@@ -71,3 +71,28 @@ def test_parse_video_meta_rejects_invalid_fps(monkeypatch: pytest.MonkeyPatch) -
     monkeypatch.setattr(bm, "run_ffprobe", _fake_ffprobe)
     with pytest.raises(ValueError):
         bm.parse_video_meta("/tmp/a.mp4")
+
+
+@pytest.mark.parametrize("timing", [
+    {"nb_frames": "10", "duration": "2.0"},
+    {"duration": "1.0"},
+    {"duration_ts": 1000, "time_base": "1/1000"},
+])
+def test_video_stream_timing_takes_precedence_over_container(monkeypatch, tmp_path, timing):
+    video = tmp_path / "video.mp4"; video.write_bytes(b"fixture")
+    monkeypatch.setattr(bm, "run_ffprobe", lambda _: {
+        "streams": [{"codec_type": "video", "r_frame_rate": "10/1", **timing}],
+        "format": {"duration": "5.0"}})
+    assert bm.parse_video_meta(str(video)).duration_s == 1.
+
+
+def test_missing_video_timing_counts_frames_instead_of_using_audio(monkeypatch, tmp_path):
+    from types import SimpleNamespace
+    video = tmp_path / "video.mkv"; video.write_bytes(b"fixture")
+    monkeypatch.setattr(bm, "run_ffprobe", lambda _: {
+        "streams": [{"codec_type": "video", "r_frame_rate": "10/1"}], "format": {"duration": "5.0"}})
+    def count(command, **kwargs):
+        assert "-count_frames" in command and command[command.index("-select_streams")+1] == "v:0"
+        return SimpleNamespace(stdout='{"streams":[{"nb_read_frames":"10"}]}')
+    monkeypatch.setattr(bm.subprocess, "run", count)
+    assert bm.parse_video_meta(str(video)).duration_s == 1.

@@ -7,13 +7,13 @@ channel_priority: strict
 dependencies:
   - python=3.10
   - pip
-  - pytorch>=2.2,<2.5
-  - pytorch-cuda>=12.1,<13
-  - torchvision
-  - torchaudio
+  - pytorch=2.5.1
+  - pytorch-cuda=12.4
+  - torchvision=0.20.1
+  - torchaudio=2.5.1
   - opencv
   - pycocotools
-  - pyarrow>=12,<16
+  - pyarrow>=14,<16
   - ffmpeg
   - numpy>=1.24,<2.0
   - pip:
@@ -21,5 +21,7 @@ dependencies:
       - ray[default]>=2.8,<3.0
       - scenedetect>=0.6,<0.7
       - prometheus-client>=0.16,<1.0
-      - git+https://github.com/facebookresearch/sam2.git@main
-      - git+https://github.com/IDEA-Research/GroundingDINO.git@main
+      - pytest>=8,<9
+      - eva-decord>=0.6.1
+      - git+https://github.com/facebookresearch/sam2.git@2b90b9f5ceec907a1c18123530e92e794ad901a4
+      - git+https://github.com/IDEA-Research/GroundingDINO.git@856dde20aee659246248e20734ef9ba5214f5e44

@@ -12,14 +12,16 @@ LOCK_FILE="$ENV_DIR/locks/linux-64/base.lock"
 USE_LOCK=1
 WITH_WEIGHTS=0
 RUN_SMOKE=0
+SMOKE_VIDEO="${EGOWORLD_SMOKE_VIDEO:-}"
 
 usage() {
   cat <<EOF
-Usage: $(basename "$0") [--no-lock] [--weights] [--smoke] [--env-name NAME]
+Usage: $(basename "$0") [--no-lock] [--weights] [--smoke-video PATH] [--env-name NAME]
 
   --no-lock     Skip conda-lock install even if lock file exists.
   --weights     Download model weights (runs scripts/download_models.sh).
-  --smoke       Run SAM2 smoke test after install.
+  --smoke-video Run single-GPU acceptance on this real video after install.
+  --smoke       Same, using EGOWORLD_SMOKE_VIDEO (required).
   --env-name    Override conda env name (default: egoworld-base).
 EOF
 }
@@ -38,6 +40,11 @@ while [[ $# -gt 0 ]]; do
       RUN_SMOKE=1
       shift
       ;;
+    --smoke-video)
+      SMOKE_VIDEO="${2:-}"
+      RUN_SMOKE=1
+      shift 2
+      ;;
     --env-name)
       ENV_NAME="${2:-}"
       shift 2
@@ -54,12 +61,20 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+if [[ "$RUN_SMOKE" -eq 1 && ! -f "$SMOKE_VIDEO" ]]; then
+  echo "ERROR: supply a real video with --smoke-video PATH or EGOWORLD_SMOKE_VIDEO."
+  exit 1
+fi
+if [[ "$RUN_SMOKE" -eq 1 ]]; then
+  SMOKE_VIDEO="$(cd "$(dirname "$SMOKE_VIDEO")" && pwd)/$(basename "$SMOKE_VIDEO")"
+fi
+
 if ! command -v conda >/dev/null 2>&1; then
   echo "ERROR: conda is required but not found on PATH."
   exit 1
 fi
 
-cd "$REPO_ROOT"
+cd "$ENV_DIR"
 
 if [[ "$USE_LOCK" -eq 1 && -f "$LOCK_FILE" ]]; then
   if ! command -v conda-lock >/dev/null 2>&1; then
@@ -75,10 +90,14 @@ else
   fi
 fi
 
+cd "$REPO_ROOT"
+
 if [[ "$WITH_WEIGHTS" -eq 1 ]]; then
-  bash "$REPO_ROOT/egoworld/scripts/download_models.sh"
+  conda run -n "$ENV_NAME" bash "$REPO_ROOT/egoworld/scripts/download_models.sh"
 fi
 
+conda run -n "$ENV_NAME" python -m pip install --no-deps -e "$REPO_ROOT"
+
 if [[ "$RUN_SMOKE" -eq 1 ]]; then
-  PYTHONPATH="$REPO_ROOT/egoworld/src" EGOWORLD_SAM2_SMOKE=1 conda run -n "$ENV_NAME" pytest -q egoworld/tests/test_sam2_integration.py
+  conda run -n "$ENV_NAME" egoworld smoke --input-video "$SMOKE_VIDEO"
 fi

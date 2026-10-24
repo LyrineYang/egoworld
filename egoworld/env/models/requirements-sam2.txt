@@ -1,0 +1,4 @@
+git+https://github.com/facebookresearch/sam2.git@2b90b9f5ceec907a1c18123530e92e794ad901a4
+git+https://github.com/IDEA-Research/GroundingDINO.git@856dde20aee659246248e20734ef9ba5214f5e44
+# Pinned upstream snapshots; validate on the target GPU before changing.
+eva-decord>=0.6.1

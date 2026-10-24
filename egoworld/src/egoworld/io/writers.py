@@ -70,3 +70,7 @@ def write_json_lines(path: str, rows: Iterable[Dict[str, Any]]) -> None:
         for row in rows:
             handle.write(json.dumps(row, ensure_ascii=True) + "\n")
     os.replace(tmp_path, path)
+
+
+def read_json(path):
+    return json.loads(Path(path).read_text(encoding="utf-8"))

@@ -3,31 +3,18 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
+from uuid import uuid4
 import json
 import time
 
-from egoworld.config import PipelineConfig, load_config
-from egoworld.io.paths import clip_dir, run_dir
-from egoworld.io.writers import write_json, write_parquet_table, write_run_manifest
-from egoworld.manifests.schema import FIELD_SPECS
-from egoworld.pipeline.queues import enforce_in_flight
-from egoworld.pipeline.scheduler import sort_clips_by_duration
-from egoworld.pipeline.state_store import (
-    bulk_insert_pending,
-    get_resumable_clips,
-    init_db,
-    mark_dead_letter,
-    upsert_clip_status,
-)
-from egoworld.utils.errors import classify_error
-from egoworld.operators.sam2_op import Sam2Operator
-from egoworld.operators.hamer_op import HamerOperator
-from egoworld.operators.foundationpose_op import FoundationPoseOperator
-from egoworld.operators.dex_retarget_op import DexRetargetOperator
-from egoworld.operators.fast3r_op import Fast3ROperator
+from egoworld.config import load_config
+from egoworld.io.paths import run_dir
+from egoworld.io.writers import write_json, write_run_manifest
+from egoworld.contracts import OUTPUT_SCHEMA_VERSION
+
 
 
 @dataclass
@@ -70,36 +57,18 @@ def load_manifest(path: str) -> List[Dict[str, Any]]:
 
 
 def make_run_id() -> str:
-    return datetime.utcnow().strftime("%Y%m%d_%H%M%S")
-
-
-def _mask_schema():  # pragma: no cover - optional dependency
-    import pyarrow as pa
-
-    return pa.schema(
-        [
-            pa.field("frame_index", pa.int64()),
-            pa.field("timestamp_s", pa.float64()),
-            pa.field("mask_rle", pa.string()),
-        ]
-    )
-
-
-def _pose_schema():  # pragma: no cover - optional dependency
-    import pyarrow as pa
-
-    return pa.schema(
-        [
-            pa.field("frame_index", pa.int64()),
-            pa.field("timestamp_s", pa.float64()),
-            pa.field("pose", pa.list_(pa.float32())),
-        ]
-    )
+    return datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S") + "_" + uuid4().hex[:8]
 
 
 def _build_clip_tasks(clips: List[Dict[str, Any]], video_manifest: Dict[str, Dict[str, Any]]) -> List[ClipTask]:
     tasks: List[ClipTask] = []
+    seen = set()
     for clip in clips:
+        if clip["clip_id"] in seen:
+            raise ValueError(f"Duplicate clip_id: {clip['clip_id']}")
+        seen.add(clip["clip_id"])
+        if not (0 <= float(clip["start_s"]) < float(clip["end_s"])) or not (0 <= int(clip["frame_start"]) < int(clip["frame_end"])):
+            raise ValueError(f"Invalid time/frame interval: {clip['clip_id']}")
         video = video_manifest.get(clip["video_id"])
         if not video:
             raise RuntimeError(f"clip_manifest references missing video_id: {clip['video_id']}")
@@ -121,6 +90,19 @@ def _build_clip_tasks(clips: List[Dict[str, Any]], video_manifest: Dict[str, Dic
     return tasks
 
 
+def check_inputs(video_manifest_path: str, clip_manifest_path: str) -> Dict[str, Any]:
+    videos = _load_video_index(video_manifest_path)
+    clips = load_manifest(clip_manifest_path)
+    if not videos or not clips:
+        raise ValueError("No input videos or clips; check the input directory and glob")
+    tasks = _build_clip_tasks(clips, videos)
+    for task in tasks:
+        if not Path(task.video_path).is_file():
+            raise ValueError(f"Input video not found: {task.video_path}")
+    return {"videos": len(videos), "clips": len(tasks),
+            "scheduled_seconds": sum(t.end_s - t.start_s for t in tasks)}
+
+
 def _load_video_index(video_manifest_path: str) -> Dict[str, Dict[str, Any]]:
     rows = load_manifest(video_manifest_path)
     return {row["video_id"]: row for row in rows}
@@ -140,302 +122,101 @@ def _clip_to_dict(task: ClipTask) -> Dict[str, Any]:
     }
 
 
-class _ActorInitMixin:
-    def __init__(self, config: Dict[str, Any]):
-        self.config = config
+def iter_clips(path):
+    if str(path).endswith(".parquet"):
+        import pyarrow.parquet as pq
+        for batch in pq.ParquetFile(path).iter_batches(batch_size=512):
+            yield from batch.to_pylist()
+    else:
+        with open(path, encoding="utf-8") as handle:
+            for line in handle:
+                if line.strip():
+                    yield json.loads(line)
 
 
-class Sam2Actor(_ActorInitMixin):
-    def __init__(self, config: Dict[str, Any]):
-        super().__init__(config)
-        operators = config.get("operators", {})
-        self.sam2_cfg = operators.get("sam2", {})
-        self.hamer_cfg = operators.get("hamer", {})
-        self.foundation_cfg = operators.get("foundationpose", {})
-        self.retarget_cfg = operators.get("dex_retarget", {})
-        self.fast3r_cfg = operators.get("fast3r", {})
+def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id=None, backend_factory=None):
+    from egoworld.contracts import enabled_stages, GPU_STAGES
+    from egoworld.pipeline.backend import RayBackend
+    from egoworld.pipeline.engine import Engine
+    from egoworld.pipeline.state_store import init_stage_db, run_counts
+    from egoworld.utils.provenance import provenance
 
-        self.sam2 = Sam2Operator(**self.sam2_cfg.get("params", {}))
-        self.hamer = HamerOperator(self.hamer_cfg.get("params", {}).get("model_path"))
-        self.foundation = FoundationPoseOperator(self.foundation_cfg.get("params", {}).get("model_path"))
-        self.retarget = DexRetargetOperator(self.retarget_cfg.get("params", {}).get("model_path"))
-        self.fast3r = Fast3ROperator(self.fast3r_cfg.get("params", {}).get("model_name_or_path"))
-
-    def process(self, clip: Dict[str, Any]) -> Dict[str, Any]:
-        masks = {}
-        hand_pose = {}
-        object_pose = {}
-        mapping = {}
-        fast3r = {}
-
-        if self.sam2_cfg.get("enabled", True):
-            masks = self.sam2.run(
-                clip["video_path"],
-                clip["start_s"],
-                clip["end_s"],
-                params=self.sam2_cfg.get("params", {}),
-            )
-        if self.hamer_cfg.get("enabled", False):
-            hand_pose = self.hamer.run(clip["video_path"], clip["start_s"], clip["end_s"])
-        if self.foundation_cfg.get("enabled", False):
-            object_pose = self.foundation.run(clip["video_path"], clip["start_s"], clip["end_s"])
-        if self.retarget_cfg.get("enabled", False):
-            mapping = self.retarget.run(hand_pose)
-        if self.fast3r_cfg.get("enabled", False):
-            fast3r = self.fast3r.run(
-                clip["video_path"],
-                clip["start_s"],
-                clip["end_s"],
-                params=self.fast3r_cfg.get("params", {}),
-            )
-        return {
-            "clip": clip,
-            "masks": masks,
-            "hand_pose": hand_pose,
-            "object_pose": object_pose,
-            "mapping": mapping,
-            "fast3r": fast3r,
-        }
-
-
-class WriterActor(_ActorInitMixin):
-    def __init__(self, config: Dict[str, Any]):
-        super().__init__(config)
-        from egoworld.config import ParquetConfig
-
-        self.parquet = ParquetConfig(**config.get("parquet", {}))
-
-    def write(self, result: Dict[str, Any]) -> Dict[str, Any]:
-        clip = result["clip"]
-        run_id = self.config["run_id"]
-        out_dir = clip_dir(self.config["paths"]["output_root"], run_id, clip["video_id"], clip["clip_id"])
-        out_dir.mkdir(parents=True, exist_ok=True)
-
-        meta = {
-            "clip": clip,
-            "field_specs": FIELD_SPECS,
-            "mask_encoding": self.config["coordinates"]["mask_encoding"],
-            "time_base": self.config["coordinates"]["time_base"],
-        }
-        write_json(str(out_dir / "meta.json"), meta)
-
-        masks_rows = result.get("masks", {}).get("frames", [])
-        write_parquet_table(
-            str(out_dir / "masks.parquet"),
-            masks_rows,
-            schema=_mask_schema(),
-            parquet=self.parquet,
-        )
-        hand_rows = result.get("hand_pose", {}).get("hand_pose", [])
-        write_parquet_table(
-            str(out_dir / "hand_pose.parquet"),
-            hand_rows,
-            schema=_pose_schema(),
-            parquet=self.parquet,
-        )
-        obj_rows = result.get("object_pose", {}).get("object_pose", [])
-        write_parquet_table(
-            str(out_dir / "object_pose.parquet"),
-            obj_rows,
-            schema=_pose_schema(),
-            parquet=self.parquet,
-        )
-        map_rows = result.get("mapping", {}).get("mapping", [])
-        write_parquet_table(
-            str(out_dir / "mapping.parquet"),
-            map_rows,
-            schema=_pose_schema(),
-            parquet=self.parquet,
-        )
-        fast3r_enabled = (
-            self.config.get("operators", {})
-            .get("fast3r", {})
-            .get("enabled", False)
-        )
-        if fast3r_enabled:
-            fast3r_rows = result.get("fast3r", {}).get("camera_poses", [])
-            write_parquet_table(
-                str(out_dir / "fast3r_pose.parquet"),
-                fast3r_rows,
-                schema=_pose_schema(),
-                parquet=self.parquet,
-            )
-
-        return {"clip_id": clip["clip_id"], "status": "written"}
-
-
-def run_pipeline(
-    config_path: str,
-    video_manifest_path: str,
-    clip_manifest_path: str,
-) -> None:
     config = load_config(config_path).resolved()
-    run_id = config.run_id or make_run_id()
-    config.run_id = run_id
-
-    state_db = config.paths.state_db_path
-    init_db(state_db)
-
+    config.run_id = run_id or config.run_id or make_run_id()
+    if any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for c in config.run_id):
+        raise ValueError("run_id may contain only letters, digits, hyphens and underscores")
     video_index = _load_video_index(video_manifest_path)
-    clip_rows = load_manifest(clip_manifest_path)
-    bulk_insert_pending(state_db, clip_rows)
-    resumable = set(get_resumable_clips(state_db))
-    clip_rows = [row for row in clip_rows if row.get("clip_id") in resumable]
-    clip_tasks = _build_clip_tasks(clip_rows, video_index)
-    clip_tasks = sort_clips_by_duration([_clip_to_dict(t) for t in clip_tasks])
-    clip_tasks = [ClipTask(**task) for task in clip_tasks]
+    if not video_index:
+        raise ValueError("No input videos; build nonempty manifests first")
+    root = run_dir(config.paths.output_root, config.run_id)
+    identity = provenance(config, video_manifest_path, clip_manifest_path)
+    fingerprint = identity["fingerprint"]
+    manifest_path = root / "run_manifest.json"
+    if manifest_path.is_file() and json.loads(manifest_path.read_text()).get("config_fingerprint") != fingerprint:
+        raise ValueError("Input/model/code settings changed; choose a new run_id")
+    root.mkdir(parents=True, exist_ok=True)
+    init_stage_db(config.paths.state_db_path)
+    manifest = config.to_run_manifest() | {"created_at": datetime.now(timezone.utc).isoformat(),
+        "config_fingerprint": fingerprint, "config": asdict(config), "provenance": identity,
+        "output_schema_version": OUTPUT_SCHEMA_VERSION, "stages": enabled_stages(config)}
+    write_run_manifest(str(manifest_path), manifest)
 
-    run_manifest = config.to_run_manifest()
-    run_manifest["config_path"] = config_path
-    run_manifest["created_at"] = datetime.utcnow().isoformat() + "Z"
-    run_root = run_dir(config.paths.output_root, run_id)
-    run_root.mkdir(parents=True, exist_ok=True)
-    write_run_manifest(str(run_root / "run_manifest.json"), run_manifest)
+    def tasks():
+        seen = set()
+        for row in iter_clips(clip_manifest_path):
+            task = _build_clip_tasks([row], video_index)[0]
+            if task.clip_id in seen:
+                raise ValueError(f"Duplicate clip_id: {task.clip_id}")
+            seen.add(task.clip_id)
+            for identifier in (task.clip_id, task.video_id):
+                if "/" in identifier or "\\" in identifier or identifier in (".", ".."):
+                    raise ValueError("Manifest identifiers cannot contain path separators")
+            result = _clip_to_dict(task)
+            video = video_index[task.video_id]
+            result["fps"] = float(video.get("fps") or ((task.frame_end - task.frame_start) / (task.end_s - task.start_s)))
+            if abs(task.start_s - task.frame_start / result["fps"]) > 1e-5 or abs(task.end_s - task.frame_end / result["fps"]) > 1e-5:
+                raise ValueError(f"Frame/time alignment mismatch: {task.clip_id}")
+            yield result
 
+    source = iter(tasks())
     try:
-        import ray  # type: ignore
-    except Exception as exc:
-        raise RuntimeError("Ray is required to run the pipeline") from exc
-
-    ray.init(ignore_reinit_error=True)
-
-    config_dict = asdict(config)
-    writer = ray.remote(WriterActor).options(num_cpus=1).remote(config_dict)
-    gpu_actors = [
-        ray.remote(Sam2Actor).options(num_gpus=1).remote(config_dict)
-        for _ in range(config.num_gpus)
-    ]
-
-    pending_gpu: List[Any] = []
-    pending_write: List[Any] = []
-    ref_to_meta: Dict[Any, Tuple[ClipTask, int]] = {}
-    write_ref_to_meta: Dict[Any, Tuple[Dict[str, Any], int]] = {}
-    actor_index = 0
-
-    def submit_clip(task: ClipTask, attempt: int) -> None:
-        nonlocal actor_index
-        upsert_clip_status(state_db, task.clip_id, task.video_id, "Running", "", attempt)
-        clip_payload = _clip_to_dict(task)
-        actor = gpu_actors[actor_index % len(gpu_actors)]
-        actor_index += 1
-        ref = actor.process.remote(clip_payload)
-        pending_gpu.append(ref)
-        ref_to_meta[ref] = (task, attempt)
-
-    for task in clip_tasks:
-        submit_clip(task, task.retry_count)
-
-        done_refs, pending_gpu = enforce_in_flight(
-            pending_gpu, config.backpressure.max_in_flight_gpu
-        )
-        for done_ref in done_refs:
-            task, attempt = ref_to_meta.pop(done_ref)
-            try:
-                result = ray.get(done_ref)
-                upsert_clip_status(state_db, task.clip_id, task.video_id, "Writing", "", attempt)
-                write_ref = writer.write.remote(result)
-                pending_write.append(write_ref)
-                write_ref_to_meta[write_ref] = (result, 0)
-            except Exception as exc:
-                classification = classify_error(exc)
-                if classification.retryable and attempt < config.retry.max_retries:
-                    delay = config.retry.next_delay(attempt + 1)
-                    time.sleep(delay)
-                    task.retry_count = attempt + 1
-                    submit_clip(task, task.retry_count)
-                else:
-                    upsert_clip_status(
-                        state_db,
-                        task.clip_id,
-                        task.video_id,
-                        "Failed",
-                        str(exc),
-                        attempt,
-                    )
-                    mark_dead_letter(state_db, task.clip_id, task.video_id, str(exc))
-
-        done_write, pending_write = enforce_in_flight(
-            pending_write, config.backpressure.max_in_flight_write
-        )
-        for write_ref in done_write:
-            result, attempt = write_ref_to_meta.pop(write_ref)
-            clip = result["clip"]
-            try:
-                ray.get(write_ref)
-                upsert_clip_status(state_db, clip["clip_id"], clip["video_id"], "Done", "", attempt)
-            except Exception as exc:
-                classification = classify_error(exc)
-                if classification.retryable and attempt < config.retry.max_retries:
-                    delay = config.retry.next_delay(attempt + 1)
-                    time.sleep(delay)
-                    retry_ref = writer.write.remote(result)
-                    pending_write.append(retry_ref)
-                    write_ref_to_meta[retry_ref] = (result, attempt + 1)
-                else:
-                    upsert_clip_status(
-                        state_db,
-                        clip["clip_id"],
-                        clip["video_id"],
-                        "Failed",
-                        str(exc),
-                        attempt,
-                    )
-                    mark_dead_letter(state_db, clip["clip_id"], clip["video_id"], str(exc))
-
-    # Drain remaining
-    while pending_gpu:
-        done_refs, pending_gpu = enforce_in_flight(pending_gpu, 1)
-        for done_ref in done_refs:
-            task, attempt = ref_to_meta.pop(done_ref)
-            try:
-                result = ray.get(done_ref)
-                upsert_clip_status(state_db, task.clip_id, task.video_id, "Writing", "", attempt)
-                write_ref = writer.write.remote(result)
-                pending_write.append(write_ref)
-                write_ref_to_meta[write_ref] = (result, 0)
-            except Exception as exc:
-                classification = classify_error(exc)
-                if classification.retryable and attempt < config.retry.max_retries:
-                    delay = config.retry.next_delay(attempt + 1)
-                    time.sleep(delay)
-                    task.retry_count = attempt + 1
-                    submit_clip(task, task.retry_count)
-                else:
-                    upsert_clip_status(
-                        state_db,
-                        task.clip_id,
-                        task.video_id,
-                        "Failed",
-                        str(exc),
-                        attempt,
-                    )
-                    mark_dead_letter(state_db, task.clip_id, task.video_id, str(exc))
-
-    while pending_write:
-        done_write, pending_write = enforce_in_flight(pending_write, 1)
-        for write_ref in done_write:
-            result, attempt = write_ref_to_meta.pop(write_ref)
-            clip = result["clip"]
-            try:
-                ray.get(write_ref)
-                upsert_clip_status(state_db, clip["clip_id"], clip["video_id"], "Done", "", attempt)
-            except Exception as exc:
-                classification = classify_error(exc)
-                if classification.retryable and attempt < config.retry.max_retries:
-                    delay = config.retry.next_delay(attempt + 1)
-                    time.sleep(delay)
-                    retry_ref = writer.write.remote(result)
-                    pending_write.append(retry_ref)
-                    write_ref_to_meta[retry_ref] = (result, attempt + 1)
-                else:
-                    upsert_clip_status(
-                        state_db,
-                        clip["clip_id"],
-                        clip["video_id"],
-                        "Failed",
-                        str(exc),
-                        attempt,
-                    )
-                    mark_dead_letter(state_db, clip["clip_id"], clip["video_id"], str(exc))
-
-    ray.shutdown()
+        first = next(source)
+    except StopIteration:
+        raise ValueError("No input clips; build nonempty manifests first")
+    import itertools
+    backend, ray = None, None
+    started = time.perf_counter()
+    summary = {"status": "failed", "run_id": config.run_id}
+    events_path = root / "events.jsonl"
+    with events_path.open("a", encoding="utf-8") as events:
+        def emit(**event):
+            event.update(ts=datetime.now(timezone.utc).isoformat(), run_id=config.run_id)
+            events.write(json.dumps(event, ensure_ascii=False) + "\n"); events.flush()
+        try:
+            if backend_factory is None:
+                import ray
+                ray.init(ignore_reinit_error=True)
+                required = config.num_gpus if set(enabled_stages(config)) & GPU_STAGES else 0
+                if ray.cluster_resources().get("GPU", 0) < required:
+                    raise RuntimeError(f"Requested {required} GPU(s), but Ray sees fewer; run doctor --gpu")
+                backend = RayBackend(asdict(config))
+            else:
+                backend = backend_factory(asdict(config))
+            engine = Engine(config, backend, fingerprint, emit)
+            summary.update(engine.run(itertools.chain([first], source)))
+            summary["status"] = "failed" if summary["failed_clips"] else "passed"
+        except BaseException as exc:
+            summary["error"] = str(exc)
+            summary["status"] = "interrupted" if isinstance(exc, KeyboardInterrupt) else "failed"
+            raise
+        finally:
+            if backend:
+                backend.close()
+            if ray:
+                ray.shutdown()
+            summary.update(elapsed_seconds=round(time.perf_counter() - started, 3), states=run_counts(config.paths.state_db_path, config.run_id))
+            summary["scheduled_frames_per_wall_second"] = summary.get("successful_scheduled_frames", 0) / max(.001, summary["elapsed_seconds"])
+            write_json(str(root / "run_summary.json"), summary)
+    if summary["failed_clips"]:
+        raise RuntimeError(f"Pipeline {config.run_id} failed for {summary['failed_clips']} clip(s); see {root / 'events.jsonl'}")
+    return config.run_id

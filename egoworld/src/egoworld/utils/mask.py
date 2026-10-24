@@ -22,16 +22,9 @@ def encode_mask_rle(mask: np.ndarray) -> str:
 
 def _simple_rle(mask: np.ndarray) -> Dict[str, Any]:
     h, w = mask.shape
-    counts = []
-    flat = mask.flatten(order="F")
-    prev = 0
-    run = 0
-    for val in flat:
-        if val == prev:
-            run += 1
-        else:
-            counts.append(run)
-            run = 1
-            prev = val
-    counts.append(run)
+    flat = (mask.ravel(order="F") != 0).astype(np.uint8)
+    boundaries = np.flatnonzero(np.diff(flat)) + 1
+    counts = np.diff(np.concatenate(([0], boundaries, [flat.size]))).tolist()
+    if flat.size and flat[0]:
+        counts.insert(0, 0)
     return {"size": [h, w], "counts": counts}

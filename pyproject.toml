@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "egoworld"
+version = "0.1.0"
+description = "Resumable hand-object-scene annotation pipelines for egocentric video"
+requires-python = ">=3.10"
+dependencies = ["numpy>=1.24.4,<3", "pyarrow>=14", "opencv-python>=4.8,<5", "PyYAML>=6,<7"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8,<9", "hydra-core>=1.3.2,<1.4"]
+pipeline = ["ray>=2.8,<3", "scenedetect>=0.6,<0.7", "eva-decord>=0.6.1"]
+
+[project.scripts]
+egoworld = "egoworld.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["egoworld/src"]

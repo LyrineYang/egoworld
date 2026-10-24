@@ -1,0 +1,154 @@
+{
+  "num_gpus": 1,
+  "parquet": {
+    "compression": "zstd",
+    "row_group_size": 65536,
+    "data_page_size": 8388608,
+    "partition": [
+      "run_id",
+      "video_id",
+      "clip_id"
+    ]
+  },
+  "backpressure": {
+    "max_in_flight_cpu": 2,
+    "max_in_flight_gpu": 2,
+    "max_in_flight_write": 4
+  },
+  "retry": {
+    "max_retries": 3,
+    "base_delay_s": 5.0,
+    "backoff": 3.0
+  },
+  "scenedetect": {
+    "method": "scenedetect",
+    "min_scene_len_s": 1.0,
+    "fallback_full_clip": true,
+    "overlap_s": 1.0,
+    "max_clip_duration_s": 15.0
+  },
+  "coordinates": {
+    "spec_version": "v1",
+    "time_base": "seconds",
+    "mask_encoding": "rle",
+    "length_unit": "meters",
+    "handedness": "right",
+    "quat_order": "wxyz",
+    "frame_index_base": 0,
+    "axis_order": "x,y,z",
+    "coord_frame": "camera"
+  },
+  "metrics": {
+    "gpu_util_min": 0.6,
+    "gpu_util_window_s": 600,
+    "failure_rate_max": 0.01,
+    "empty_mask_rate_max": 0.2
+  },
+  "paths": {
+    "data_root": "./data",
+    "output_root": "./output",
+    "manifest_path": "./manifests",
+    "state_db_path": "./state/pipeline.db",
+    "runlog_path": "./runlog.md"
+  },
+  "operators": {
+    "sam2": {
+      "enabled": true,
+      "params": {
+        "checkpoint": "./models/sam2/sam2.1_hiera_small.pt",
+        "config": "./models/sam2/sam2.1_hiera_s.yaml",
+        "device": "cuda",
+        "precision": "fp16",
+        "vos_optimized": false,
+        "prompting": {
+          "source": "groundingdino",
+          "prompt_interval_s": 2.0,
+          "max_prompts_per_clip": 60,
+          "max_boxes_per_frame": 6,
+          "box_threshold": 0.35,
+          "text_threshold": 0.25,
+          "nms_iou": 0.5,
+          "min_box_area": 256,
+          "gd_config": "./models/groundingdino/GroundingDINO_SwinT_OGC.py",
+          "gd_checkpoint": "./models/groundingdino/groundingdino_swint_ogc.pth",
+          "gd_device": "cuda",
+          "prompt_text": "left hand . right hand . cup . bottle . bowl ."
+        }
+      }
+    },
+    "hamer": {
+      "enabled": true,
+      "params": {
+        "checkpoint": "./external/hamer/_DATA/hamer_ckpts/checkpoints/hamer.ckpt",
+        "frame_stride": 5,
+        "batch_size": 8,
+        "unknown_handedness": "error",
+        "working_dir": "./external/hamer"
+      }
+    },
+    "foundationpose": {
+      "enabled": true,
+      "params": {
+        "repo_path": "./external/FoundationPose",
+        "assets_manifest": "./egoworld/configs/assets.example.json",
+        "objects": {
+          "cup": {
+            "mesh_path": "./assets/cup.obj",
+            "mesh_scale_to_meters": 1.0
+          }
+        }
+      }
+    },
+    "dex_retarget": {
+      "enabled": true,
+      "params": {
+        "config": "./assets/robot-retarget.yaml",
+        "urdf_dir": "./assets/robots",
+        "robot_id": "configured-right-hand",
+        "handedness": "right",
+        "human_to_robot_rotation": [
+          1,
+          0,
+          0,
+          0,
+          1,
+          0,
+          0,
+          0,
+          1
+        ],
+        "scale_factor": 1.0,
+        "joint_units": "radians"
+      }
+    },
+    "fast3r": {
+      "enabled": true,
+      "params": {
+        "model_name_or_path": "./models/fast3r",
+        "max_views": 8,
+        "image_size": 512,
+        "dtype": "fp32",
+        "max_points": 100000
+      }
+    }
+  },
+  "model_versions": {
+    "sam2": "sam2.1_small",
+    "hamer": "TBD",
+    "foundationpose": "TBD",
+    "dex_retarget": "TBD",
+    "fast3r": "TBD"
+  },
+  "execution": {
+    "cpu_workers": 2,
+    "write_workers": 2,
+    "cpu_operator_workers": 1,
+    "max_active_clips": 4,
+    "max_cached_models": 1,
+    "stage_timeout_s": 900,
+    "poll_timeout_s": 0.1,
+    "keep_prepared": false,
+    "verify_hashes_on_resume": true,
+    "gpu_stage_groups": []
+  }
+}

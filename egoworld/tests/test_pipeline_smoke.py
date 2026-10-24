@@ -203,11 +203,10 @@ def test_pipeline_smoke_minimal() -> None:
         assert (run_root / "run_manifest.json").exists()
         assert (clip_dir / "meta.json").exists()
         assert (clip_dir / "masks.parquet").exists()
-        assert (clip_dir / "hand_pose.parquet").exists()
-        assert (clip_dir / "object_pose.parquet").exists()
-        assert (clip_dir / "mapping.parquet").exists()
+        assert (clip_dir / "instances.parquet").exists()
+        assert (clip_dir / "qc.json").exists()
 
-        state = get_clip_state(str(state_db), clip_id)
+        state = get_clip_state(str(state_db), clip_id, run_id=run_id)
         assert state is not None
         assert state.status == "Done"
 
@@ -279,13 +278,13 @@ def test_pipeline_resume_skips_done() -> None:
         _write_jsonl(clip_manifest_path, clip_manifest)
 
         run_pipeline(str(config_path), str(video_manifest_path), str(clip_manifest_path))
-        first_state = get_clip_state(str(state_db), clip_id)
+        first_state = get_clip_state(str(state_db), clip_id, run_id=run_id)
         assert first_state is not None
         assert first_state.status == "Done"
         first_updated = first_state.updated_at
 
         run_pipeline(str(config_path), str(video_manifest_path), str(clip_manifest_path))
-        second_state = get_clip_state(str(state_db), clip_id)
+        second_state = get_clip_state(str(state_db), clip_id, run_id=run_id)
         assert second_state is not None
         assert second_state.status == "Done"
         assert second_state.updated_at == first_updated

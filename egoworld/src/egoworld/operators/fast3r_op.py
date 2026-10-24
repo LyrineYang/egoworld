@@ -1,23 +1,82 @@
-"""Fast3R operator stub."""
-
+"""Fast3R multiview inference; explicit relative scale and non-fabricated PnP poses."""
 from __future__ import annotations
+from pathlib import Path
+import tempfile
+import numpy as np
+from egoworld.operators.common import array, frame_reader, read_frame, frame_fields
 
-from typing import Any, Dict
 
-from egoworld.operators.base import Operator
-
-
-class Fast3ROperator(Operator):
+class Fast3ROperator:
     name = "fast3r"
 
-    def __init__(self, model_name_or_path: str | None = None):
-        self.model_name_or_path = model_name_or_path
+    def __init__(self, **params):
+        self.params = params
+        self.model = None
 
-    def run(self, video_path: str, start_s: float, end_s: float, params: Dict[str, Any] | None = None) -> Dict[str, Any]:
-        return {
-            "camera_poses": [],
-            "pointcloud_path": "",
-            "video_path": video_path,
-            "start_s": start_s,
-            "end_s": end_s,
-        }
+    def run(self, clip, video_path, inputs):
+        import cv2
+        import torch
+        from fast3r.models.fast3r import Fast3R
+        from fast3r.dust3r.inference_multiview import inference
+        from fast3r.dust3r.utils.image import load_images
+        from fast3r.dust3r.cloud_opt.init_im_poses import fast_pnp
+        device = self.params.get("device", "cuda")
+        if self.model is None:
+            self.model = Fast3R.from_pretrained(self.params["model_name_or_path"]).to(device).eval()
+        count = clip["frame_end"] - clip["frame_start"]
+        views = min(int(self.params.get("max_views", 8)), count)
+        if views < 2:
+            raise ValueError("Fast3R requires at least two frames")
+        indices = np.unique(np.linspace(0, count - 1, views).astype(int))
+        cap = frame_reader(video_path)
+        try:
+            with tempfile.TemporaryDirectory(prefix="egoworld-fast3r-") as folder:
+                files = []
+                for index in indices:
+                    path = str(Path(folder) / f"{index:09d}.jpg")
+                    if not cv2.imwrite(path, read_frame(cap, int(index))):
+                        raise IOError(f"Cannot write sampled view {path}")
+                    files.append(path)
+                images = load_images(files, size=int(self.params.get("image_size", 512)), verbose=False)
+                dtype = {"fp32": torch.float32, "fp16": torch.float16, "bf16": torch.bfloat16}[self.params.get("dtype", "fp32")]
+                with torch.inference_mode():
+                    result, _ = inference(images, self.model, device, dtype=dtype, verbose=False, profiling=False)
+        finally:
+            cap.release()
+        scale = float(self.params.get("metric_scale", 1.0))
+        calibrated = "metric_scale" in self.params
+        if not np.isfinite(scale) or scale <= 0 or (calibrated and not self.params.get("metric_scale_source")):
+            raise ValueError("Metric scaling requires a positive factor and metric_scale_source")
+        output, points, confidences, point_views = [], [], [], []
+        budget = int(self.params.get("max_points", 100000))
+        if budget < views:
+            raise ValueError("max_points must be at least max_views")
+        if len(result["preds"]) != len(indices):
+            raise ValueError("Fast3R returned an incomplete set of views")
+        for j, (index, pred) in enumerate(zip(indices, result["preds"])):
+            xyz = array(pred["pts3d_in_other_view"])[0]
+            confidence = array(pred["conf"])[0]
+            valid = np.isfinite(xyz).all(-1) & np.isfinite(confidence) & (confidence > float(self.params.get("min_confidence", 1.0)))
+            if valid.sum() < 8:
+                raise ValueError(f"Fast3R view {j} has too few confident points for pose estimation")
+            focal, pose = fast_pnp(torch.from_numpy(xyz), None, torch.from_numpy(valid), "cpu",
+                                   pp=None, niter_PnP=int(self.params.get("pnp_iterations", 10)))
+            if focal is None or pose is None:
+                raise ValueError(f"Fast3R PnP failed for view {j}; no identity fallback is written")
+            pose = array(pose).copy(); pose[:3, 3] *= scale
+            height, width = xyz.shape[:2]
+            output.append({**frame_fields(clip, int(index)), "view_index": j,
+                "camera_to_world": pose.reshape(-1).tolist(),
+                "intrinsics": [float(focal), 0., width / 2, 0., float(focal), height / 2, 0., 0., 1.],
+                "image_width": width, "image_height": height,
+                "pointcloud_path": "reconstruction-pointcloud.npz", "coord_frame": "first_view_world",
+                "length_unit": "meters" if calibrated else "relative", "scale_status": "calibrated" if calibrated else "unscaled"})
+            selected = np.flatnonzero(valid.ravel())
+            step = max(1, int(np.ceil(len(selected) / max(1, budget // views))))
+            selected = selected[::step]
+            points.append(xyz.reshape(-1, 3)[selected] * scale)
+            confidences.append(confidence.ravel()[selected])
+            point_views.append(np.full(len(selected), j, dtype=np.int32))
+        return {"tables": {"reconstruction": output}, "arrays": {"reconstruction-pointcloud.npz": {
+            "points": np.concatenate(points), "confidence": np.concatenate(confidences), "view_index": np.concatenate(point_views)}},
+            "stats": {"views": len(output), "points": sum(map(len, points))}}
