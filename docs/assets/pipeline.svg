@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="272" viewBox="0 0 1200 272" fill="none" role="img" aria-labelledby="title desc">
+  <title id="title">EgoWorld annotation workflow</title>
+  <desc id="desc">RGB video and optional aligned depth and mesh assets pass through configurable annotation stages to produce Parquet tables, NPZ point clouds, quality checks, and run metadata.</desc>
+  <defs>
+    <linearGradient id="background" x1="0" y1="0" x2="1200" y2="272" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#F1F5FF"/>
+      <stop offset="1" stop-color="#F5FAF8"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M1 1L7 4L1 7" stroke="#8995AC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </marker>
+  </defs>
+  <rect x=".5" y=".5" width="1199" height="271" rx="18" fill="url(#background)" stroke="#E2E8F0"/>
+  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif">
+    <text x="36" y="38" fill="#596780" font-size="11" font-weight="700" letter-spacing="2">VIDEO TO DATASET</text>
+    <rect x="36" y="60" width="272" height="146" rx="12" fill="white" stroke="#DEE5F0"/>
+    <rect x="56" y="80" width="32" height="28" rx="7" fill="#EDF2FF"/>
+    <rect x="63" y="88" width="12" height="12" rx="2" stroke="#5268AD" stroke-width="1.5"/>
+    <path d="M76 92L81 89V99L76 96" stroke="#5268AD" stroke-width="1.5" stroke-linejoin="round"/>
+    <text x="100" y="99" fill="#17243B" font-size="18" font-weight="650">Video inputs</text>
+    <text x="56" y="136" fill="#4B5C73" font-size="14">Egocentric RGB video</text>
+    <text x="56" y="160" fill="#4B5C73" font-size="14">Text prompts for hands and objects</text>
+    <text x="56" y="187" fill="#6A778C" font-size="12">Optional: aligned depth + mesh assets</text>
+    <path d="M321 133H351" stroke="#8995AC" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <rect x="364" y="60" width="464" height="146" rx="12" fill="white" stroke="#CCD7ED"/>
+    <text x="384" y="99" fill="#17243B" font-size="18" font-weight="650">Configurable annotations</text>
+    <rect x="384" y="117" width="107" height="28" rx="6" fill="#EDF2FF"/>
+    <rect x="499" y="117" width="92" height="28" rx="6" fill="#EDF2FF"/>
+    <rect x="599" y="117" width="160" height="28" rx="6" fill="#EDF2FF"/>
+    <text x="437.5" y="136" text-anchor="middle" fill="#3E548F" font-size="12" font-weight="600">Segmentation</text>
+    <text x="545" y="136" text-anchor="middle" fill="#3E548F" font-size="12" font-weight="600">Hand pose</text>
+    <text x="679" y="136" text-anchor="middle" fill="#3E548F" font-size="12" font-weight="600">Object pose</text>
+    <rect x="384" y="153" width="175" height="28" rx="6" fill="#EAF6F0"/>
+    <rect x="567" y="153" width="143" height="28" rx="6" fill="#EAF6F0"/>
+    <text x="471.5" y="172" text-anchor="middle" fill="#366550" font-size="12" font-weight="600">Robotic hand retargeting</text>
+    <text x="638.5" y="172" text-anchor="middle" fill="#366550" font-size="12" font-weight="600">Scene geometry</text>
+    <path d="M841 133H871" stroke="#8995AC" stroke-width="1.5" marker-end="url(#arrow)"/>
+    <rect x="884" y="60" width="280" height="146" rx="12" fill="white" stroke="#DEE5F0"/>
+    <text x="904" y="99" fill="#17243B" font-size="18" font-weight="650">Structured outputs</text>
+    <text x="904" y="136" fill="#4B5C73" font-size="14">Parquet annotations + NPZ geometry</text>
+    <text x="904" y="160" fill="#4B5C73" font-size="14">Quality checks + run metadata</text>
+    <text x="904" y="187" fill="#6A778C" font-size="12">Traceable to source frames and time</text>
+    <text x="600" y="241" text-anchor="middle" fill="#596780" font-size="12">Configure once · Process a directory · Resume by stage · Inspect results</text>
+  </g>
+</svg>

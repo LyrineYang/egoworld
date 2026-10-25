@@ -1,92 +1,110 @@
+<div align="center">
+
 # EgoWorld
 
-将第一视角视频批量转换为可读回的分割、手部姿态、物体姿态、机器人手关节和场景几何数据。
-产品入口为命令行，面向单台 NVIDIA 服务器：从输入目录启动，中断后用同一命令恢复。
+**Turn egocentric video into structured hand, object, and scene data.**
 
-**目前已实现五阶段适配、并发处理、结构化输出和恢复机制；本地 CPU 与真实 Ray 的模型替身测试可运行。
-真实模型、显存、标注效果与服务器吞吐仍待单卡验证。** Demo 暂缓。
+Composable annotations. Resumable processing. Inspectable datasets.
 
-## 能得到什么
+[![Pipeline checks](https://github.com/LyrineYang/egoworld/actions/workflows/tests.yml/badge.svg)](https://github.com/LyrineYang/egoworld/actions/workflows/tests.yml)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
 
-| 阶段 | 直观输出 | 需要准备 |
-| --- | --- | --- |
-| SAM2.1 + GroundingDINO | 每个手/物体的 mask、类别、片段内 ID、二维轨迹 | RGB 视频、提示词、模型权重 |
-| HaMeR | 左右手、21 个三维关节点、手指关节旋转、手型 | SAM2 手框、HaMeR/MANO 资产 |
-| FoundationPose | 物体相对相机的位置和朝向 | 已有对齐 RGB-D、内参和带尺度网格 |
-| DexRetarget | 指定机器人手各关节的角度或位移 | HaMeR 输出、机器人 YAML/URDF 和坐标约定 |
-| Fast3R | 抽样相机位姿、内参、场景点云 | 多帧 RGB；默认相对尺度 |
+[Quick start](#quick-start) · [Capabilities](#capabilities) · [Output format](#output-format) · [Documentation](#documentation)
 
-没有 RGB-D 时关闭 FoundationPose；没有机器人资产时可关闭 DexRetarget。
-本轮不接新传感器、不加复杂新模型、不做硬件控制。字段含义见[输出清单](docs/outputs.md)。
+</div>
 
-## 第一次运行
+![EgoWorld: video inputs, configurable annotation stages, and structured dataset outputs](docs/assets/pipeline.svg)
 
-所有命令在仓库根目录执行。服务器的安装、资产路径和配置步骤见[服务器操作说明](docs/server.md)。
-准备好环境后，先复制单卡分割配置：
+EgoWorld brings segmentation, hand reconstruction, object pose estimation, robotic hand retargeting, and scene reconstruction into one command-line workflow. Configure the stages your data supports, process a video directory, and export results with timestamps, coordinate conventions, and quality checks.
+
+Built for offline batch processing on a single NVIDIA server:
+
+- **Compose the pipeline.** Enable the annotations you need, with separate model environments where dependencies differ.
+- **Resume interrupted work.** Reuse validated stage outputs and retry failed work without restarting the entire dataset.
+- **Inspect every run.** Read structured outputs, quality reports, logs, and records of the inputs, models, and configuration used.
+
+## Capabilities
+
+| Annotation | Model / component | What you get | Required input |
+| --- | --- | --- | --- |
+| **Segmentation & tracking** | SAM2.1 + GroundingDINO | Hand/object masks, labels, clip-local IDs, 2D boxes and center trajectories | RGB video, text prompts |
+| **3D hand pose** | HaMeR | Handedness, 21 joints, wrist and finger joint rotations, hand shape | RGB and detected hand boxes; HaMeR/MANO assets |
+| **6D object pose** | FoundationPose | Object position and orientation relative to the camera | Aligned RGB-D, camera intrinsics, metric object mesh |
+| **Robotic hand retargeting** | DexRetarget | Named robot joint angles or displacements | 3D hand joints, robot configuration and URDF |
+| **Scene geometry** | Fast3R | Sampled-view camera poses, intrinsics, point cloud | Multiple RGB frames; relative scale by default |
+
+Each enabled model requires its weights and runtime dependencies. FoundationPose and retargeting are optional when their inputs or robot assets are unavailable. Outputs retain their own reference frames; they are not fused into a shared world coordinate system. See the [output reference](docs/outputs.md) for exact meanings and units.
+
+## Quick start
+
+Use a Linux NVIDIA server with Conda. Run the commands below from the repository root. The [setup guide](docs/server.md) covers CUDA dependencies, model assets, and configuration.
+
+**1. Install and choose a configuration.**
 
 ```bash
+bash egoworld/scripts/setup_env.sh --weights
+conda activate egoworld-base
 mkdir -p config.local
 cp egoworld/configs/example.json config.local/job.json
+```
 
-# 修改 job.json 的路径和提示词后检查
-# 无 GPU 可先执行此项；不启动模型、不写运行结果
+The starter configuration enables SAM2.1 + GroundingDINO. Edit `job.json` to set model paths, target prompts, and output locations. The installer downloads the segmentation weights; additional stages require their own [model environments and assets](egoworld/env/README.md).
+
+| Configuration | Use case |
+| --- | --- |
+| [example.json](egoworld/configs/example.json) | Start with segmentation and 2D tracking |
+| [rgb.json](egoworld/configs/rgb.json) | Add hand pose, robotic hand retargeting, and scene geometry |
+| [full.json](egoworld/configs/full.json) | Also estimate object pose from existing RGB-D and mesh assets |
+| [server.json](egoworld/configs/server.json) | Explore stage assignment across four GPUs |
+
+**2. Check the setup and run a short sample.**
+
+```bash
 egoworld launch --config config.local/job.json --input-dir /absolute/videos --check-only
-
-# 在服务器上执行：短样本 → 目录处理 → 查看结果
+egoworld doctor --config config.local/job.json --gpu --assets
 egoworld smoke --config config.local/job.json --input-video /absolute/videos/sample.mp4
+```
+
+The smoke test runs the enabled stages and checks that a second run reuses completed outputs. For a 16 GB GPU, see the [conservative smoke profile and hardware requirements](docs/server.md#7-16gb-单卡-smoke).
+
+**3. Process a directory and inspect the results.**
+
+```bash
 egoworld launch --config config.local/job.json --input-dir /absolute/videos --run-id dataset_001
 egoworld inspect --run-dir /absolute/output/run_id=dataset_001
 ```
 
-中断后重新执行同一条 launch 命令、保持相同 run-id。正常 Ctrl+C 会进入清理；
-外部模型 runner 由独立守护进程在 worker 退出时清理。
+Replace `/absolute/output` with the configured `paths.output_root`. To resume, repeat the same launch command with the same configuration and run ID. Use a new run ID when code, models, inputs, or processing settings change.
 
-16GB 单卡试跑可给 smoke 加 `--profile 16gb --seconds 2`，设置单片段、模型进程隔离、HaMeR batch=1 和 Fast3R 两视图；
-卡型/BF16 与资产要求见 [16GB 说明](docs/server.md#7-16gb-单卡-smoke)，这不是已实测的显存适配保证。
+## Output format
 
-输出位于 `paths.output_root/run_id=<id>/`：
+Annotations are written as **Parquet tables**, with scene point clouds in **NPZ**. Each clip includes quality checks and metadata; each run includes an execution summary and event log.
 
-- `run_summary.json`：运行成功/失败、完成/跳过/失败片段数、阶段耗时。
-- `video_id=*/clip_id=*/`：启用阶段的 Parquet/NPZ、`qc.json`、最终 `meta.json`。
-- `events.jsonl`：失败阶段、错误与重试；分环境错误另看 `.work/<clip>/<stage>/runner.log`。
-
-命令成功只表示执行完成；`qc.status=review` 仍需检查空结果、覆盖率和模型效果。
-阶段 JSON 是提交依据，单独存在的 Parquet 可能是未完成或失效的旧结果。
-改变代码、模型或输入后使用新 run-id。吞吐数字包含启动与重叠帧，不代表大规模性能已验证。
-
-## 配置选择
-
-| 配置 | 用途 |
-| --- | --- |
-| `egoworld/configs/example.json` | 单卡 SAM2.1 + GroundingDINO；第一次启动的最短路径 |
-| `egoworld/configs/rgb.json` | RGB 的分割、人手、机器人手和场景；需对应模型/机器人资产 |
-| `egoworld/configs/full.json` | 加入已有 RGB-D/网格的物体姿态 |
-| `egoworld/configs/server.json` | 四卡固定分工模板；性能待实测 |
-
-可分别 smoke 任一阶段，不必等待其它分支验收通过。实际依赖用 `egoworld plan --config ...` 查看，
-运行时字段用 `egoworld schema` 查看。对象 ID 仅在片段内有效，各模型尚未融合为统一世界坐标。
-
-## 无 GPU 开发与回归
-
-Python 3.10+，系统需 FFmpeg/ffprobe；本层不安装 Torch 或模型权重。
-
-```bash
-python -m venv .venv
-source .venv/bin/activate
-python -m pip install -e '.[dev]'
-egoworld doctor
-pytest -q -m 'not env_smoke and not pipeline_smoke and not sam2_smoke and not native_models'
+```text
+run_id=dataset_001/
+├── run_summary.json
+├── events.jsonl
+└── video_id=…/clip_id=…/
+    ├── masks.parquet · instances.parquet · tracks.parquet
+    ├── hand_pose.parquet · object_pose.parquet · mapping.parquet
+    ├── reconstruction.parquet · reconstruction-pointcloud.npz
+    └── qc.json · meta.json
 ```
 
-真实 Ray 联调需另装 Ray 并开启测试开关，详见[测试说明](docs/testing.md)。
+Only enabled stages produce annotations. Use `egoworld schema` to inspect field definitions and `egoworld plan --config config.local/job.json` to view stage dependencies. A completed run confirms execution; its quality reports and sampled annotations still need review.
 
-## 文档与下一步
+## Documentation
 
-- [服务器操作](docs/server.md)：安装、配置、预检、启动、停止、恢复与故障处理。
-- [输出清单](docs/outputs.md)：模型与数据要求对应。
-- [当前需求与产品推进顺序](docs/requirements.md)：验收条件、代码/测试对应和下一步。
-- [测试与验证边界](docs/testing.md)：无 GPU、Ray、真模型测试与独立验证。
-- [吞吐设计](docs/design.md)：当前实现、成熟方案比较与需要实测的优化。
-- [项目复盘](docs/overview.md)与[原设计归档](docs/archive/plan.md)：历史和现状对照。
+The detailed guides are currently maintained in Chinese.
 
-项目许可证尚未确定；模型与资产沿用各自上游许可。
+| Guide | Contents |
+| --- | --- |
+| [Server guide](docs/server.md) | Installation, configuration, processing, recovery, and troubleshooting |
+| [Output reference](docs/outputs.md) | Model-to-output mapping, coordinate frames, units, and required assets |
+| [Architecture](docs/design.md) | Scheduling, resource limits, stage commits, and throughput design |
+| [Testing](docs/testing.md) | CPU checks, Ray integration, real-model smoke tests, and verification boundaries |
+| [Requirements](docs/requirements.md) | Supported scope and its implementation and test coverage |
+
+**Validation status.** CPU tests and Ray integration tests using model test doubles have passed locally. Real-model CUDA inference, 16 GB compatibility, annotation quality, and server throughput remain to be validated on target hardware. Multi-GPU configuration is provided as a template, without benchmark claims.
+
+**Licensing.** A project license has not yet been specified. Integrated models and assets remain subject to their respective upstream licenses.
