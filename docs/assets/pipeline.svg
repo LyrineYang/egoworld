@@ -1,45 +1,441 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="272" viewBox="0 0 1200 272" fill="none" role="img" aria-labelledby="title desc">
-  <title id="title">EgoWorld annotation workflow</title>
-  <desc id="desc">RGB video and optional aligned depth and mesh assets pass through configurable annotation stages to produce Parquet tables, NPZ point clouds, quality checks, and run metadata.</desc>
-  <defs>
-    <linearGradient id="background" x1="0" y1="0" x2="1200" y2="272" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#F1F5FF"/>
-      <stop offset="1" stop-color="#F5FAF8"/>
-    </linearGradient>
-    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
-      <path d="M1 1L7 4L1 7" stroke="#8995AC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-    </marker>
-  </defs>
-  <rect x=".5" y=".5" width="1199" height="271" rx="18" fill="url(#background)" stroke="#E2E8F0"/>
-  <g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif">
-    <text x="36" y="38" fill="#596780" font-size="11" font-weight="700" letter-spacing="2">VIDEO TO DATASET</text>
-    <rect x="36" y="60" width="272" height="146" rx="12" fill="white" stroke="#DEE5F0"/>
-    <rect x="56" y="80" width="32" height="28" rx="7" fill="#EDF2FF"/>
-    <rect x="63" y="88" width="12" height="12" rx="2" stroke="#5268AD" stroke-width="1.5"/>
-    <path d="M76 92L81 89V99L76 96" stroke="#5268AD" stroke-width="1.5" stroke-linejoin="round"/>
-    <text x="100" y="99" fill="#17243B" font-size="18" font-weight="650">Video inputs</text>
-    <text x="56" y="136" fill="#4B5C73" font-size="14">Egocentric RGB video</text>
-    <text x="56" y="160" fill="#4B5C73" font-size="14">Text prompts for hands and objects</text>
-    <text x="56" y="187" fill="#6A778C" font-size="12">Optional: aligned depth + mesh assets</text>
-    <path d="M321 133H351" stroke="#8995AC" stroke-width="1.5" marker-end="url(#arrow)"/>
-    <rect x="364" y="60" width="464" height="146" rx="12" fill="white" stroke="#CCD7ED"/>
-    <text x="384" y="99" fill="#17243B" font-size="18" font-weight="650">Configurable annotations</text>
-    <rect x="384" y="117" width="107" height="28" rx="6" fill="#EDF2FF"/>
-    <rect x="499" y="117" width="92" height="28" rx="6" fill="#EDF2FF"/>
-    <rect x="599" y="117" width="160" height="28" rx="6" fill="#EDF2FF"/>
-    <text x="437.5" y="136" text-anchor="middle" fill="#3E548F" font-size="12" font-weight="600">Segmentation</text>
-    <text x="545" y="136" text-anchor="middle" fill="#3E548F" font-size="12" font-weight="600">Hand pose</text>
-    <text x="679" y="136" text-anchor="middle" fill="#3E548F" font-size="12" font-weight="600">Object pose</text>
-    <rect x="384" y="153" width="175" height="28" rx="6" fill="#EAF6F0"/>
-    <rect x="567" y="153" width="143" height="28" rx="6" fill="#EAF6F0"/>
-    <text x="471.5" y="172" text-anchor="middle" fill="#366550" font-size="12" font-weight="600">Robotic hand retargeting</text>
-    <text x="638.5" y="172" text-anchor="middle" fill="#366550" font-size="12" font-weight="600">Scene geometry</text>
-    <path d="M841 133H871" stroke="#8995AC" stroke-width="1.5" marker-end="url(#arrow)"/>
-    <rect x="884" y="60" width="280" height="146" rx="12" fill="white" stroke="#DEE5F0"/>
-    <text x="904" y="99" fill="#17243B" font-size="18" font-weight="650">Structured outputs</text>
-    <text x="904" y="136" fill="#4B5C73" font-size="14">Parquet annotations + NPZ geometry</text>
-    <text x="904" y="160" fill="#4B5C73" font-size="14">Quality checks + run metadata</text>
-    <text x="904" y="187" fill="#6A778C" font-size="12">Traceable to source frames and time</text>
-    <text x="600" y="241" text-anchor="middle" fill="#596780" font-size="12">Configure once · Process a directory · Resume by stage · Inspect results</text>
-  </g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1160" viewBox="0 0 1600 1160" fill="none" role="img" aria-labelledby="title desc">
+<title id="title">EgoWorld: from egocentric video to structured annotations</title>
+<desc id="desc">A product overview with schematic examples of segmentation, a 21-joint human hand, a robotic hand, an object pose and a scene point cloud. RGB clips feed SAM2.1 with GroundingDINO and independently Fast3R. SAM hand boxes feed HaMeR; HaMeR joints feed DexRetarget. SAM object masks feed FoundationPose, which also requires aligned RGB-D, camera intrinsics and a metric mesh. DexRetarget requires a robot configuration and URDF. Every enabled stage writes structured outputs with quality checks and stage commit records. Examples are illustrations, not real model predictions; model coordinate frames are not fused.</desc>
+<defs>
+  <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#8899AC" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  <marker id="asset" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M1 1L7 4L1 7" fill="none" stroke="#B29A7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></marker>
+  <marker id="red" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0L5 2.5L0 5Z" fill="#D16555"/></marker>
+  <marker id="green" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0L5 2.5L0 5Z" fill="#439985"/></marker>
+  <marker id="blue" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0 0L5 2.5L0 5Z" fill="#527DD1"/></marker>
+</defs>
+<rect x="1" y="1" width="1598" height="1158" rx="24" fill="#F8FAFC" stroke="#DFE7ED"/>
+<g font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif">
+<text x="48" y="48" font-size="16" fill="#4F6D82" font-weight="650" >E G O W O R L D  /  A N N O T A T I O N  W O R K F L O W</text>
+<text x="48" y="101" font-size="40" fill="#182F43" font-weight="700" >From first-person video to usable annotations.</text>
+<text x="48" y="135" font-size="22" fill="#597083" font-weight="400" >Hands, objects, robot joints and scene geometry — choose the outputs your data supports.</text>
+<rect x="48" y="166" width="495" height="144" rx="18" fill="#FFF" stroke="#DCE5EB" />
+<g transform="translate(66 184) scale(1)">
+<rect x="0" y="0" width="160" height="108" rx="10" fill="#EAF0F3" stroke="none" />
+<path d="M0 64L160 50V108H0Z" stroke="#D7E1E6" stroke-width="1" fill="#DFE8EC" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M0 77L160 64M38 63L25 108M115 56L139 108" stroke="#CAD7DE" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M94 30C94 24 126 24 126 30L123 72C120 81 99 81 97 72Z" stroke="#577787" stroke-width="2" fill="#C0D5DE" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M125 36C148 33 148 62 125 62" stroke="#577787" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="110" cy="30" rx="16" ry="5" fill="#E8F1F4" stroke="#577787" stroke-width="2"/>
+<path d="M0 91L49 61L67 45Q72 40 76 44L79 48L90 41Q95 39 97 44L98 50L104 47Q111 45 112 51L110 58L102 67L99 79L72 98L46 108H0Z" stroke="#B28F80" stroke-width="1.5" fill="#DAC5B7" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="246" y="204" font-size="25" fill="#24364A" font-weight="650" >Egocentric RGB video</text>
+<text x="246" y="240" font-size="22" fill="#597083" font-weight="400" >+ text prompts</text>
+<text x="246" y="280" font-size="17" fill="#597083" font-weight="400" >Same source frames and timing</text>
+<path d="M551 238H596" stroke="#95A3B2" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<rect x="610" y="166" width="412" height="144" rx="18" fill="#EEF4F8" stroke="#D6E2EA" />
+<text x="634" y="204" font-size="25" fill="#24364A" font-weight="650" >Clip preparation</text>
+<text x="634" y="242" font-size="21" fill="#597083" font-weight="400" >Video clips + source frame mapping</text>
+<text x="634" y="280" font-size="17" fill="#597083" font-weight="400" >RGB is available to every visual stage</text>
+<rect x="1168" y="166" width="384" height="144" rx="18" fill="#FFF9EF" stroke="#E9DDCA" />
+<text x="1192" y="204" font-size="24" fill="#725839" font-weight="650" >Conditional assets</text>
+<text x="1192" y="243" font-size="22" fill="#725839" font-weight="400" >RGB-D + K + metric mesh</text>
+<text x="1192" y="280" font-size="22" fill="#725839" font-weight="400" >Robot configuration + URDF</text>
+<path d="M816 310V338H28V838" stroke="#95A3B2" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M28 510H45" stroke="#95A3B2" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" data-source="prepare" data-target="sam2"/>
+<path d="M28 838H45" stroke="#95A3B2" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" data-source="prepare" data-target="fast3r"/>
+<circle cx="28" cy="510" r="4" fill="#8899AC" />
+<text x="48" y="368" font-size="16" fill="#597083" font-weight="650" letter-spacing="1.3">RGB CLIPS</text>
+<path d="M458 510H609" stroke="#95A3B2" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" data-source="sam2" data-target="hamer"/>
+<text x="480" y="491" font-size="19" fill="#597083" font-weight="500" >Hand boxes</text>
+<path d="M1022 510H1165" stroke="#95A3B2" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" data-source="hamer" data-target="dex_retarget"/>
+<text x="1043" y="491" font-size="19" fill="#597083" font-weight="500" >3D joints</text>
+<path d="M253 634V664H561V838H609" stroke="#95A3B2" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)" data-source="sam2" data-target="foundationpose"/>
+<text x="373" y="654" font-size="19" fill="#597083" font-weight="500" >Object masks</text>
+<path d="M1450 310V359H1360V383" stroke="#B29A7A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 6" marker-end="url(#asset)"/>
+<path d="M1552 238H1580V684H817V711" stroke="#B29A7A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 6" marker-end="url(#asset)"/>
+<text x="1095" y="673" font-size="18" fill="#8A704D" font-weight="500" >Aligned RGB-D + K + mesh</text>
+<text x="1310" y="350" font-size="17" fill="#8A704D" font-weight="500" >Robot config + URDF</text>
+<text x="48" y="697" font-size="16" fill="#597083" font-weight="650" letter-spacing="1">INDEPENDENT RGB BRANCH</text>
+<g id="stage-sam2" data-stage="sam2">
+<rect x="48" y="386" width="410" height="248" rx="18" fill="#FFF" stroke="#DCE5EB" />
+<rect x="49" y="387" width="6" height="246" rx="3" fill="#139F8C" stroke="none" />
+<text x="72" y="423" font-size="25" fill="#24364A" font-weight="650" >SAM2.1 + GroundingDINO</text>
+<text x="72" y="450" font-size="15" fill="#139F8C" font-weight="650" letter-spacing=".8">SEGMENTATION + TRACKING</text>
+<g transform="translate(72 473) scale(0.92)">
+<rect x="0" y="0" width="160" height="108" rx="10" fill="#EAF0F3" stroke="none" />
+<path d="M0 64L160 50V108H0Z" stroke="#D7E1E6" stroke-width="1" fill="#DFE8EC" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M0 77L160 64M38 63L25 108M115 56L139 108" stroke="#CAD7DE" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M94 30C94 24 126 24 126 30L123 72C120 81 99 81 97 72Z" stroke="#577787" stroke-width="2" fill="#C0D5DE" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M125 36C148 33 148 62 125 62" stroke="#577787" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<ellipse cx="110" cy="30" rx="16" ry="5" fill="#E8F1F4" stroke="#577787" stroke-width="2"/>
+<path d="M0 91L49 61L67 45Q72 40 76 44L79 48L90 41Q95 39 97 44L98 50L104 47Q111 45 112 51L110 58L102 67L99 79L72 98L46 108H0Z" stroke="#B28F80" stroke-width="1.5" fill="#DAC5B7" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M94 30C94 24 126 24 126 30L123 72C120 81 99 81 97 72Z" stroke="#D98C34" stroke-width="2" fill="#F2B94B" stroke-linecap="round" stroke-linejoin="round" fill-opacity=".62"/>
+<path d="M0 91L49 61L67 45Q72 40 76 44L79 48L90 41Q95 39 97 44L98 50L104 47Q111 45 112 51L110 58L102 67L99 79L72 98L46 108H0Z" stroke="#129B8D" stroke-width="2" fill="#42CCB8" stroke-linecap="round" stroke-linejoin="round" fill-opacity=".58"/>
+<rect x="90" y="20" width="45" height="63" rx="2" fill="none" stroke="#CE842B" stroke-width="1.5" stroke-dasharray="4 3"/>
+<rect x="5" y="39" width="108" height="65" rx="2" fill="none" stroke="#129B8D" stroke-width="1.5" stroke-dasharray="4 3"/>
+<circle cx="111" cy="50" r="3" fill="#CE842B" />
+<circle cx="63" cy="76" r="3" fill="#129B8D" />
+<path d="M107 56L110 53L111 50" stroke="#CE842B" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+</g>
+<text x="240" y="497" font-size="21" fill="#435C70" font-weight="400" >Instance masks</text>
+<text x="240" y="526" font-size="21" fill="#435C70" font-weight="400" >Clip-local IDs</text>
+<text x="240" y="555" font-size="21" fill="#435C70" font-weight="400" >2D trajectories</text>
+<path d="M72 599H434" stroke="#E5EBF0" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="72" y="622" font-size="17" fill="#139F8C" font-weight="500" font-family="&#x27;SFMono-Regular&#x27;, Consolas, monospace">masks / instances / tracks.parquet</text>
+</g>
+<g id="stage-hamer" data-stage="hamer">
+<rect x="612" y="386" width="410" height="248" rx="18" fill="#FFF" stroke="#DCE5EB" />
+<rect x="613" y="387" width="6" height="246" rx="3" fill="#7563D8" stroke="none" />
+<text x="636" y="423" font-size="25" fill="#24364A" font-weight="650" >HaMeR</text>
+<text x="636" y="450" font-size="15" fill="#7563D8" font-weight="650" letter-spacing=".8">3D HAND RECONSTRUCTION</text>
+<g transform="translate(636 473)">
+<rect x="0" y="0" width="147" height="110" rx="10" fill="#F3F2FC" stroke="none" />
+<path d="M78 98L49 79L60 58L77 54L93 58L108 68L78 98" stroke="#7563D8" stroke-width="1.5" fill="#E6E0FA" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M78 98L49 79L35 66L22 57L13 50" stroke="#7563D8" stroke-width="2.7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="49" cy="79" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="35" cy="66" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="22" cy="57" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="13" cy="50" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<path d="M78 98L60 58L54 41L50 25L47 11" stroke="#7563D8" stroke-width="2.7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="60" cy="58" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="54" cy="41" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="50" cy="25" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="47" cy="11" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<path d="M78 98L77 54L77 35L77 17L77 4" stroke="#7563D8" stroke-width="2.7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="77" cy="54" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="77" cy="35" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="77" cy="17" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="77" cy="4" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<path d="M78 98L93 58L99 41L104 27L107 15" stroke="#7563D8" stroke-width="2.7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="93" cy="58" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="99" cy="41" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="104" cy="27" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="107" cy="15" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<path d="M78 98L108 68L120 57L129 47L136 40" stroke="#7563D8" stroke-width="2.7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="108" cy="68" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="120" cy="57" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="129" cy="47" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="136" cy="40" r="3.1" fill="#FFFFFF" stroke="#7563D8" stroke-width="1.6"/>
+<circle cx="78" cy="98" r="3.8" fill="#7563D8" />
+</g>
+<text x="804" y="497" font-size="21" fill="#435C70" font-weight="400" >21 hand joints</text>
+<text x="804" y="526" font-size="21" fill="#435C70" font-weight="400" >Joint rotations</text>
+<text x="804" y="555" font-size="21" fill="#435C70" font-weight="400" >Hand shape</text>
+<path d="M636 599H998" stroke="#E5EBF0" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="636" y="622" font-size="17" fill="#7563D8" font-weight="500" font-family="&#x27;SFMono-Regular&#x27;, Consolas, monospace">hand_pose.parquet</text>
+</g>
+<g id="stage-dex_retarget" data-stage="dex_retarget">
+<rect x="1168" y="386" width="384" height="248" rx="18" fill="#FFF" stroke="#DCE5EB" />
+<rect x="1169" y="387" width="6" height="246" rx="3" fill="#53698F" stroke="none" />
+<text x="1192" y="423" font-size="25" fill="#24364A" font-weight="650" >DexRetarget</text>
+<text x="1192" y="450" font-size="15" fill="#53698F" font-weight="650" letter-spacing=".8">ROBOTIC HAND RETARGETING</text>
+<g transform="translate(1192 473)">
+<rect x="0" y="0" width="147" height="110" rx="10" fill="#F1F4FA" stroke="none" />
+<rect x="48" y="66" width="66" height="27" rx="6" fill="#CBD8E8" stroke="#849CB6" />
+<rect x="65" y="94" width="31" height="13" rx="3" fill="#DFE7F0" stroke="#849CB6" />
+<path d="M49 79L35 66L22 57L13 50" stroke="#53698F" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="49" cy="79" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="35" cy="66" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="22" cy="57" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="13" cy="50" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<path d="M60 58L54 41L50 25L47 11" stroke="#53698F" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="60" cy="58" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="54" cy="41" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="50" cy="25" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="47" cy="11" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<path d="M77 54L77 35L77 17L77 4" stroke="#53698F" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="77" cy="54" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="77" cy="35" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="77" cy="17" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="77" cy="4" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<path d="M93 58L99 41L104 27L107 15" stroke="#53698F" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="93" cy="58" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="99" cy="41" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="104" cy="27" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="107" cy="15" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<path d="M108 68L120 57L129 47L136 40" stroke="#53698F" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<circle cx="108" cy="68" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="120" cy="57" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="129" cy="47" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="136" cy="40" r="4" fill="#FFFFFF" stroke="#53698F" stroke-width="1.6"/>
+<circle cx="78" cy="98" r="3.8" fill="#53698F" />
+<path d="M17 96A19 19 0 0 1 38 81" stroke="#9C80DC" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="18" y="106" font-size="13" fill="#7563D8" font-weight="600" >q</text>
+</g>
+<text x="1360" y="497" font-size="21" fill="#435C70" font-weight="400" >Robot joint states</text>
+<text x="1360" y="526" font-size="21" fill="#435C70" font-weight="400" >Named joints</text>
+<text x="1360" y="555" font-size="21" fill="#435C70" font-weight="400" >Radians / meters</text>
+<path d="M1192 599H1528" stroke="#E5EBF0" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="1192" y="622" font-size="17" fill="#53698F" font-weight="500" font-family="&#x27;SFMono-Regular&#x27;, Consolas, monospace">mapping.parquet</text>
+</g>
+<g id="stage-fast3r" data-stage="fast3r">
+<rect x="48" y="714" width="410" height="248" rx="18" fill="#FFF" stroke="#DCE5EB" />
+<rect x="49" y="715" width="6" height="246" rx="3" fill="#377EAA" stroke="none" />
+<text x="72" y="751" font-size="25" fill="#24364A" font-weight="650" >Fast3R</text>
+<text x="72" y="778" font-size="15" fill="#377EAA" font-weight="650" letter-spacing=".8">MULTI-VIEW SCENE GEOMETRY</text>
+<g transform="translate(72 801)">
+<rect x="0" y="0" width="147" height="110" rx="10" fill="#EEF5FA" stroke="none" />
+<circle cx="94.9" cy="72.0" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="76.4" cy="64.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="61.4" cy="83.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="49.1" cy="55.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="45.8" cy="59.5" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="53.6" cy="58.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="27.7" cy="63.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="51.7" cy="69.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="38.8" cy="53.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="38.9" cy="70.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="60.9" cy="74.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="109.8" cy="57.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="26.7" cy="78.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="104.2" cy="57.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="92.7" cy="55.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="123.0" cy="70.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="108.5" cy="76.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="42.5" cy="69.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="101.3" cy="71.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="61.1" cy="53.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="88.9" cy="48.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="98.2" cy="44.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="68.6" cy="64.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="29.1" cy="69.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="74.0" cy="59.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="120.8" cy="71.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="120.1" cy="50.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="18.1" cy="66.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="28.4" cy="77.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="46.0" cy="54.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="48.5" cy="64.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="101.8" cy="59.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="50.5" cy="73.5" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="20.3" cy="60.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="96.1" cy="70.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="27.0" cy="54.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="74.7" cy="69.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="16.9" cy="69.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="47.4" cy="53.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="35.2" cy="61.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="70.1" cy="51.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="88.2" cy="76.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="95.7" cy="46.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="91.5" cy="67.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="16.0" cy="67.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="92.0" cy="78.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="124.6" cy="60.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="84.5" cy="79.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="39.9" cy="68.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="22.3" cy="80.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="92.1" cy="52.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="38.3" cy="69.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="103.7" cy="48.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="53.2" cy="67.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="45.8" cy="81.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="100.6" cy="77.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="90.6" cy="68.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="48.7" cy="67.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="65.7" cy="64.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="22.4" cy="82.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="33.2" cy="67.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="124.7" cy="58.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="117.5" cy="51.0" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="70.1" cy="60.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="53.3" cy="62.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="67.5" cy="77.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="129.6" cy="43.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="93.8" cy="63.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="63.8" cy="49.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="57.7" cy="60.0" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="58.3" cy="69.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="58.3" cy="59.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="47.4" cy="84.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="61.2" cy="82.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="34.5" cy="74.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="80.4" cy="71.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="75.7" cy="77.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="84.3" cy="47.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="95.5" cy="65.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="43.9" cy="76.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="113.6" cy="52.0" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="32.5" cy="62.0" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="84.6" cy="61.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="23.5" cy="68.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="79.6" cy="66.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="56.8" cy="76.5" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="94.9" cy="53.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="55.9" cy="81.5" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="41.1" cy="66.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="50.9" cy="70.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="108.8" cy="47.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="37.5" cy="53.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="29.9" cy="70.5" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="72.7" cy="80.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="68.5" cy="66.0" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="18.1" cy="61.5" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="51.5" cy="58.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="108.0" cy="57.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="31.1" cy="70.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="33.4" cy="58.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="86.8" cy="48.5" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="104.3" cy="58.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="22.6" cy="76.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="128.5" cy="66.4" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="114.3" cy="75.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="47.0" cy="67.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="102.5" cy="57.5" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="129.1" cy="55.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="17.6" cy="57.0" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="65.4" cy="48.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="87.0" cy="80.3" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="125.1" cy="75.5" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="44.4" cy="56.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="23.3" cy="85.6" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="18.1" cy="56.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="93.7" cy="77.8" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="78.0" cy="48.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="19.2" cy="82.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="96.2" cy="55.2" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="131.1" cy="50.1" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="32.5" cy="85.7" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="21.6" cy="65.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="36.2" cy="73.9" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="72.7" cy="56.0" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="89.1" cy="49.0" r="1.35" fill="#76A9C0" opacity=".75"/>
+<circle cx="98.9" cy="56.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="88.6" cy="55.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="83.1" cy="54.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="79.4" cy="41.7" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.0" cy="32.7" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="99.0" cy="56.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="87.0" cy="55.3" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="91.2" cy="40.2" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="74.6" cy="57.7" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="97.7" cy="63.9" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="84.9" cy="40.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.0" cy="61.2" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="72.9" cy="50.8" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="99.0" cy="47.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="77.0" cy="40.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.1" cy="50.8" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="73.3" cy="33.8" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="99.0" cy="63.2" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="79.8" cy="54.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="92.6" cy="40.3" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="90.4" cy="67.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="96.1" cy="29.2" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="75.4" cy="43.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="98.8" cy="50.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="76.8" cy="41.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="84.5" cy="65.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="78.4" cy="35.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="87.5" cy="56.0" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="74.3" cy="52.7" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="96.6" cy="37.3" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="93.2" cy="58.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="97.7" cy="33.0" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="80.8" cy="38.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="88.0" cy="65.3" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="96.6" cy="35.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="76.8" cy="39.0" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="73.8" cy="54.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.1" cy="60.8" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.1" cy="35.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.6" cy="29.3" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="77.5" cy="31.2" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.0" cy="45.3" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="97.7" cy="32.2" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="82.2" cy="46.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.1" cy="42.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="98.9" cy="60.9" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="98.1" cy="51.0" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="89.0" cy="43.9" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="89.2" cy="40.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="90.2" cy="60.7" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="78.2" cy="26.8" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="81.3" cy="37.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.2" cy="40.8" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.1" cy="43.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="73.5" cy="48.3" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="88.2" cy="27.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="85.7" cy="44.9" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="88.6" cy="30.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="81.7" cy="65.7" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="98.5" cy="38.0" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="75.0" cy="45.0" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="78.4" cy="66.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.0" cy="44.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="96.5" cy="48.7" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="97.9" cy="50.2" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.9" cy="34.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.0" cy="47.8" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="74.7" cy="55.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="75.7" cy="52.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="91.3" cy="57.8" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="91.3" cy="34.5" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="91.3" cy="48.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="79.4" cy="53.4" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="88.8" cy="52.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="85.5" cy="51.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="77.8" cy="31.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="86.2" cy="51.9" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="72.8" cy="60.0" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="79.3" cy="44.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="98.8" cy="50.0" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="99.0" cy="44.9" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="79.3" cy="62.7" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="98.8" cy="33.8" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="78.9" cy="54.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="95.5" cy="48.3" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="98.7" cy="43.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="72.8" cy="51.6" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="82.9" cy="57.3" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.8" cy="40.7" r="1.45" fill="#377EAA" opacity=".85"/>
+<circle cx="71.0" cy="57.1" r="1.45" fill="#377EAA" opacity=".85"/>
+<path d="M20 31l14 -5v13l-14 -4Z M34 26l8 -4v21l-8 -4" stroke="#6B5FA6" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M49 12l14 -5v13l-14 -4Z M63 7l8 -4v21l-8 -4" stroke="#6B5FA6" stroke-width="1.3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M27 33L67 49M58 20L83 42" stroke="#A4B5CD" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="3 4"/>
+</g>
+<text x="240" y="825" font-size="21" fill="#435C70" font-weight="400" >Camera poses + K</text>
+<text x="240" y="854" font-size="21" fill="#435C70" font-weight="400" >Scene point cloud</text>
+<text x="240" y="883" font-size="21" fill="#435C70" font-weight="400" >Relative scale</text>
+<path d="M72 927H434" stroke="#E5EBF0" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="72" y="950" font-size="17" fill="#377EAA" font-weight="500" font-family="&#x27;SFMono-Regular&#x27;, Consolas, monospace">reconstruction.parquet + NPZ</text>
+</g>
+<g id="stage-foundationpose" data-stage="foundationpose">
+<rect x="612" y="714" width="410" height="248" rx="18" fill="#FFF" stroke="#DCE5EB" />
+<rect x="613" y="715" width="6" height="246" rx="3" fill="#C28535" stroke="none" />
+<text x="636" y="751" font-size="25" fill="#24364A" font-weight="650" >FoundationPose</text>
+<text x="636" y="778" font-size="15" fill="#C28535" font-weight="650" letter-spacing=".8">6D OBJECT POSE</text>
+<g transform="translate(636 801)">
+<rect x="0" y="0" width="147" height="110" rx="10" fill="#FFF5E9" stroke="none" />
+<path d="M49 35Q69 27 88 35L84 80Q68 89 52 80Z" stroke="#B78955" stroke-width="1.8" fill="#E6D4BC" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M89 42C114 38 114 70 87 69" stroke="#B78955" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M36 29L87 17L116 34L64 47Z M36 29V83L64 102V47 M64 102L116 87V34 M36 83L87 69L116 87 M87 17V69" stroke="#D7973A" stroke-width="1.6" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<path d="M71 66L111 70" stroke="#D16555" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#red)"/>
+<path d="M71 66L49 88" stroke="#439985" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#green)"/>
+<path d="M71 66V23" stroke="#527DD1" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#blue)"/>
+<text x="116" y="76" font-size="12" fill="#C05447" font-weight="600" >x</text>
+<text x="40" y="100" font-size="12" fill="#338875" font-weight="600" >y</text>
+<text x="76" y="25" font-size="12" fill="#527DD1" font-weight="600" >z</text>
+</g>
+<text x="804" y="825" font-size="21" fill="#435C70" font-weight="400" >Object position</text>
+<text x="804" y="854" font-size="21" fill="#435C70" font-weight="400" >Object orientation</text>
+<text x="804" y="883" font-size="21" fill="#435C70" font-weight="400" >Camera frame / m</text>
+<path d="M636 927H998" stroke="#E5EBF0" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="636" y="950" font-size="17" fill="#C28535" font-weight="500" font-family="&#x27;SFMono-Regular&#x27;, Consolas, monospace">object_pose.parquet</text>
+</g>
+<rect x="1168" y="714" width="384" height="248" rx="18" fill="#18384E" stroke="#18384E" />
+<text x="1192" y="751" font-size="25" fill="#FFFFFF" font-weight="650" >Structured dataset</text>
+<text x="1192" y="781" font-size="15" fill="#ADC4D3" font-weight="650" letter-spacing=".7">FROM EVERY ENABLED STAGE</text>
+<rect x="1192" y="804" width="108" height="33" rx="6" fill="#2D5268" stroke="none" />
+<rect x="1310" y="804" width="70" height="33" rx="6" fill="#2D5268" stroke="none" />
+<text x="1206" y="827" font-size="17" fill="#E0F2F5" font-weight="650" >PARQUET</text>
+<text x="1324" y="827" font-size="17" fill="#E0F2F5" font-weight="650" >NPZ</text>
+<text x="1192" y="870" font-size="21" fill="#E0EAF0" font-weight="400" >Source frame + timestamp</text>
+<text x="1192" y="902" font-size="20" fill="#E0EAF0" font-weight="400" >QC + metadata + stage commits</text>
+<text x="1192" y="937" font-size="17" fill="#ADC4D3" font-weight="500" font-family="&#x27;SFMono-Regular&#x27;, Consolas, monospace">run_id / video_id / clip_id</text>
+<path d="M48 1000H1552" stroke="#DDE6ED" stroke-width="1" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+<text x="48" y="1041" font-size="16" fill="#4F6D82" font-weight="650" letter-spacing="1">ONE CONFIGURABLE RUN</text>
+<text x="48" y="1074" font-size="23" fill="#24364A" font-weight="550" >CPU preparation · GPU inference · CPU retargeting · asynchronous writes</text>
+<text x="48" y="1106" font-size="19" fill="#597083" font-weight="400" >Bounded scheduling and per-stage recovery; single-GPU and multi-GPU configurations.</text>
+<path d="M1168 1024H1210" stroke="#95A3B2" stroke-width="2.5" fill="none" stroke-linecap="round" stroke-linejoin="round" marker-end="url(#arrow)"/>
+<text x="1224" y="1030" font-size="16" fill="#597083" font-weight="400" >Video / stage input</text>
+<path d="M1168 1055H1210" stroke="#B29A7A" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="7 6" marker-end="url(#asset)"/>
+<text x="1224" y="1061" font-size="16" fill="#8A704D" font-weight="400" >Additional asset</text>
+<text x="1168" y="1101" font-size="17" fill="#597083" font-weight="500" >Illustrations, not model predictions.</text>
+<text x="48" y="1140" font-size="16" fill="#6C8191" font-weight="400" >K = camera intrinsics. Hand, object and scene outputs retain separate coordinate frames.</text>
+</g></svg>

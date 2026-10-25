@@ -13,7 +13,9 @@ Composable annotations. Resumable processing. Inspectable datasets.
 
 </div>
 
-![EgoWorld: video inputs, configurable annotation stages, and structured dataset outputs](docs/assets/pipeline.svg)
+![EgoWorld workflow: video clips feed segmentation and scene reconstruction; segmentation feeds hand and object pose, and hand joints feed robotic retargeting](docs/assets/pipeline.svg)
+
+*Workflow and output illustrations. Examples are schematic, not real-model predictions; each model retains its own coordinate frame.*
 
 EgoWorld brings segmentation, hand reconstruction, object pose estimation, robotic hand retargeting, and scene reconstruction into one command-line workflow. Configure the stages your data supports, process a video directory, and export results with timestamps, coordinate conventions, and quality checks.
 
