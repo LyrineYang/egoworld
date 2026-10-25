@@ -176,3 +176,27 @@ egoworld inspect --run-dir ./output/run_id=server_trial_001
 
 所有结果分四栏记录：**自测已过 / 独立复验已过 / 真模型已过 / 性能已测**，可同时存在待测项。
 GPU 不可用时后两栏保持待测，继续开发和验证已确定的数据流、错误处理与其它独立需求。
+
+## 6. 服务器调度与测量回归
+
+设计目标为 2–16 卡单服务器；16GB smoke 不代表生产吞吐配置。
+
+```bash
+pytest -q egoworld/tests/test_scheduling_resources.py egoworld/tests/test_external_runner.py
+EGOWORLD_RAY_TEST=1 RAY_USAGE_STATS_ENABLED=0 pytest -q -m ray_integration
+PYTHONPATH=egoworld/src python egoworld/scripts/benchmark_cpu.py \
+  --output /tmp/egoworld-cpu.json --repeats 3
+```
+
+新增回归覆盖：逻辑 2/16 GPU 槽位并发、写盘重试在生产预算已满时继续排空、预算不可能满足时明确失败、
+准备文件高水位、等待过久阶段让位、常驻进程跨片段复用、模型异常/超时释放、SIGTERM 清理、
+profile 只读汇总和多 GPU 硬件清单。逻辑 GPU 测试使用 CPU 替身，不能作为真实多卡性能证据。
+
+微基准应在回归结束后单独运行，避免本项目的并发测试争用 CPU；记录脚本哈希、实际源文件哈希、依赖版本、
+样本类型和原始中位数。结果字节估计本身也有 CPU 成本，脚本单独测量它。
+进程 CPU 时间不包含 FFmpeg 等其它子进程的 CPU 时间，RSS 是单进程生命周期高水位；
+二者不能直接当整个服务器的资源需求。真实 GPU 峰值和完整输出吞吐仍需服务器短样本测量。
+
+本机记录（2026-10-25，macOS/ARM、Python 3.13.2、Ray 2.59.0）：完整回归 **143 passed / 11 skipped，97.04 秒**。
+包含真实 Ray 进程测试；11 项跳过均因缺少 GPU/真实模型条件。另用实际 CPU 集成运行验证 profile CLI，
+禁止导入 Torch/Ray 后仍可读回并导出相同 JSON。Linux 目标环境及真实单/多卡仍待服务器或 CI 复核。

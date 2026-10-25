@@ -22,6 +22,10 @@ class BackpressureConfig:
     max_in_flight_cpu: Optional[int] = None
     max_in_flight_gpu: Optional[int] = None
     max_in_flight_write: Optional[int] = None
+    max_in_flight_bytes: int = 0
+    max_prepared_bytes: int = 0
+    estimated_result_bytes: int = 64 * 1024**2
+    stage_memory_bytes: Dict[str, int] = field(default_factory=dict)
 
     def resolve(self, num_gpus: int) -> "BackpressureConfig":
         multiplier = 2
@@ -30,6 +34,10 @@ class BackpressureConfig:
             max_in_flight_cpu=self.max_in_flight_cpu or (multiplier * num_gpus),
             max_in_flight_gpu=self.max_in_flight_gpu or (multiplier * num_gpus),
             max_in_flight_write=self.max_in_flight_write or (multiplier * num_gpus),
+            max_in_flight_bytes=self.max_in_flight_bytes,
+            max_prepared_bytes=self.max_prepared_bytes,
+            estimated_result_bytes=self.estimated_result_bytes,
+            stage_memory_bytes=dict(self.stage_memory_bytes),
         )
 
 
@@ -109,6 +117,11 @@ class ExecutionConfig:
     keep_prepared: bool = False
     verify_hashes_on_resume: bool = True
     gpu_stage_groups: List[List[str]] = field(default_factory=list)
+    external_runner_mode: str = "auto"
+    worker_threads: int = 1
+    model_residency_tasks: int = 8
+    max_stage_wait_s: float = 60.0
+    measure_gpu_memory: bool = False
 
 
 @dataclass
@@ -157,6 +170,16 @@ class PipelineConfig:
             value = getattr(self.backpressure, name)
             if value is not None and (not isinstance(value, int) or isinstance(value, bool) or value < 1):
                 raise ValueError(f"backpressure.{name} must be a positive integer")
+        for name in ("max_in_flight_bytes", "max_prepared_bytes", "estimated_result_bytes"):
+            value = getattr(self.backpressure, name)
+            if not isinstance(value, int) or isinstance(value, bool) or value < (1 if name == "estimated_result_bytes" else 0):
+                raise ValueError(f"backpressure.{name} must be an integer with a valid byte limit")
+        from egoworld.contracts import STAGE_DEPENDENCIES
+        if not isinstance(self.backpressure.stage_memory_bytes, dict):
+            raise ValueError("stage_memory_bytes must be a stage-to-bytes object")
+        for stage, value in self.backpressure.stage_memory_bytes.items():
+            if stage not in STAGE_DEPENDENCIES or not isinstance(value, int) or isinstance(value, bool) or value < 1:
+                raise ValueError("stage_memory_bytes requires known stages and positive byte estimates")
         if self.scenedetect.max_clip_duration_s <= 0:
             raise ValueError("scenedetect.max_clip_duration_s must be positive")
         if not 0 <= self.scenedetect.overlap_s < self.scenedetect.max_clip_duration_s:
@@ -176,11 +199,17 @@ class PipelineConfig:
                 raise ValueError(f"coordinates.{name} currently supports only {value!r}")
         if self.parquet.partition != ["run_id", "video_id", "clip_id"]:
             raise ValueError("Only run_id/video_id/clip_id partitioning is supported")
-        for name in ("cpu_workers", "write_workers", "cpu_operator_workers", "max_active_clips", "max_cached_models"):
+        for name in ("cpu_workers", "write_workers", "cpu_operator_workers", "max_active_clips", "max_cached_models", "worker_threads", "model_residency_tasks"):
             if not isinstance(getattr(self.execution, name), int) or isinstance(getattr(self.execution, name), bool) or getattr(self.execution, name) < 1:
                 raise ValueError(f"execution.{name} must be positive")
         if self.execution.stage_timeout_s <= 0 or self.execution.poll_timeout_s <= 0:
             raise ValueError("Execution timeouts must be positive")
+        if self.execution.external_runner_mode not in ("auto", "per_task", "persistent"):
+            raise ValueError("external_runner_mode must be auto, per_task or persistent")
+        if not isinstance(self.execution.measure_gpu_memory, bool):
+            raise ValueError("measure_gpu_memory must be boolean")
+        if not math.isfinite(self.execution.max_stage_wait_s) or self.execution.max_stage_wait_s <= 0:
+            raise ValueError("max_stage_wait_s must be finite and positive")
         for value in (self.execution.stage_timeout_s, self.execution.poll_timeout_s,
                       self.scenedetect.max_clip_duration_s, self.scenedetect.overlap_s,
                       self.retry.base_delay_s, self.retry.backoff):

@@ -19,7 +19,7 @@ class DexRetargetOperator:
 
     def run(self, clip, video_path, inputs):
         groups = {}
-        for row in rows(inputs, "hamer", "hand_pose"):
+        for row in rows(inputs, "hamer", "hand_pose", ["frame_index", "timestamp_s", "object_id", "handedness", "joints_3d", "scale_status"]):
             groups.setdefault((row["object_id"], row["handedness"]), []).append(row)
         rotation = np.asarray(self.params["human_to_robot_rotation"], dtype=float).reshape(3, 3)
         if not np.allclose(rotation.T @ rotation, np.eye(3), atol=1e-4) or np.linalg.det(rotation) < .99:

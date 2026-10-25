@@ -151,6 +151,7 @@ def runtime_report(config_path: str, *, gpu: bool = False, stages: list[str] | N
         if selected & GPU_STAGES:
             modules += ["torch"]
     imported = {}
+    gpu_devices = []
     for name in modules:
         try:
             imported[name] = importlib.import_module(name)
@@ -167,6 +168,13 @@ def runtime_report(config_path: str, *, gpu: bool = False, stages: list[str] | N
             requested = config.num_gpus if coordinator else 1
             check("CUDA devices", count >= requested, f"requested={requested}, visible={count}")
         if torch and count:
+            for index in range(count):
+                device = {"visible_index": index, "name": torch.cuda.get_device_name(index)}
+                if hasattr(torch.cuda, "get_device_properties"):
+                    props = torch.cuda.get_device_properties(index)
+                    device.update(total_memory_bytes=props.total_memory,
+                                  compute_capability=[props.major, props.minor])
+                gpu_devices.append(device)
             check("GPU", True, torch.cuda.get_device_name(0))
             precision = config.operators.sam2.params.get("precision", "fp16") if "sam2" in selected else "fp32"
             if precision == "bf16":
@@ -243,5 +251,5 @@ def runtime_report(config_path: str, *, gpu: bool = False, stages: list[str] | N
                 check(name, Path(path).is_file() and Path(path).stat().st_size > 0, path)
     if assets:
         checks.extend(asset_report(config, stages=selected)["checks"])
-    return {"mode": "gpu" if gpu else "cpu", "stages": sorted(selected),
+    return {"mode": "gpu" if gpu else "cpu", "stages": sorted(selected), "gpu_devices": gpu_devices,
             "ok": all(item["ok"] for item in checks), "checks": checks}

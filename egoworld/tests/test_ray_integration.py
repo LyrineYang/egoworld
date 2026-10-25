@@ -221,3 +221,32 @@ def test_external_process_group_stops_when_actor_exits(tmp_path, stop):
                 try: os.killpg(int(pid_file.read_text()), signal.SIGKILL)
                 except ProcessLookupError: pass
             backend.close(); ray.shutdown()
+
+
+@pytest.mark.ray_integration
+def test_real_ray_persistent_worker_reuses_model_and_reports_small_status(tmp_path):
+    if os.getenv('EGOWORLD_RAY_TEST') != '1': pytest.skip('Set EGOWORLD_RAY_TEST=1')
+    ray = pytest.importorskip('ray')
+    from test_external_runner import session_case
+    from egoworld.pipeline.backend import RayBackend
+    host, _, counts = session_case(tmp_path, 'persistent')
+    config = host.config
+    host.close()
+    with tempfile.TemporaryDirectory(prefix='ew-ray-', dir='/tmp') as folder:
+        ray.init(num_cpus=4, num_gpus=1, include_dashboard=False, object_store_memory=100*1024**2, _temp_dir=folder)
+        backend = RayBackend(config)
+        try:
+            for cid, expected in [('A', 0), ('B', 1)]:
+                job = {'stage':'sam2', 'clip':{'clip_id':cid}, 'work_dir':str(tmp_path / cid)}
+                ref = backend.submit('compute', job, prepared={'video_path':'unused'}, inputs={})
+                deadline = time.monotonic() + 30
+                while time.monotonic() < deadline:
+                    if events := backend.poll(.1): break
+                else: pytest.fail('Persistent worker never replied')
+                _, completed, payload, error, _ = events[0]
+                assert error is None
+                assert completed['_result_bytes'] > 0
+                assert ray.get(payload)['stats']['model_cache_hit'] == expected
+            assert len(counts.read_text().splitlines()) == 1
+        finally:
+            backend.close(); ray.shutdown()

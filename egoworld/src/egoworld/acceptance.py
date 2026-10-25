@@ -56,6 +56,7 @@ def prepare_smoke_config(cfg, stages=None, profile="default"):
     cfg.backpressure.max_in_flight_gpu = 1
     cfg.backpressure.max_in_flight_write = 1
     if profile == "16gb":
+        cfg.execution.external_runner_mode = "per_task"
         cfg.execution.cpu_workers = cfg.execution.write_workers = cfg.execution.cpu_operator_workers = 1
         cfg.execution.max_active_clips = cfg.execution.max_cached_models = 1
         cfg.execution.keep_prepared = True  # retain logs for the first real trial

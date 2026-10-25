@@ -162,3 +162,43 @@ T4 等不支持 BF16 的卡不能凭“有 16GB”就承诺整图可跑。doctor
 成功标准为 acceptance.json 的 status=passed、各启用阶段输出非空且恢复不重写；再抽查少量实际内容。
 失败报告给出缺失环境/资产或错误，阶段日志保留。显存峰值在服务器运行时用 nvidia-smi 观察；
 降低导出点数、减少迭代时间或一次 CPU/Ray 通过都不能代替真实 GPU 的显存证据。
+
+## 8. 2–16 卡服务器与资源观测
+
+16GB profile 只用于首次可用性试跑。服务器从 server.json 复制配置，按机器修改 num_gpus；
+默认每卡一个串行 GPU worker，所有 GPU worker 可处理启用阶段。gpu_stage_groups 为空时无需为每阶段预留一张卡，
+两卡也可交替完成四个 GPU 阶段。固定分组仍可显式配置，但必须覆盖启用阶段。
+
+内置分环境 worker 默认跨片段保留模型；同一 worker 换阶段时先释放旧 runner。
+model_residency_tasks 控制同模型偏好的连续任务数，max_stage_wait_s 使等待过久的就绪任务优先；
+两者都不抢占正在运行的片段。worker_threads 控制 OpenCV、Arrow 与 OMP/MKL/OpenBLAS；FFmpeg 转码为单线程。
+总 CPU 数仍需容纳 CPU 池、Writer、GPU actor 和系统开销，不能只增加 num_gpus。
+
+| 可选配置 | 用途与边界 |
+| --- | --- |
+| backpressure.max_in_flight_bytes | 计算前预留估计字节，结果提交后归还；0 关闭。server.json 的 2GiB 只是初始准入预算 |
+| backpressure.stage_memory_bytes | 各阶段一次任务的主机工作集/结果估计，按实测填写；不是 GPU 显存 |
+| backpressure.estimated_result_bytes | 缺少阶段估计时使用的预留量，默认 64MiB；不能代表真实模型内存需求 |
+| backpressure.max_prepared_bytes | 活动片段转码文件高水位；0 关闭。已开始的准备任务可能短暂超出 |
+| execution.measure_gpu_memory | 可选收集 PyTorch 显存峰值，默认关闭；不能覆盖 nvdiffrast 等全部设备分配 |
+| execution.external_runner_mode | auto 自动识别内置 worker；per_task 每任务重启；persistent 要求自定义 runner 实现 --serve 协议 |
+
+字节预算不包含全部模型常驻权重、操作系统页缓存或所有子进程；它是控制发任务的估计值，不是 OOM 保证。
+同一 stage_memory_bytes 过小会低估负载；预留值大于总预算则明确失败，避免永久等待。
+写盘及写盘重试不受生产侧预算阻止。保留临时文件和日志仍需额外磁盘空间。
+
+```bash
+# 查看全部可见 GPU 的名称、容量和架构（doctor --gpu 仍检查原生环境/资产）
+egoworld doctor --config config.local/job.json --gpu --assets
+
+# 在 job.json 中按需设置 measure_gpu_memory=true，正常处理短样本后：
+egoworld profile --run-dir /srv/egoworld/output/run_id=dataset_001 \
+  --output /srv/egoworld/profiles/dataset_001.json
+```
+
+profile 不加载模型、不重跑视频、不修改配置；只整理本次运行实际完成调用的加载/墙钟/CPU、排队、结果字节、
+进程生命周期 RSS 峰值和可选 PyTorch 显存数据。阶段时间可重叠，不能相加当成运行耗时；墙钟不是纯 GPU 前向时间。
+全部被恢复缓存跳过的运行没有新测量，失败运行的完成子集也不能当完整性能验收。
+
+常驻 runner 的 .work/<clip>/<stage>/runner.log 指向 .work/.runners/ 下的会话日志，原片段清理后也可定位同一会话。
+GPU 预检的进一步可行性及本机实验见 [调度设计](design.md#9-gpu-预检的可行性与成本)。

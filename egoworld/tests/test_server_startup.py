@@ -162,3 +162,16 @@ def test_setup_uses_environment_directory_for_relative_constraints(tmp_path):
     rows = log.read_text().splitlines()
     assert rows[:2] == [str(root / "egoworld/env")] * 2
     assert rows[-1] == str(root)
+
+
+def test_doctor_reports_every_visible_gpu(server_case, monkeypatch):
+    from egoworld import preflight
+    path, _ = server_case
+    original = preflight.importlib.import_module
+    cuda = SimpleNamespace(device_count=lambda: 2, get_device_name=lambda i:f'GPU {i}',
+        get_device_properties=lambda i:SimpleNamespace(total_memory=(i+1)*1024,major=8,minor=0))
+    torch = SimpleNamespace(__version__='2.5.1', cuda=cuda)
+    monkeypatch.setattr(preflight.importlib, 'import_module', lambda name: torch if name=='torch' else original(name))
+    report = preflight.runtime_report(str(path), gpu=True, stages=['hamer'])
+    assert [gpu['name'] for gpu in report['gpu_devices']] == ['GPU 0', 'GPU 1']
+    assert report['gpu_devices'][1]['total_memory_bytes'] == 2048

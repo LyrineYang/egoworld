@@ -24,19 +24,28 @@ class RayBackend:
             raise ValueError(f"Worker pools require {required_cpus} Ray CPUs; reduce execution worker counts")
         for kind, cls, resources, stages in definitions:
             self.slots.append({"kind": kind, "class": cls, "resources": resources, "stages": stages,
-                               "actor": self._actor(cls, resources), "busy": False, "last_stage": None})
+                               "actor": self._actor(cls, resources), "busy": False, "last_stage": None, "stage_tasks": 0})
 
     def _actor(self, cls, resources):
-        return self.ray.remote(cls).options(**resources, max_restarts=0, max_task_retries=0).remote(self.config)
+        threads = str(self.config["execution"].get("worker_threads", 1))
+        return self.ray.remote(cls).options(**resources, max_restarts=0, max_task_retries=0,
+            runtime_env={"env_vars": {key: threads for key in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")}}).remote(self.config)
 
     def available(self, kind, stage=None):
         pool = "write" if kind in ("write", "finalize") else ("gpu" if stage in GPU_STAGES else "cpu") if kind == "compute" else kind
         return [i for i, slot in enumerate(self.slots) if slot["kind"] == pool and not slot["busy"]
                 and (stage is None or stage in slot["stages"])]
 
+    def _replace(self, slot):
+        slot["actor"] = self._actor(slot["class"], slot["resources"])
+        slot["last_stage"], slot["stage_tasks"] = None, 0
+
     def stage_priority(self, stage):
         """Prefer work that reuses a model already warm on an idle worker."""
-        return 0 if any(self.slots[i]["last_stage"] == stage for i in self.available("compute", stage)) else 1
+        limit = self.config["execution"].get("model_residency_tasks", 8)
+        return min((0 if self.slots[i]["last_stage"] == stage and self.slots[i]["stage_tasks"] < limit else
+                    2 if self.slots[i]["last_stage"] == stage else 1
+                    for i in self.available("compute", stage)), default=1)
 
     def submit(self, kind, job, prepared=None, inputs=None, result=None):
         candidates = self.available(kind, job.get("stage") if kind == "compute" else None)
@@ -44,6 +53,10 @@ class RayBackend:
             raise RuntimeError("No idle worker")
         index = min(candidates, key=lambda i: self.slots[i]["last_stage"] != job.get("stage"))
         slot = self.slots[index]; slot["busy"] = True
+        if kind == "compute":
+            stage = job["stage"]
+            slot["stage_tasks"] = slot["stage_tasks"] + 1 if slot["last_stage"] == stage else 1
+            slot["last_stage"] = stage
         if kind == "prepare":
             ref = slot["actor"].prepare.remote(job)
         elif kind == "compute":
@@ -71,16 +84,18 @@ class RayBackend:
                 if task["kind"] == "write":
                     value = task["result"]
                 self.ray.kill(slot["actor"], no_restart=True)
-                slot["actor"] = self._actor(slot["class"], slot["resources"])
+                self._replace(slot)
             elif task["kind"] == "compute":
                 try:
-                    self.ray.get(ref)  # small status return; never the model payload
+                    status = self.ray.get(ref)  # small status return; never the model payload
+                    if status:
+                        task["job"]["_result_bytes"] = status["result_bytes"]
                     value = task["result"]
                 except Exception as exc:
                     error = exc
                     if self._unhealthy(exc):
                         self.ray.kill(slot["actor"], no_restart=True)
-                        slot["actor"] = self._actor(slot["class"], slot["resources"])
+                        self._replace(slot)
             else:
                 try:
                     value = self.ray.get(ref)
@@ -95,7 +110,7 @@ class RayBackend:
                             error = source_error
                     # An error dependency must not kill a healthy writer; replace only dead actors.
                     if not isinstance(exc, self.ray.exceptions.RayTaskError) and any(name in type(exc).__name__ for name in ("ActorDied", "ActorUnavailable")):
-                        slot["actor"] = self._actor(slot["class"], slot["resources"])
+                        self._replace(slot)
             events.append((task["kind"], task["job"], value, error, now - task["started"]))
         return events
 
@@ -108,6 +123,12 @@ class RayBackend:
         return sum(task["kind"] == kind for task in self.pending.values())
 
     def close(self):
+        cleanups = []
+        for slot in self.slots:
+            if slot["class"] is ModelActor and not slot["busy"]:
+                cleanups.append(slot["actor"].close.remote())
+        if cleanups:
+            self.ray.wait(cleanups, num_returns=len(cleanups), timeout=5)
         for slot in self.slots:
             try:
                 self.ray.kill(slot["actor"], no_restart=True)

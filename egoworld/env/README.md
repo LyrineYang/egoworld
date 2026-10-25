@@ -127,7 +127,7 @@ git rev-parse HEAD
 返回 egoworld-base，进入项目根目录，执行 egoworld doctor --config config.local/job.json --gpu --assets。
 预检会进入对应环境检查原生 API 导入与 CUDA，并返回 JSON 子报告；模型资产由协调环境静态检查。
 不要配置任意不支持 --doctor 协议的自定义命令。推理失败日志在 .work/<clip>/<stage>/runner.log。
-分环境每任务重新加载模型，是兼容性起点；常驻与批次优化不作为本轮新增需求。
+默认 external_runner_mode=auto：内置 egoworld.worker 使用串行常驻进程，复用模型；换阶段、失败或超时会释放。自定义命令默认仍走一次性协议。显式 persistent 要求支持 --serve；需要每阶段隔离验证时设 per_task（16gb smoke 已强制设置）。
 
 将各上游 git commit、下载快照 revision 和环境版本填入 model_versions/部署记录。实际通过后保存 pip freeze 和 conda env export，
 不要把未经目标服务器执行的模板标成已验证 lock。最后执行 [单阶段和完整 smoke](../../docs/testing.md)。

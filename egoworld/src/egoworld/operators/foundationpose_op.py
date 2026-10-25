@@ -1,5 +1,6 @@
 """FoundationPose RGB-D tracking with explicit meshes, calibration and metric scale."""
 from __future__ import annotations
+from egoworld.utils.performance import timed_load
 from pathlib import Path
 import sys
 import numpy as np
@@ -13,6 +14,7 @@ class FoundationPoseOperator:
         self.params = params
         self.scorer = self.refiner = self.glctx = None
 
+    @timed_load
     def _load(self):
         if self.params.get("repo_path") and self.params["repo_path"] not in sys.path:
             sys.path.insert(0, self.params["repo_path"])
@@ -37,7 +39,8 @@ class FoundationPoseOperator:
             raise ValueError("depth_scale_to_meters must be positive")
         objects = self.params["objects"]
         cls = self._load()
-        trackers, output = {}, []
+        trackers, output, meshes = {}, [], {}
+        cached_frame, image, depth = None, None, None
         cap = frame_reader(video_path)
         try:
             for row in sorted(rows(inputs, "sam2", "instances"), key=lambda r: (r["frame_index"], r["object_id"])):
@@ -45,35 +48,41 @@ class FoundationPoseOperator:
                     continue
                 spec = objects[row["label"]]
                 frame = row["frame_index"]
-                depth_path = video_assets["depth_pattern"].format(frame_index=frame)
-                if Path(depth_path).suffix == ".npy":
-                    depth = np.load(depth_path, allow_pickle=False).astype(np.float32) * depth_scale
-                else:
-                    import cv2
-                    depth = cv2.imread(depth_path, cv2.IMREAD_UNCHANGED)
-                    if depth is None:
-                        raise ValueError(f"Missing depth frame {depth_path}")
-                    depth = depth.astype(np.float32) * depth_scale
-                image = read_frame(cap, frame - clip["frame_start"])[..., ::-1].copy()
-                if depth.shape != image.shape[:2] or not np.isfinite(depth).all() or np.any(depth < 0):
-                    raise ValueError("Depth must be finite and aligned to RGB resolution")
+                if frame != cached_frame:
+                    depth_path = video_assets["depth_pattern"].format(frame_index=frame)
+                    if Path(depth_path).suffix == ".npy":
+                        depth = np.load(depth_path, allow_pickle=False).astype(np.float32) * depth_scale
+                    else:
+                        import cv2
+                        depth = cv2.imread(depth_path, cv2.IMREAD_UNCHANGED)
+                        if depth is None:
+                            raise ValueError(f"Missing depth frame {depth_path}")
+                        depth = depth.astype(np.float32) * depth_scale
+                    image = read_frame(cap, frame - clip["frame_start"])[..., ::-1].copy()
+                    if depth.shape != image.shape[:2] or not np.isfinite(depth).all() or np.any(depth < 0):
+                        raise ValueError("Depth must be finite and aligned to RGB resolution")
+                    cached_frame = frame
                 if row["object_id"] not in trackers:
-                    mesh = trimesh.load(spec["mesh_path"], force="mesh")
                     mesh_scale = float(spec["mesh_scale_to_meters"])
                     if not np.isfinite(mesh_scale) or mesh_scale <= 0:
                         raise ValueError("mesh_scale_to_meters must be finite and positive")
-                    mesh.apply_scale(mesh_scale)
+                    key = (spec["mesh_path"], mesh_scale)
+                    if key not in meshes:
+                        mesh = trimesh.load(spec["mesh_path"], force="mesh")
+                        mesh.apply_scale(mesh_scale)
+                        meshes[key] = mesh
+                    mesh = meshes[key].copy()  # trackers may mutate meshes; never share their state
                     tracker = cls(model_pts=mesh.vertices, model_normals=mesh.vertex_normals, mesh=mesh,
                                   scorer=self.scorer, refiner=self.refiner, glctx=self.glctx,
                                   debug=0, debug_dir=self.params.get("debug_dir", "/tmp/egoworld-foundationpose"))
                     mask = decode_rle(row["mask_rle"])
                     if mask.shape != depth.shape or not np.any((depth > 0) & mask):
                         raise ValueError("Registration mask must align with RGB-D and contain valid depth")
-                    pose = tracker.register(K=intrinsics, rgb=image, depth=depth, ob_mask=mask,
+                    pose = tracker.register(K=intrinsics, rgb=image.copy(), depth=depth.copy(), ob_mask=mask,
                                             iteration=int(self.params.get("register_iterations", 5)))
                     trackers[row["object_id"]] = tracker
                 else:
-                    pose = trackers[row["object_id"]].track_one(rgb=image, depth=depth, K=intrinsics,
+                    pose = trackers[row["object_id"]].track_one(rgb=image.copy(), depth=depth.copy(), K=intrinsics,
                                                         iteration=int(self.params.get("track_iterations", 2)))
                 output.append({"frame_index": frame, "timestamp_s": row["timestamp_s"],
                     "object_id": row["object_id"], "label": row["label"], "transform": np.asarray(pose).reshape(-1).tolist(),

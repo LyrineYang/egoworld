@@ -50,6 +50,15 @@ def inspect(args: argparse.Namespace) -> None:
     print(json.dumps(inspect_run(Path(args.run_dir)), indent=2))
 
 
+def profile(args):
+    from egoworld.profiling import profile_run
+    from egoworld.io.writers import write_json
+    report = profile_run(args.run_dir)
+    if args.output:
+        write_json(args.output, report)
+    print(json.dumps(report, indent=2))
+
+
 def smoke(args: argparse.Namespace) -> None:
     from egoworld.acceptance import single_gpu_smoke
 
@@ -130,6 +139,11 @@ def build_parser() -> argparse.ArgumentParser:
     inspect_cmd = sub.add_parser("inspect", help="Summarize completed clip outputs and QC")
     inspect_cmd.add_argument("--run-dir", required=True)
     inspect_cmd.set_defaults(func=inspect)
+
+    profile_cmd = sub.add_parser("profile", help="Summarize observed run costs without rerunning models or changing config")
+    profile_cmd.add_argument("--run-dir", required=True)
+    profile_cmd.add_argument("--output", help="Optional JSON report file")
+    profile_cmd.set_defaults(func=profile)
 
     smoke_cmd = sub.add_parser("smoke", help="Single-GPU acceptance on a short real video, including resume")
     smoke_cmd.add_argument("--config", default="egoworld/configs/example.json")

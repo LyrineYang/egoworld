@@ -13,10 +13,10 @@ def array(value):
     return np.asarray(value)
 
 
-def rows(receipts, stage, artifact):
+def rows(receipts, stage, artifact, columns=None):
     import pyarrow.parquet as pq
     receipt = receipts[stage]
-    return pq.ParquetFile(Path(receipt["directory"]) / f"{artifact}.parquet").read().to_pylist()
+    return pq.ParquetFile(Path(receipt["directory"]) / f"{artifact}.parquet").read(columns=columns).to_pylist()
 
 
 def rgbd_assets(path):

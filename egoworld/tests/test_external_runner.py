@@ -60,3 +60,114 @@ def test_native_weights_are_released_before_external_runner(monkeypatch):
         return {"tables": {"masks": [], "instances": [], "tracks": []}}
     monkeypatch.setattr(actor, "_external", external)
     assert actor.process({"stage": "sam2", "clip": {}}, {}, {})["tables"]
+
+
+def session_case(tmp_path, mode):
+    runner = tmp_path / 'native_fixture.py'
+    counts = tmp_path / 'initializations'
+    runner.write_text('''import os,sys
+from pathlib import Path
+from egoworld.pipeline import stages
+from egoworld import worker
+class Model:
+    def __init__(self, **params):
+        with Path(COUNTS).open('a') as f: f.write(str(os.getpid())+'\\n')
+    def run(self, *args):
+        if args[0] == 'FAIL': raise ValueError('fixture failure')
+        if args[0] == 'WAIT': __import__('time').sleep(10)
+        return {'frames': [], 'instances': [], 'processed_frames': 1}
+stages.OPERATORS['sam2'] = Model
+worker.main()
+'''.replace('COUNTS', repr(str(counts))))
+    config = asdict(PipelineConfig().resolved())
+    config['execution']['external_runner_mode'] = mode
+    config['operators']['sam2']['params']['runner_command'] = [sys.executable, str(runner)]
+    actor = ModelActor(config)
+    def run(cid, video='unused'):
+        return actor.process({'stage':'sam2', 'clip':{'clip_id':cid}, 'work_dir':str(tmp_path / cid)}, {'video_path':video}, {})
+    return actor, run, counts
+
+
+def test_persistent_runner_reuses_loaded_model_after_original_clip_is_removed(tmp_path):
+    import shutil
+    actor, run, counts = session_case(tmp_path, 'persistent')
+    try:
+        first = run('A')
+        shutil.rmtree(tmp_path / 'A')
+        second = run('B')
+        assert len(counts.read_text().splitlines()) == 1
+        assert first['stats']['model_cache_hit'] == 0
+        assert second['stats']['model_cache_hit'] == 1
+        assert second['stats']['result_bytes'] > 0
+        process = actor.session.process
+    finally:
+        actor.close()
+    assert process.poll() is not None
+
+
+def test_per_task_mode_keeps_isolation(tmp_path):
+    actor, run, counts = session_case(tmp_path, 'per_task')
+    try:
+        run('A'); run('B')
+        assert len(counts.read_text().splitlines()) == 2
+        assert actor.session is None
+    finally:
+        actor.close()
+
+
+def test_persistent_model_error_discards_session_and_next_task_restarts(tmp_path):
+    actor, run, counts = session_case(tmp_path, 'persistent')
+    try:
+        run('A')
+        process = actor.session.process
+        with pytest.raises(ValueError, match='fixture failure'):
+            run('B', 'FAIL')
+        assert actor.session is None and process.poll() is not None
+        run('C')
+        assert len(counts.read_text().splitlines()) == 2
+    finally:
+        actor.close()
+
+
+def test_persistent_timeout_cleans_up_session(tmp_path):
+    actor, run, _ = session_case(tmp_path, 'persistent')
+    actor.config['execution']['stage_timeout_s'] = 2
+    try:
+        run('A')
+        process = actor.session.process
+        with pytest.raises(TimeoutError, match='timed out'):
+            run('B', 'WAIT')
+        assert actor.session is None and process.poll() is not None
+    finally:
+        actor.close()
+
+
+def test_guard_sigterm_kills_runner_process_group(tmp_path, monkeypatch):
+    import concurrent.futures
+    import subprocess
+    pid_file = tmp_path / 'runner.pid'
+    command = "import os,time;from pathlib import Path;Path(PID).write_text(str(os.getpid()));time.sleep(30)".replace('PID', repr(str(pid_file)))
+    config = asdict(PipelineConfig().resolved())
+    config['execution']['stage_timeout_s'] = 5
+    actor = ModelActor(config)
+    launched = []
+    original = subprocess.Popen
+    def spawn(*args, **kwargs):
+        child = original(*args, **kwargs); launched.append(child); return child
+    monkeypatch.setattr(subprocess, 'Popen', spawn)
+    job = {'stage':'sam2', 'clip':{}, 'work_dir':str(tmp_path / 'work')}
+    try:
+        with concurrent.futures.ThreadPoolExecutor(1) as pool:
+            task = pool.submit(actor._external, [sys.executable, '-c', command], job, {}, {})
+            deadline = time.monotonic() + 4
+            while not pid_file.is_file() and time.monotonic() < deadline: time.sleep(.01)
+            assert pid_file.is_file()
+            os.kill(launched[0].pid, signal.SIGTERM)
+            with pytest.raises(RuntimeError, match='exited 125'): task.result(timeout=6)
+        with pytest.raises(ProcessLookupError):
+            os.kill(int(pid_file.read_text()), 0)  # guard must have killed AND reaped its child
+    finally:
+        if pid_file.is_file():
+            try: os.killpg(int(pid_file.read_text()), signal.SIGKILL)
+            except ProcessLookupError: pass
+        actor.close()

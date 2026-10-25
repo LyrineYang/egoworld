@@ -1,5 +1,6 @@
 """HaMeR adapter using SAM2 hand boxes and the official crop/model API."""
 from __future__ import annotations
+from egoworld.utils.performance import timed_load
 import numpy as np
 from egoworld.operators.common import array, frame_reader, read_frame, rows, frame_fields
 
@@ -11,6 +12,7 @@ class HamerOperator:
         self.params = params
         self.model = self.model_cfg = None
 
+    @timed_load
     def _load(self):
         if self.model is None:
             from hamer.models import load_hamer
@@ -27,7 +29,7 @@ class HamerOperator:
         if stride < 1 or batch_size < 1:
             raise ValueError("HaMeR stride and batch size must be positive")
         by_frame = {}
-        for row in rows(inputs, "sam2", "instances"):
+        for row in rows(inputs, "sam2", "instances", ["frame_index", "object_id", "label", "area_px", "bbox_xyxy"]):
             if row["area_px"] and any(word in row["label"].lower() for word in ("hand", "glove")) and (row["frame_index"] - clip["frame_start"]) % stride == 0:
                 by_frame.setdefault(row["frame_index"], []).append(row)
         cap = frame_reader(video_path)

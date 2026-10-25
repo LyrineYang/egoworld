@@ -1,0 +1,44 @@
+{
+  "benchmark_script_hash": "ea5a0c963e1be3aa7d01177e07e47be2af8d8b95c05e5031a6223208918ac564",
+  "threads": 1,
+  "source_tree_hash": "4ced97b73521fbb531cc484c0b5a3bbe79cbaf3d008c6ff4a7fea5e7f4d82ed4",
+  "versions": {
+    "numpy": "2.2.5",
+    "pyarrow": "19.0.0",
+    "opencv": "4.12.0"
+  },
+  "platform": "macOS-26.5.1-arm64-arm-64bit-Mach-O",
+  "python": "3.13.2",
+  "repeats": 3,
+  "parquet": {
+    "payload_size_estimation_seconds": 0.004048375005368143,
+    "rows": 512,
+    "mask_utf8_bytes_per_row": 36036,
+    "full_read_seconds": 0.014792750007472932,
+    "projected_read_seconds": 0.0024790409952402115,
+    "full_arrow_bytes": 18490816,
+    "projected_arrow_bytes": 38336,
+    "scope": "Synthetic stripe-mask table; same requested columns and values; timings include conversion to Python rows."
+  },
+  "external_runner": {
+    "per_task": {
+      "seconds": 2.753786042041611,
+      "tasks": 6,
+      "cache_hits": [
+        0,
+        0,
+        0
+      ]
+    },
+    "persistent": {
+      "seconds": 0.5027422499842942,
+      "tasks": 6,
+      "cache_hits": [
+        5,
+        5,
+        5
+      ]
+    },
+    "scope": "Real runner/guard/file protocol with a zero-inference fixture. Includes Python imports and process cleanup; no model weights or CUDA."
+  }
+}

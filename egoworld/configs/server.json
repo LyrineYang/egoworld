@@ -11,9 +11,13 @@
     ]
   },
   "backpressure": {
-    "max_in_flight_cpu": 8,
-    "max_in_flight_gpu": 8,
-    "max_in_flight_write": 12
+    "max_in_flight_cpu": null,
+    "max_in_flight_gpu": null,
+    "max_in_flight_write": null,
+    "max_in_flight_bytes": 2147483648,
+    "max_prepared_bytes": 4294967296,
+    "estimated_result_bytes": 67108864,
+    "stage_memory_bytes": {}
   },
   "retry": {
     "max_retries": 3,
@@ -143,25 +147,17 @@
     "cpu_workers": 8,
     "write_workers": 4,
     "cpu_operator_workers": 1,
-    "max_active_clips": 16,
+    "max_active_clips": 32,
     "max_cached_models": 1,
     "stage_timeout_s": 900,
     "poll_timeout_s": 0.1,
     "keep_prepared": false,
     "verify_hashes_on_resume": true,
-    "gpu_stage_groups": [
-      [
-        "sam2"
-      ],
-      [
-        "hamer"
-      ],
-      [
-        "foundationpose"
-      ],
-      [
-        "fast3r"
-      ]
-    ]
+    "gpu_stage_groups": [],
+    "external_runner_mode": "auto",
+    "worker_threads": 1,
+    "model_residency_tasks": 8,
+    "max_stage_wait_s": 60,
+    "measure_gpu_memory": false
   }
 }

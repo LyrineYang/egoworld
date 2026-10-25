@@ -1,6 +1,7 @@
 """SAM2 operator for video mask propagation with optional GroundingDINO prompts."""
 
 from __future__ import annotations
+from egoworld.utils.performance import timed_load
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -44,6 +45,7 @@ class Sam2Operator(Operator):
         self._predictor = None
         self._gd = None
 
+    @timed_load
     def _ensure_predictor(self) -> None:
         if self._predictor is not None:
             return
@@ -76,6 +78,7 @@ class Sam2Operator(Operator):
             hydra_overrides_extra=overrides,
         )
 
+    @timed_load
     def _ensure_groundingdino(self, prompt_cfg: PromptConfig) -> GroundingDINOOperator:
         if self._gd is None:
             self._gd = GroundingDINOOperator(

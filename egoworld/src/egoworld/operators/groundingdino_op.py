@@ -1,6 +1,7 @@
 """GroundingDINO operator wrapper for text-conditioned detection."""
 
 from __future__ import annotations
+from egoworld.utils.performance import timed_load
 
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
@@ -25,6 +26,7 @@ class GroundingDINOOperator:
         self._model = None
         self._use_model_class = False
 
+    @timed_load
     def _ensure_model(self) -> None:
         if self._model is not None:
             return

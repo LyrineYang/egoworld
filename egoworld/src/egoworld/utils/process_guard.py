@@ -15,6 +15,12 @@ def main():
     if not command:
         raise SystemExit("Expected an external runner command")
     child = subprocess.Popen(command, stdin=subprocess.DEVNULL, start_new_session=True)
+    def cancelled(*_):
+        raise SystemExit(125)
+    # Ray may SIGTERM descendants directly on Linux. Python's default handler
+    # would bypass finally and leave the runner's separate process group alive.
+    signal.signal(signal.SIGTERM, cancelled)
+    signal.signal(signal.SIGINT, cancelled)
     try:
         while child.poll() is None:
             if select.select([sys.stdin.fileno()], [], [], .1)[0]:

@@ -57,6 +57,10 @@ class WriterActor:
     def __init__(self, config):
         self.config = config
         self.parquet = ParquetConfig(**config["parquet"])
+        import pyarrow as pa
+        threads = config["execution"].get("worker_threads", 1)
+        pa.set_cpu_count(threads)
+        pa.set_io_thread_count(threads)
 
     def write_stage(self, job, packet):
         started = time.perf_counter()

@@ -2,6 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 import tempfile
+import time
 import numpy as np
 from egoworld.operators.common import array, frame_reader, read_frame, frame_fields
 
@@ -21,6 +22,7 @@ class Fast3ROperator:
         from fast3r.dust3r.utils.image import load_images
         from fast3r.dust3r.cloud_opt.init_im_poses import fast_pnp
         device = torch.device(self.params.get("device", "cuda"))
+        load_started = time.perf_counter()
         if self.model is None:
             model = Fast3R.from_pretrained(self.params["model_name_or_path"])
             implementation = self.params.get("attn_implementation")
@@ -35,6 +37,7 @@ class Fast3ROperator:
                 if not changed:
                     raise ValueError("Fast3R version exposes no configurable attention modules")
             self.model = model.to(device).eval()
+        self._model_load_seconds = getattr(self, "_model_load_seconds", 0.) + time.perf_counter() - load_started
         count = clip["frame_end"] - clip["frame_start"]
         views = min(int(self.params.get("max_views", 8)), count)
         if views < 2:

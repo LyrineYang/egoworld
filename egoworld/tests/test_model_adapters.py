@@ -91,24 +91,37 @@ def test_foundationpose_uses_metric_depth_register_then_track(monkeypatch, tmp_p
     for frame in (10, 11): np.save(tmp_path / f"{frame}.npy", np.full((2, 2), 1000, dtype=np.uint16))
     assets = tmp_path / "assets.json"
     assets.write_text(json.dumps({"v": {"intrinsics": [100, 0, 1, 0, 100, 1, 0, 0, 1], "depth_pattern": str(tmp_path / "{frame_index}.npy"), "depth_scale_to_meters": .001}}))
-    instances = [{"frame_index": f, "timestamp_s": f / 10, "object_id": 1, "label": "cup", "area_px": 4,
-                  "mask_rle": '{"size":[2,2],"counts":[0,4]}'} for f in (10, 11)]
+    instances = [{"frame_index": f, "timestamp_s": f / 10, "object_id": oid, "label": "cup", "area_px": 4,
+                  "mask_rle": '{"size":[2,2],"counts":[0,4]}'} for f in (10, 11) for oid in (1, 2)]
     monkeypatch.setattr(target, "rows", lambda *args: instances)
     monkeypatch.setattr(target, "frame_reader", lambda *args: SimpleNamespace(release=lambda: None))
-    monkeypatch.setattr(target, "read_frame", lambda *args: np.zeros((2, 2, 3), dtype=np.uint8))
+    decoded = []
+    def decode(*args):
+        decoded.append(args[1]); return np.zeros((2, 2, 3), dtype=np.uint8)
+    monkeypatch.setattr(target, "read_frame", decode)
     mesh = SimpleNamespace(vertices=np.zeros((3, 3)), vertex_normals=np.zeros((3, 3)), apply_scale=lambda scale: None)
-    module(monkeypatch, "trimesh", load=lambda *args, **kwargs: mesh)
+    import copy
+    mesh.copy = lambda: copy.copy(mesh)
+    mesh_loads = []
+    def load_mesh(*args, **kwargs):
+        mesh_loads.append(args[0]); return mesh
+    module(monkeypatch, "trimesh", load=load_mesh)
     log = []
     class Tracker:
         def __init__(self, **kwargs): pass
         def register(self, **kwargs):
-            log.append("register"); assert np.all(kwargs["depth"] == 1); assert kwargs["ob_mask"].all(); return np.eye(4)
-        def track_one(self, **kwargs): log.append("track"); return np.eye(4)
+            log.append("register"); assert np.all(kwargs["depth"] == 1); assert kwargs["ob_mask"].all()
+            kwargs["depth"][:] = 5  # one tracker must not corrupt the next object
+            return np.eye(4)
+        def track_one(self, **kwargs):
+            log.append("track"); assert np.all(kwargs["depth"] == 1); kwargs["depth"][:] = 5
+            return np.eye(4)
     operator = target.FoundationPoseOperator(assets_manifest=str(assets), objects={"cup": {"mesh_path": "not-read", "mesh_scale_to_meters": .001}})
     monkeypatch.setattr(operator, "_load", lambda: Tracker)
     output = operator.run(CLIP, "unused", {})["tables"]["object_pose"]
     validate_rows("object_pose", output, CLIP)
-    assert log == ["register", "track"] and output[0]["length_unit"] == "meters"
+    assert log == ["register", "register", "track", "track"] and output[0]["length_unit"] == "meters"
+    assert decoded == [0, 1] and len(mesh_loads) == 1
 
 
 @pytest.mark.parametrize("return_tuple", [False, True])

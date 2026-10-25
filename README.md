@@ -57,7 +57,7 @@ The starter configuration enables SAM2.1 + GroundingDINO. Edit `job.json` to set
 | [example.json](egoworld/configs/example.json) | Start with segmentation and 2D tracking |
 | [rgb.json](egoworld/configs/rgb.json) | Add hand pose, robotic hand retargeting, and scene geometry |
 | [full.json](egoworld/configs/full.json) | Also estimate object pose from existing RGB-D and mesh assets |
-| [server.json](egoworld/configs/server.json) | Explore stage assignment across four GPUs |
+| [server.json](egoworld/configs/server.json) | Shared GPU pool for 2–16 GPU servers; four-GPU starting configuration |
 
 **2. Check the setup and run a short sample.**
 
