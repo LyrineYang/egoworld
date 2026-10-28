@@ -20,6 +20,13 @@ pytest -q -m 'not env_smoke and not pipeline_smoke and not sam2_smoke and not na
 局部恢复、独立分支失败、延迟重试、坐标与点云契约、模型身份变化。模型 API 替身只证明适配器控制流。
 `.github/workflows/tests.yml` 在 Linux CPU 上运行这一层与下一层。
 
+2026-10-28 可视化改动验证（macOS/ARM、Python 3.12、pytest 8.4.2）：
+CPU 回归命令额外排除 `ray_integration`：**146 passed / 17 deselected，15.19 秒**。覆盖报告从真实提交/损坏提交/部分结果导出、
+上游失效传播、失败日志、恢复后空计时、导出上限，以及禁用 Torch/Ray 后的 CLI 和 JSON 文本转义。
+可选 Prometheus 缺失时的监控降级、wheel 中的报告导出也已检查。
+离线 DOM 检查另覆盖搜索、状态筛选、分页、详情/关闭、空结果及恶意文本；未完成浏览器截图/视觉验收。
+这些检查不运行真实模型，也不提供 CUDA、Ray 或目标服务器的新验收证据。
+
 ## 2. 真实 Ray，仍不需要 GPU
 
 ```bash

@@ -1,5 +1,7 @@
 # 文档入口
 
+了解项目价值与展示材料，先看 [README](../README.md)、[工程贡献与研究 insight](overview.md#7-项目定位工程贡献与研究-insight) 和 [架构概览](assets/architecture.svg)。
+
 接手开发或迁移执行环境时，先读 [开发交接](handoff.md)：用户约束、实现基线、证据边界与下一步。
 
 建议按下列顺序阅读：

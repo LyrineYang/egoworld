@@ -7,6 +7,9 @@ from typing import Any
 
 
 class _NoOp:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
+        pass
+
     def inc(self, *args: Any, **kwargs: Any) -> None:
         return None
 

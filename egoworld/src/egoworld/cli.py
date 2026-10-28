@@ -59,6 +59,13 @@ def profile(args):
     print(json.dumps(report, indent=2))
 
 
+def report(args):
+    from egoworld.reporting import write_report
+
+    output = write_report(args.run_dir, args.output, max_clips=args.max_clips)
+    print(json.dumps({"report": str(output)}))
+
+
 def smoke(args: argparse.Namespace) -> None:
     from egoworld.acceptance import single_gpu_smoke
 
@@ -144,6 +151,12 @@ def build_parser() -> argparse.ArgumentParser:
     profile_cmd.add_argument("--run-dir", required=True)
     profile_cmd.add_argument("--output", help="Optional JSON report file")
     profile_cmd.set_defaults(func=profile)
+
+    report_cmd = sub.add_parser("report", help="Export an offline HTML run/QC report without running models")
+    report_cmd.add_argument("--run-dir", required=True)
+    report_cmd.add_argument("--output", help="HTML destination; default: <run-dir>/report.html")
+    report_cmd.add_argument("--max-clips", type=int, default=1000, help="Maximum clip details to export (default: 1000)")
+    report_cmd.set_defaults(func=report)
 
     smoke_cmd = sub.add_parser("smoke", help="Single-GPU acceptance on a short real video, including resume")
     smoke_cmd.add_argument("--config", default="egoworld/configs/example.json")

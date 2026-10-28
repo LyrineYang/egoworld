@@ -4,26 +4,47 @@
 
 **Turn egocentric video into structured hand, object, and scene data.**
 
-Composable annotations. Resumable processing. Inspectable datasets.
+Choose annotations. Recover interrupted work. Inspect the resulting data.
 
 [![Pipeline checks](https://github.com/LyrineYang/egoworld/actions/workflows/tests.yml/badge.svg)](https://github.com/LyrineYang/egoworld/actions/workflows/tests.yml)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
 
-[Quick start](#quick-start) · [Capabilities](#capabilities) · [Output format](#output-format) · [Documentation](#documentation)
+[Why EgoWorld](#why-egoworld) · [Capabilities](#capabilities) · [Quick start](#quick-start) · [Validation](#validation) · [中文项目解读](docs/overview.md#7-项目定位工程贡献与研究-insight)
 
 </div>
 
-![EgoWorld workflow: video clips feed segmentation and scene reconstruction; segmentation feeds hand and object pose, and hand joints feed robotic retargeting](docs/assets/pipeline.svg)
+EgoWorld is a configurable **offline annotation pipeline** for egocentric video. It connects segmentation, hand pose, object pose, robot hand retargeting, and scene geometry with source timestamps, explicit output contracts, and recovery at each stage.
 
-*Workflow and output illustrations. Examples are schematic, not real-model predictions; each model retains its own coordinate frame.*
+Designed for researchers preparing hand–object–scene data on a single NVIDIA server. Start with RGB segmentation; add branches when the required model and data assets are available.
 
-EgoWorld brings segmentation, hand reconstruction, object pose estimation, robotic hand retargeting, and scene reconstruction into one command-line workflow. Configure the stages your data supports, process a video directory, and export results with timestamps, coordinate conventions, and quality checks.
+![Illustrated EgoWorld workflow: video becomes colored masks and tracks, a 3D hand skeleton, robot joints, an object pose with axes, and a scene point cloud](docs/assets/architecture.svg)
 
-Built for offline batch processing on a single NVIDIA server:
+*Pictures show the outputs; model names are secondary labels. Illustrations, not real predictions. Object pose requires aligned RGB-D, intrinsics and a metric mesh; retargeting requires robot assets. Coordinate frames and scales remain separate.*
 
-- **Compose the pipeline.** Enable the annotations you need, with separate model environments where dependencies differ.
-- **Resume interrupted work.** Reuse validated stage outputs and retry failed work without restarting the entire dataset.
-- **Inspect every run.** Read structured outputs, quality reports, logs, and records of the inputs, models, and configuration used.
+## Why EgoWorld
+
+The engineering contribution is the path from model predictions to a recoverable, inspectable dataset. The perception models remain upstream components.
+
+| Practical problem | EgoWorld's design | What this enables |
+| --- | --- | --- |
+| A dataset needs different annotations on limited hardware | Configurable branches, isolated model environments, model reuse, bounded scheduling | Select supported outputs and control in-flight work within one workflow |
+| One expensive stage fails after others finish | Per-stage commits, schema/hash validation, dependency-aware invalidation | Reuse valid stages and rebuild affected descendants; preserve independent branches |
+| Models disagree about formats, frames, and scale | Shared output contracts with source frame/time and explicit coordinate, unit, and scale fields | Join annotations by source frame and interpret their geometry correctly |
+
+**Research focus: scheduling under model-switch and resource costs.** The current scheduler combines completion events, model reuse, waiting protection, and bounded admission. The next question is whether measured switching costs, stage durations, and intermediate-data pressure can improve useful throughput over these fixed heuristics while preserving output quality and recovery. This is proposed research; target-hardware gains have not been established. See the [comparison and validation method](docs/design.md#11-调度作为突破点研究问题与验证方法).
+
+**Design insight: time alignment and geometry alignment are different problems.** Source frame indices let you associate observations across stages. A shared metric world frame still requires calibration and scale alignment. EgoWorld records the existing conventions so downstream work can make that distinction. See the [engineering rationale and research opportunities](docs/overview.md#7-项目定位工程贡献与研究-insight).
+
+The [development handoff](docs/handoff.md#文件结构与阅读地图) maps the existing files to their contents, including gap resolution, alignment steps, scheduling research, and validation.
+
+<details>
+<summary><strong>Explore the annotation outputs — illustrated model-by-model overview</strong></summary>
+
+![Schematic annotation examples: instance masks and tracks, a 21-joint human hand, robot joint states, object pose, and scene geometry](docs/assets/pipeline.svg)
+
+Illustrations, not real-model predictions. File names, required inputs, and coordinate meanings are explained below and in the [output reference](docs/outputs.md).
+
+</details>
 
 ## Capabilities
 
@@ -74,9 +95,12 @@ The smoke test runs the enabled stages and checks that a second run reuses compl
 ```bash
 egoworld launch --config config.local/job.json --input-dir /absolute/videos --run-id dataset_001
 egoworld inspect --run-dir /absolute/output/run_id=dataset_001
+egoworld report --run-dir /absolute/output/run_id=dataset_001
 ```
 
 Replace `/absolute/output` with the configured `paths.output_root`. To resume, repeat the same launch command with the same configuration and run ID. Use a new run ID when code, models, inputs, or processing settings change.
+
+Open the generated `report.html` in a browser for an **offline inspection report**: stage timing, searchable clip QC, failed or incomplete outputs, and per-stage file row counts. No GPU, model runtime, web server, or network connection is needed. It reads existing run records and checks commit metadata; it does not rerun inference or certify annotation accuracy. Reports include at most 1,000 clip details by default (`--max-clips` changes the limit), and clearly mark partial coverage. See the [inspection guide](docs/server.md#离线可视化报告) for details.
 
 ## Output format
 
@@ -107,6 +131,15 @@ The detailed guides are currently maintained in Chinese.
 | [Testing](docs/testing.md) | CPU checks, Ray integration, real-model smoke tests, and verification boundaries |
 | [Requirements](docs/requirements.md) | Supported scope and its implementation and test coverage |
 
-**Validation status.** CPU tests and Ray integration tests using model test doubles have passed locally. Real-model CUDA inference, 16 GB compatibility, annotation quality, and server throughput remain to be validated on target hardware. Multi-GPU configuration is provided as a template, without benchmark claims.
+## Validation
+
+| Evidence | Current status |
+| --- | --- |
+| CPU data flow, contracts, fault recovery, CLI and offline reports | Local regression passed; see [test scope and records](docs/testing.md) |
+| Real Ray processes with model test doubles | Previously passed locally; these checks do not run CUDA inference |
+| Real-model inference and annotation quality | Target-hardware validation pending |
+| 16 GB fit, multi-GPU scaling and server throughput | Configuration templates available; target-hardware measurements pending |
+
+The current contribution is an integration and execution system. New perception algorithms, a fused metric world representation, and downstream robot-learning gains would require separate evidence.
 
 **Licensing.** A project license has not yet been specified. Integrated models and assets remain subject to their respective upstream licenses.
