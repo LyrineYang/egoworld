@@ -1,0 +1,133 @@
+{
+  "date_local": "2026-11-01",
+  "timezone": "Asia/Shanghai",
+  "scope": "One 3-second SAM2/DINO sample on an otherwise idle compute device; not end-to-end or server throughput. No NVML module was installed.",
+  "mode": "probe",
+  "status": "passed",
+  "source_run_fingerprint": "67f335db904f734436a2abc112447dbf804b1ec078a318f903a79528d5499210",
+  "measurement_fingerprint": "53ead13a64027ae3cc07d7e2cb4e293f94ac4ff358574aa8ca941a7841637d02",
+  "observed_identity_hash": "345d2d4996923d1aab8e2e9c96e828e0620cfccc126bd15c7d865d09496d0c39",
+  "prepared_sha256": "0b953f53fda561d294ea2713230f11d98e347e592e6de2edc4efd9f208d4e469",
+  "input_specification": {
+    "fps": 10.0,
+    "width": 426,
+    "height": 206,
+    "frame_count": 30,
+    "upstream_rows": {}
+  },
+  "source_tree_hash": "95dcb81482aa38000bcb207cb97916d665842d785989ce2d1ec62b480ce8731e",
+  "gpu": {
+    "name": "NVIDIA GeForce RTX 4060 Laptop GPU",
+    "total_memory_bytes": 8585216000,
+    "compute_capability": [
+      8,
+      9
+    ],
+    "uuid": "d69560c2-3ab1-d989-ff13-013d1db9d0dd",
+    "torch_cuda_version": "12.4"
+  },
+  "model_sources": {
+    "sam2": {
+      "path": "/home/lyrine/projects/egoworld/external/sam2/sam2/__init__.py",
+      "python_source_sha256": "962d412fb2fbe24e78684a562f9bdefff057a1fd337fa61d54fd2450dcfe9cd5"
+    },
+    "groundingdino": {
+      "path": "/home/lyrine/projects/egoworld/external/GroundingDINO/groundingdino/__init__.py",
+      "python_source_sha256": "0fff6159ca7d39a70247511a563318a373a093c1cf7992870db813973cf6aa22"
+    }
+  },
+  "trials": [
+    {
+      "phase": "cold",
+      "status": "passed",
+      "cache_hit": 0,
+      "model_load_seconds": 5.691555630999915,
+      "synchronized_stage_wall_seconds": 10.30735946499999,
+      "torch_peak_allocated_bytes": 1777597440,
+      "torch_peak_reserved_bytes": 2057306112,
+      "output_rows": {
+        "masks.parquet": 30,
+        "instances.parquet": 60,
+        "tracks.parquet": 60
+      },
+      "device_observation": "unavailable"
+    },
+    {
+      "phase": "warmup",
+      "status": "passed",
+      "cache_hit": 1,
+      "model_load_seconds": 9.9639999007195e-06,
+      "synchronized_stage_wall_seconds": 4.437251151999931,
+      "torch_peak_allocated_bytes": 1782297600,
+      "torch_peak_reserved_bytes": 2057306112,
+      "output_rows": {
+        "masks.parquet": 30,
+        "instances.parquet": 60,
+        "tracks.parquet": 60
+      },
+      "device_observation": "unavailable"
+    },
+    {
+      "phase": "hot",
+      "status": "passed",
+      "cache_hit": 1,
+      "model_load_seconds": 8.787999945525371e-06,
+      "synchronized_stage_wall_seconds": 4.116112863000012,
+      "torch_peak_allocated_bytes": 1782297600,
+      "torch_peak_reserved_bytes": 2057306112,
+      "output_rows": {
+        "masks.parquet": 30,
+        "instances.parquet": 60,
+        "tracks.parquet": 60
+      },
+      "device_observation": "unavailable"
+    },
+    {
+      "phase": "hot",
+      "status": "passed",
+      "cache_hit": 1,
+      "model_load_seconds": 8.596999919063819e-06,
+      "synchronized_stage_wall_seconds": 5.157463982999957,
+      "torch_peak_allocated_bytes": 1782297600,
+      "torch_peak_reserved_bytes": 2057306112,
+      "output_rows": {
+        "masks.parquet": 30,
+        "instances.parquet": 60,
+        "tracks.parquet": 60
+      },
+      "device_observation": "unavailable"
+    },
+    {
+      "phase": "hot",
+      "status": "passed",
+      "cache_hit": 1,
+      "model_load_seconds": 1.0579999980109278e-05,
+      "synchronized_stage_wall_seconds": 4.810322892000045,
+      "torch_peak_allocated_bytes": 1782297600,
+      "torch_peak_reserved_bytes": 2057306112,
+      "output_rows": {
+        "masks.parquet": 30,
+        "instances.parquet": 60,
+        "tracks.parquet": 60
+      },
+      "device_observation": "unavailable"
+    }
+  ],
+  "output_hashes_identical_across_trials": true,
+  "recommendations": {
+    "automatic_resource_plan": false,
+    "configuration_modified": false,
+    "warm_model_reuse_verified": true,
+    "empty_output_trial_count": 0,
+    "sample_review": "Check nonempty target coverage and input size before applying resource suggestions.",
+    "recommended_gpu_workers_per_device": 1,
+    "gpu_colocation": "not_evaluated",
+    "result_payload_reservation_bytes_min": 111010,
+    "result_reservation_scope": "Payload only; excludes model/decoder/process heaps and device memory. Do not treat this as a complete stage working-set estimate.",
+    "device_headroom_bytes_suggested": null,
+    "device_headroom_rule": "Heuristic: max(512 MiB, 15% of capacity); requires validation on representative inputs.",
+    "device_headroom_status": "unknown",
+    "hot_stage_wall_seconds_median": 4.810322892000045,
+    "scope": "One fixed sample, one serial worker. No automatic precision, sampling, batch-size, worker-count or configuration changes; no OOM guarantee or multi-GPU throughput claim."
+  }
+}

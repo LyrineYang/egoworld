@@ -262,6 +262,10 @@ class Engine:
                     self.record(ctx, stage, "Done", ctx["attempts"].get(stage, 0), duration_s=duration, stats=value["stats"])
                 else:
                     self.finish(ctx)
+        return self.summary()
+
+    def summary(self):
+        """Include committed measurements even when an invocation is interrupted."""
         return {"completed_clips": self.completed, "skipped_clips": self.skipped,
                 "failed_clips": len(self.failed), "queue_peaks": self.peaks,
                 "successful_scheduled_frames": self.successful_frames, "stage_metrics": self.stage_metrics,

@@ -51,12 +51,23 @@ def inspect(args: argparse.Namespace) -> None:
 
 
 def profile(args):
-    from egoworld.profiling import profile_run
+    from egoworld.profiling import profile_run, list_invocations
     from egoworld.io.writers import write_json
-    report = profile_run(args.run_dir)
+    report = list_invocations(args.run_dir) if args.history else profile_run(args.run_dir, args.invocation)
     if args.output:
         write_json(args.output, report)
     print(json.dumps(report, indent=2))
+
+
+def diagnostic(args):
+    from egoworld.diagnostics.replay import run_diagnostic
+    result = run_diagnostic(args.config, args.source_run, args.clip_id, args.stage, args.output_dir,
+        mode="probe" if args.command == "gpu-probe" else "replay", warmup=args.warmup, repeats=args.repeats,
+        gpu_device=args.gpu_device, timeout_s=args.timeout_s,
+        video_manifest=args.video_manifest, clip_manifest=args.clip_manifest)
+    print(json.dumps(result, indent=2))
+    if result["status"] != "passed":
+        raise SystemExit(130 if result["status"] == "interrupted" else 1)
 
 
 def report(args):
@@ -150,7 +161,29 @@ def build_parser() -> argparse.ArgumentParser:
     profile_cmd = sub.add_parser("profile", help="Summarize observed run costs without rerunning models or changing config")
     profile_cmd.add_argument("--run-dir", required=True)
     profile_cmd.add_argument("--output", help="Optional JSON report file")
+    selection = profile_cmd.add_mutually_exclusive_group()
+    selection.add_argument("--invocation", help="Read a preserved invocation instead of the latest summary")
+    selection.add_argument("--history", action="store_true", help="List retained pipeline invocations")
     profile_cmd.set_defaults(func=profile)
+
+    from egoworld.contracts import STAGE_DEPENDENCIES
+    for name in ("replay", "gpu-probe"):
+        command = sub.add_parser(name, help="Replay one stage" if name == "replay" else "Measure a serial cold/warm stage; recommendations only")
+        command.add_argument("--config", required=True)
+        command.add_argument("--source-run", required=True, help="Original run directory; never modified")
+        command.add_argument("--clip-id", required=True)
+        command.add_argument("--stage", required=True, choices=tuple(STAGE_DEPENDENCIES))
+        command.add_argument("--output-dir", required=True, help="Each invocation creates a new subdirectory")
+        command.add_argument("--video-manifest", help="Original manifest, required when it cannot be located automatically")
+        command.add_argument("--clip-manifest", help="Original manifest, required when it cannot be located automatically")
+        command.add_argument("--gpu-device", type=int, default=0, help="Index within the current CUDA_VISIBLE_DEVICES (default: 0)")
+        command.add_argument("--timeout-s", type=float, help="Per-call runner timeout, including the cold startup")
+        if name == "gpu-probe":
+            command.add_argument("--warmup", type=int, default=1)
+            command.add_argument("--repeats", type=int, default=3, help="Measured hot calls, excluding cold/warmup")
+        else:
+            command.set_defaults(warmup=0, repeats=1)
+        command.set_defaults(func=diagnostic)
 
     report_cmd = sub.add_parser("report", help="Export an offline HTML run/QC report without running models")
     report_cmd.add_argument("--run-dir", required=True)

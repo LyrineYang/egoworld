@@ -3,8 +3,12 @@ import json
 from pathlib import Path
 
 
-def profile_run(directory):
+def profile_run(directory, invocation=None):
     root = Path(directory)
+    if invocation is not None:
+        if not invocation or Path(invocation).name != invocation or invocation in (".", ".."):
+            raise ValueError("Invalid invocation ID")
+        root = root / "invocations" / invocation
     summary = json.loads((root / "run_summary.json").read_text())
     manifest = json.loads((root / "run_manifest.json").read_text())
     stages = {}
@@ -25,8 +29,22 @@ def profile_run(directory):
             "gpu_memory_observed": bool(metrics.get("torch_peak_reserved_bytes", 0)),
         }
     return {"run_id": summary["run_id"], "status": summary["status"],
+            "invocation_id": summary.get("invocation_id"),
             "config_fingerprint": manifest["config_fingerprint"],
             "configuration": manifest["config"], "stages": stages,
-            "elapsed_seconds": summary["elapsed_seconds"],
+            "elapsed_seconds": summary.get("elapsed_seconds"),
             "scope": "Completed calls in this invocation; includes cold starts. Stage times overlap. GPU memory is PyTorch allocator memory, not all device allocations. RSS is a process-lifetime high-water mark.",
             "automatic_resource_plan": False}
+
+
+def list_invocations(directory):
+    records = []
+    for path in sorted((Path(directory) / 'invocations').glob('*/run_summary.json')):
+        data = json.loads(path.read_text())
+        records.append({'invocation_id': path.parent.name, 'status': data['status'],
+                        'started_at': data.get('started_at'),
+                        'elapsed_seconds': data.get('elapsed_seconds'),
+                        'completed_clips': data.get('completed_clips', 0),
+                        'skipped_clips': data.get('skipped_clips', 0),
+                        'legacy': (path.parent / 'legacy.json').exists()})
+    return {'invocations': records}

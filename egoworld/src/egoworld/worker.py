@@ -13,14 +13,26 @@ def execute(request_path, response_path, actor=None):
     request = json.loads(Path(request_path).read_text())
     request["config"]["operators"][request["job"]["stage"]]["params"].pop("runner_command", None)
     actor = actor or ModelActor(request["config"])
+    observer = None
+    if request.get("diagnostics"):
+        from egoworld.contracts import GPU_STAGES
+        from egoworld.diagnostics.observations import TrialObserver, runtime_identity
+        observer = TrialObserver(request["job"]["stage"] in GPU_STAGES).__enter__()
     try:
         packet = actor.process(request["job"], request["prepared"], request["inputs"])
     except Exception as exc:
         from egoworld.utils.errors import classify_error
-        write_json(response_path, {"error": {"type": type(exc).__name__, "message": str(exc),
-                    "retryable": classify_error(exc).retryable or isinstance(exc, TimeoutError)}})
+        failure = {"error": {"type": type(exc).__name__, "message": str(exc),
+                    "retryable": classify_error(exc).retryable or isinstance(exc, TimeoutError)}}
+        if observer:
+            failure["diagnostics"] = observer.finish()
+            failure["runtime"] = runtime_identity()
+        write_json(response_path, failure)
         traceback.print_exc()
         return actor, False
+    if observer:
+        packet["diagnostics"] = observer.finish()
+        packet["runtime"] = runtime_identity()
     files = {}
     for name, arrays in packet.pop("arrays", {}).items():
         file = Path(response_path).parent / name
