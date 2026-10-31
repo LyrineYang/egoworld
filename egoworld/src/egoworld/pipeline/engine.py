@@ -116,6 +116,8 @@ class Engine:
             self.record(ctx, stage, "Failed", attempt, str(error))
 
     def finish(self, ctx, failed=False):
+        from egoworld.pipeline.input_cache import release_prepared_cache
+        release_prepared_cache(ctx["prepared"])
         clip = ctx["clip"]; failed = failed or bool(ctx["errors"])
         error = "; ".join(f"{stage}: {message}" for stage, message in ctx["errors"].items())
         upsert_clip_status(self.db, clip["clip_id"], clip["video_id"], "Failed" if failed else "Done",
@@ -254,6 +256,10 @@ class Engine:
                         metrics[name] = metrics.get(name, 0.) + value["stats"].get(name, 0.)
                     for name in ("process_peak_rss_bytes", "torch_peak_allocated_bytes", "torch_peak_reserved_bytes"):
                         metrics[name] = max(metrics.get(name, 0), value["stats"].get(name, 0))
+                    for name, observation in value["stats"].items():
+                        if name.startswith("input_cache_"):
+                            metrics[name] = (max(metrics.get(name, 0), observation) if "_peak_" in name
+                                             else metrics.get(name, 0) + observation)
                     metrics["result_peak_bytes"] = max(metrics.get("result_peak_bytes", 0), value["stats"].get("result_bytes", 0))
                     if value["stats"].get("gpu_name"):
                         names = metrics.setdefault("gpu_names", [])

@@ -38,11 +38,13 @@ def model_source_identities():
 
 @lru_cache(maxsize=1)
 def runtime_identity():
-    result = {'python': sys.version, 'executable': sys.executable, 'platform': platform.platform(),
+    result = {'python': sys.version, 'executable': sys.executable, 'process_id': os.getpid(), 'platform': platform.platform(),
             'source_tree_hash': source_identity(), 'model_sources': model_source_identities(),
             'packages': sorted((dist.metadata.get('Name', 'unknown'), dist.version)
                                for dist in importlib.metadata.distributions()),
-            'cuda_visible_devices': os.environ.get('CUDA_VISIBLE_DEVICES')}
+            'cuda_visible_devices': os.environ.get('CUDA_VISIBLE_DEVICES'),
+            'execution_environment': {name: os.environ.get(name) for name in
+                                      ('LD_LIBRARY_PATH', 'OMP_NUM_THREADS', 'MKL_NUM_THREADS', 'OPENBLAS_NUM_THREADS')}}
     torch = sys.modules.get('torch')
     if torch is not None and torch.cuda.is_initialized():
         try:
@@ -83,6 +85,10 @@ class TrialObserver:
         self.thread = None
         self.nvml = self.handle = None
         self.data = {'sample_interval_seconds': interval, 'samples': 0,
+                     'device_memory_samples': 0, 'device_utilization_samples': 0,
+                     'device_gpu_utilization_percent_peak': None,
+                     'device_gpu_utilization_percent_mean': None,
+                     'device_power_watts_peak': None,
                      'process_tree_peak_rss_bytes': None, 'device_used_peak_bytes': None,
                      'device_free_min_bytes': None, 'device_total_bytes': None,
                      'device_observation': 'not_requested' if not gpu else 'unavailable',
@@ -104,7 +110,12 @@ class TrialObserver:
                 # CUDA numeric ordinals do not necessarily match NVML ordinals.
                 if visible.startswith(('GPU-', 'MIG-')):
                     self.handle = pynvml.nvmlDeviceGetHandleByUUID(visible)
+                    self.data['device_mapping'] = 'CUDA_VISIBLE_DEVICES UUID'
                 self.data.update(driver_version=pynvml.nvmlSystemGetDriverVersion())
+                try:
+                    self.data['nvml_binding_version'] = importlib.metadata.version('nvidia-ml-py')
+                except importlib.metadata.PackageNotFoundError:
+                    self.data['nvml_binding_version'] = 'unknown'
                 for key in ('device_uuid', 'driver_version'):
                     if isinstance(self.data.get(key), bytes):
                         self.data[key] = self.data[key].decode()
@@ -130,6 +141,7 @@ class TrialObserver:
                         uuid = 'GPU-' + str(UUID(uuid))
                     if uuid.startswith(('GPU-', 'MIG-')):
                         self.handle = self.nvml.nvmlDeviceGetHandleByUUID(uuid)
+                        self.data['device_mapping'] = 'initialized CUDA device UUID'
             except Exception as exc:
                 self.data['device_observation_error'] = str(exc)
         try:
@@ -146,13 +158,39 @@ class TrialObserver:
                 uuid = self.nvml.nvmlDeviceGetUUID(self.handle)
                 self.data['device_uuid'] = uuid.decode() if isinstance(uuid, bytes) else uuid
                 self.data['device_total_bytes'] = int(info.total)
+                self.data['device_memory_samples'] += 1
                 self.data['device_used_peak_bytes'] = max(self.data['device_used_peak_bytes'] or 0, int(info.used))
                 previous = self.data['device_free_min_bytes']
                 self.data['device_free_min_bytes'] = min(previous if previous is not None else int(info.free), int(info.free))
             except Exception as exc:
                 self.data['device_observation'] = 'partial'
                 self.data['device_observation_error'] = str(exc)
+            # Optional telemetry may be unsupported under WSL/MIG. This does not
+            # invalidate successful device-memory samples or manufacture zeros.
+            self._optional_device_samples()
         self.data['samples'] += 1
+
+    def _optional_device_samples(self):
+        try:
+            rates = self.nvml.nvmlDeviceGetUtilizationRates(self.handle)
+            count = self.data['device_utilization_samples']
+            previous = self.data['device_gpu_utilization_percent_mean'] or 0.
+            self.data['device_gpu_utilization_percent_mean'] = (previous * count + rates.gpu) / (count + 1)
+            self.data['device_gpu_utilization_percent_peak'] = max(self.data['device_gpu_utilization_percent_peak'] or 0, int(rates.gpu))
+            self.data['device_utilization_samples'] = count + 1
+        except Exception as exc:
+            self.data['device_utilization_error'] = str(exc)
+        try:
+            watts = float(self.nvml.nvmlDeviceGetPowerUsage(self.handle)) / 1000
+            self.data['device_power_watts_peak'] = max(self.data['device_power_watts_peak'] or 0., watts)
+        except Exception as exc:
+            self.data['device_power_error'] = str(exc)
+        try:
+            processes = self.nvml.nvmlDeviceGetComputeRunningProcesses(self.handle)
+            self.data['device_compute_pids_observed'] = sorted(set(self.data.get('device_compute_pids_observed', [])) | {p.pid for p in processes})
+            self.data['device_non_runner_compute_pids_observed'] = [pid for pid in self.data['device_compute_pids_observed'] if pid != os.getpid()]
+        except Exception as exc:
+            self.data['device_process_query_error'] = str(exc)
 
     def _loop(self):
         while not self.stop.wait(self.interval):
@@ -167,6 +205,8 @@ class TrialObserver:
         self.stop.set()
         self.thread.join()
         self._sample()
+        self.data['device_memory_coverage'] = ('from_trial_start' if self.data.get('device_baseline_used_bytes') is not None
+                                               else 'after_cuda_initialization' if self.data['device_memory_samples'] else 'unavailable')
         if self.nvml is not None:
             try:
                 self.nvml.nvmlShutdown()

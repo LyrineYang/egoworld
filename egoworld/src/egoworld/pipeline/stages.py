@@ -44,7 +44,12 @@ class PrepareActor:
         if info.frame_count != clip["frame_end"] - clip["frame_start"] or abs(info.fps - clip["fps"]) > .01:
             target.unlink(missing_ok=True)
             raise ValueError("Prepared clip frame count/FPS differs from manifest; normalize to constant FPS")
-        return {"video_path": str(target), "frames": info.frame_count, "prepared_bytes": target.stat().st_size}
+        result = {"video_path": str(target), "frames": info.frame_count, "prepared_bytes": target.stat().st_size}
+        from egoworld.pipeline.input_cache import prepare_cache
+        spec = prepare_cache(self.config, job, target)
+        if spec:
+            result["input_cache"] = spec
+        return result
 
 
 class ModelActor:
@@ -89,7 +94,14 @@ class ModelActor:
         try:
             if working_dir:
                 os.chdir(working_dir)
-            return self._process(job, prepared, inputs)
+            from egoworld.pipeline.input_cache import cache_session
+            with cache_session(prepared.get("input_cache")) as cache:
+                packet = self._process(job, prepared, inputs)
+                if cache is not None:
+                    for key, value in cache.stats.items():
+                        # External workers report their own observations.
+                        packet["stats"].setdefault(key, value)
+                return packet
         finally:
             if working_dir:
                 os.chdir(previous)

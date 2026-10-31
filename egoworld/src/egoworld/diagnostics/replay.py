@@ -53,6 +53,8 @@ def recommendations(trials, stage):
             'sample_review': 'Check nonempty target coverage and input size before applying resource suggestions.',
             'recommended_gpu_workers_per_device': 1 if gpu else None,
             'gpu_colocation': 'not_evaluated',
+            'non_runner_compute_pids_observed': sorted({pid for item in devices for pid in item.get('device_non_runner_compute_pids_observed', [])}),
+            'contention_review': 'Non-runner compute PIDs may be other workloads or runner children; verify before interpreting timings as isolated. Graphics/desktop activity may also be included.',
             'result_payload_reservation_bytes_min': math.ceil(max(results) * 1.25) if results else None,
             'result_reservation_scope': 'Payload only; excludes model/decoder/process heaps and device memory. Do not treat this as a complete stage working-set estimate.',
             'device_headroom_bytes_suggested': margin,
@@ -111,6 +113,7 @@ def run_diagnostic(config_path, source_run, clip_id, stage, output_dir, *, mode=
               'automatic_resource_plan': False, 'configuration_modified': False}
     write_json(root / 'report.json', report)
     session = None
+    prepared = None
     started = time.perf_counter()
     try:
         config = load_config(str(config_path)).resolved()
@@ -225,11 +228,17 @@ def run_diagnostic(config_path, source_run, clip_id, stage, output_dir, *, mode=
                 session.close()
             except Exception as exc:
                 report.update(status='failed', cleanup_error=str(exc))
+        from egoworld.pipeline.input_cache import release_prepared_cache
+        try:
+            report['released_input_cache_bytes'] = release_prepared_cache(prepared)
+        except Exception as exc:
+            report.update(status='failed', cleanup_error=str(exc))
         report.update(finished_at=datetime.now(timezone.utc).isoformat(),
                       elapsed_seconds=time.perf_counter() - started,
                       recommendations=recommendations(report['trials'], stage))
         report['observed_identity_hash'] = digest({'measurement_fingerprint': report.get('measurement_fingerprint'),
-            'runtimes': [trial.get('runtime') for trial in report['trials']],
+            'runtimes': [{key: value for key, value in trial.get('runtime', {}).items() if key != 'process_id'}
+                         for trial in report['trials']],
             'devices': [trial.get('diagnostics', {}).get('device_uuid') for trial in report['trials']]})
         report['retained_artifact_bytes'] = sum(path.stat().st_size for path in root.rglob('*') if path.is_file())
         write_json(root / 'report.json', report)

@@ -41,6 +41,11 @@ class Model:
         with Path(INSTANCES).open('a') as stream: stream.write(str(os.getpid())+'\\n')
     def run(self, *args):
         with Path(CALLS).open('a') as stream: stream.write(str(os.getpid())+'\\n')
+        if self.params.get('cache_fixture'):
+            from egoworld.operators.common import frame_reader, read_frame
+            cap = frame_reader(args[1])
+            try: read_frame(cap, 0)
+            finally: cap.release()
         if self.params.get('fail'): raise RuntimeError('CUDA out of memory fixture')
         if self.params.get('hang'): time.sleep(30)
         if isinstance(args[0], dict):
@@ -112,6 +117,23 @@ def test_repeated_replay_runs_instead_of_accepting_target_commit(diagnostic_case
     assert len(case['calls'].read_text().splitlines()) == 2
     assert Path(one['report_path']).read_bytes() == first
     assert one['trials'][0]['stats']['model_cache_hit'] == two['trials'][0]['stats']['model_cache_hit'] == 0
+    assert one['trials'][0]['runtime']['process_id'] != two['trials'][0]['runtime']['process_id']
+    assert one['observed_identity_hash'] == two['observed_identity_hash']
+
+
+@pytest.mark.parametrize('fail', [False, True])
+def test_runner_cache_metrics_and_cleanup_survive_success_or_error(diagnostic_case, fail):
+    case = diagnostic_case
+    case['config'].extra['input_cache'] = {'enabled': True}
+    case['config'].operators.hamer.params.update(cache_fixture=True, fail=fail)
+    write_json(case['cfg'], asdict(case['config']))
+    report = case['run'](mode='probe', warmup=0, repeats=1)
+    assert report['status'] == ('failed' if fail else 'passed')
+    if not fail:
+        assert report['trials'][0]['stats']['input_cache_frame_misses'] == 1
+        assert report['trials'][1]['stats']['input_cache_frame_hits'] == 1
+    assert report['released_input_cache_bytes'] > 0
+    assert not list(Path(report['report_path']).parent.rglob('*.dat'))
 
 
 @pytest.mark.parametrize('damage', ['upstream', 'video', 'manifest', 'missing_commit', 'wrong_fingerprint'])
@@ -268,3 +290,36 @@ def test_runtime_identity_tracks_editable_model_source_changes(tmp_path, monkeyp
     first = model_source_identities()['hamer']['python_source_sha256']
     implementation.write_text('VERSION = 2')
     assert model_source_identities()['hamer']['python_source_sha256'] != first
+
+
+def test_nvml_real_sample_semantics_and_partial_failure(monkeypatch):
+    import types
+    from egoworld.diagnostics.observations import TrialObserver
+    monkeypatch.setenv('CUDA_VISIBLE_DEVICES', 'GPU-fixture')
+    monkeypatch.delitem(sys.modules, 'torch', raising=False)
+    fail = [False]
+    def memory(handle):
+        if fail[0]: raise RuntimeError('device disappeared')
+        return types.SimpleNamespace(total=1000, used=300, free=700)
+    nvml = types.SimpleNamespace(nvmlInit=lambda: None, nvmlShutdown=lambda: None,
+        nvmlSystemGetDriverVersion=lambda: 'fixture', nvmlDeviceGetHandleByUUID=lambda _: 'h',
+        nvmlDeviceGetUUID=lambda _: 'GPU-fixture', nvmlDeviceGetMemoryInfo=memory,
+        nvmlDeviceGetUtilizationRates=lambda _: types.SimpleNamespace(gpu=25),
+        nvmlDeviceGetPowerUsage=lambda _: 10000,
+        nvmlDeviceGetComputeRunningProcesses=lambda _: [types.SimpleNamespace(pid=123)])
+    monkeypatch.setitem(sys.modules, 'pynvml', nvml)
+    observer = TrialObserver(True, interval=60).__enter__()
+    data = observer.finish()
+    assert data['device_observation'] == 'nvml'
+    assert data['device_memory_coverage'] == 'from_trial_start'
+    assert data['device_memory_samples'] == 2
+    assert data['device_gpu_utilization_percent_mean'] == 25
+    assert data['device_power_watts_peak'] == 10
+    assert data['device_compute_pids_observed'] == [123]
+    observer = TrialObserver(True, interval=60).__enter__()
+    fail[0] = True
+    data = observer.finish()
+    assert data['device_observation'] == 'partial'
+    assert data['device_used_peak_bytes'] == 300
+    trial = {'status': 'passed', 'phase': 'cold', 'diagnostics': data}
+    assert recommendations([trial], 'hamer')['device_headroom_status'] == 'unknown'

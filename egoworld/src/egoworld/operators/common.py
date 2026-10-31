@@ -31,6 +31,11 @@ def rgbd_assets(path):
 
 
 def frame_reader(path):
+    from egoworld.pipeline.input_cache import CURRENT
+    cache = CURRENT.get()
+    if cache is not None and str(Path(path).resolve()) == cache.spec["video_path"]:
+        from egoworld.operators.cached_inputs import CachedFrameReader
+        return CachedFrameReader(path, cache)
     import cv2
     cap = cv2.VideoCapture(str(path))
     if not cap.isOpened():
@@ -39,6 +44,8 @@ def frame_reader(path):
 
 
 def read_frame(cap, index):
+    if hasattr(cap, "read_index"):
+        return cap.read_index(index)
     import cv2
     if int(cap.get(cv2.CAP_PROP_POS_FRAMES)) != index:
         cap.set(cv2.CAP_PROP_POS_FRAMES, index)

@@ -48,6 +48,8 @@ class HamerOperator:
                 dataset = ViTDetDataset(self.model_cfg, image, np.asarray([d["bbox_xyxy"] for d in detections]),
                                        np.asarray([int(s == "right") for s in sides]),
                                        rescale_factor=float(self.params.get("rescale_factor", 2.0)))
+                from egoworld.operators.cached_inputs import cached_hamer_dataset
+                dataset = cached_hamer_dataset(dataset)
                 loader = torch.utils.data.DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=0)
                 offset = 0
                 for batch in loader:

@@ -232,7 +232,8 @@ def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id
             summary["status"] = "interrupted" if isinstance(exc, KeyboardInterrupt) else "failed"
             raise
         finally:
-            for cleanup in ([backend.close] if backend else []) + ([ray.shutdown] if ray else []):
+            from egoworld.pipeline.input_cache import cache_root, clear_cache
+            for cleanup in ([backend.close] if backend else []) + ([ray.shutdown] if ray else []) + [lambda: clear_cache(cache_root(asdict(config), root / ".work"))]:
                 try:
                     cleanup()
                 except Exception as exc:

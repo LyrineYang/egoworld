@@ -164,6 +164,8 @@ class PipelineConfig:
         return resolved
 
     def validate(self) -> None:
+        from egoworld.pipeline.input_cache import options
+        options(self.extra)
         if not isinstance(self.num_gpus, int) or isinstance(self.num_gpus, bool) or self.num_gpus < 0:
             raise ValueError("num_gpus must be a nonnegative integer")
         for name in ("max_in_flight_cpu", "max_in_flight_gpu", "max_in_flight_write"):
