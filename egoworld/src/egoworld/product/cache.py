@@ -74,7 +74,7 @@ def stage_identity(config, provenance, stage, clip, upstream, runtime):
             except subprocess.CalledProcessError:
                 extras[key] = directory_identity(repo)
     return {"version": 1, "schema_version": OUTPUT_SCHEMA_VERSION, "stage": stage,
-            "source_tree_hash": provenance["source_tree_hash"], "models": config.model_versions,
+            "split_execution": config.execution.split_execution and stage in config.execution.split_stages, "source_tree_hash": provenance["source_tree_hash"], "models": config.model_versions,
             "params": params, "assets": assets, "extra_assets": extras, "runtime": runtime,
             "clip": {k: clip[k] for k in ("video_id", "clip_id", "frame_start", "frame_end", "fps", "video_sha256")},
             "upstream": upstream, "coordinates": asdict(config.coordinates)}

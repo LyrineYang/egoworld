@@ -1,0 +1,4342 @@
+{
+  "schema_version": 1,
+  "scope": "RTX 4060 Laptop 8 GiB; single GPU, fixed local samples; not server scaling or dataset accuracy evidence",
+  "source_tree_hash": "e94d1111efd4a19aff86fd2742a8b786374acc45614be8233ee780e614b26a19",
+  "source_snapshots": {
+    "v1": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/provenance/v1/source.json",
+      "sha256": "4f665ca383fc21dd84a69ea4c8e63c61d35d34e38a2c6ef0f1cb8b5d6206e860"
+    },
+    "v2": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/provenance/v2/source.json",
+      "sha256": "6688893a9f36a0128e9654fbe627c3e7d36bd90e247e9a13c83746c79ae13b23"
+    },
+    "v3": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/provenance/v3/source.json",
+      "sha256": "9827d02b8db3e60d8505fd3a444ed40843fc0d93b36a5c7955efa466e3086e46"
+    },
+    "v4": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/provenance/v4/source.json",
+      "sha256": "bfea6b507f00915b2abd22a5eacbcf9f93abb4bcc0ea0b07cefd78bcdaed627c"
+    }
+  },
+  "final_change_from_schedule_snapshot": [
+    "operators/hamer_op.py"
+  ],
+  "configuration_modified": false,
+  "native": {
+    "fast3r": {
+      "baseline": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v3/fast3r-baseline/20261101_111058_145404_734e52ba/report.json",
+        "report_sha256": "ec8163db99fe974042ea09fa108d9da80c8c84378119686df205c6012c1a1774",
+        "status": "passed",
+        "hot_seconds": [
+          2.4319933780006977,
+          2.5177364089995535,
+          2.4802808780004852
+        ],
+        "hot_median_seconds": 2.4802808780004852,
+        "gpu_step_hot_median_seconds": 2.4802808780004852,
+        "device_peak_bytes": 5406216192,
+        "cpu_runner_peak_bytes": 0,
+        "gpu_runner_peak_rss_bytes": 5675606016,
+        "spool_peak_bytes": 0,
+        "other_gpu_pids": [],
+        "source_tree_hash": "30fefc5d418287b8d435b8e4d3d12ad8f3f5ff4c2100fd6251a785b1409419ce",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 426,
+          "height": 206,
+          "frame_count": 30,
+          "upstream_rows": {}
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          15.174517460000061,
+          2.9412402769994515,
+          3.0169011159996444,
+          3.0828303799989953,
+          3.1709623250008008
+        ],
+        "hot_complete_trial_median_seconds": 3.0828303799989953,
+        "cold_worker_seconds": 11.404526940999858,
+        "hot_phase_wall_medians": {},
+        "output_rows": {
+          "reconstruction.parquet": 2
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "reconstruction.parquet.view_index": 0,
+              "reconstruction.parquet.camera_to_world": 0,
+              "reconstruction.parquet.intrinsics": 0,
+              "reconstruction-correspondences.npz.points": 0.0,
+              "reconstruction-correspondences.npz.confidence": 0.0,
+              "reconstruction-correspondences.npz.view_index": 0.0,
+              "reconstruction-correspondences.npz.source_pixel_xy": 0.0,
+              "reconstruction-pointcloud.npz.points": 0.0,
+              "reconstruction-pointcloud.npz.confidence": 0.0,
+              "reconstruction-pointcloud.npz.view_index": 0.0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "reconstruction.parquet.view_index": 0,
+              "reconstruction.parquet.camera_to_world": 0,
+              "reconstruction.parquet.intrinsics": 0,
+              "reconstruction-correspondences.npz.points": 0.0,
+              "reconstruction-correspondences.npz.confidence": 0.0,
+              "reconstruction-correspondences.npz.view_index": 0.0,
+              "reconstruction-correspondences.npz.source_pixel_xy": 0.0,
+              "reconstruction-pointcloud.npz.points": 0.0,
+              "reconstruction-pointcloud.npz.confidence": 0.0,
+              "reconstruction-pointcloud.npz.view_index": 0.0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "reconstruction.parquet.view_index": 0,
+              "reconstruction.parquet.camera_to_world": 0,
+              "reconstruction.parquet.intrinsics": 0,
+              "reconstruction-correspondences.npz.points": 0.0,
+              "reconstruction-correspondences.npz.confidence": 0.0,
+              "reconstruction-correspondences.npz.view_index": 0.0,
+              "reconstruction-correspondences.npz.source_pixel_xy": 0.0,
+              "reconstruction-pointcloud.npz.points": 0.0,
+              "reconstruction-pointcloud.npz.confidence": 0.0,
+              "reconstruction-pointcloud.npz.view_index": 0.0
+            }
+          }
+        ]
+      },
+      "profile": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v3-controls/fast3r-profile/20261101_120021_161712_adabcde1/report.json",
+        "report_sha256": "58aa92d279271df8568e10bdd2b5b8fafc891ab1dfe1cad1dcbae349b73e5f97",
+        "status": "passed",
+        "hot_seconds": [
+          2.636120936000225,
+          2.6543723529994168,
+          2.6684852420003153
+        ],
+        "hot_median_seconds": 2.6543723529994168,
+        "gpu_step_hot_median_seconds": 2.6543723529994168,
+        "device_peak_bytes": 5404938240,
+        "cpu_runner_peak_bytes": 0,
+        "gpu_runner_peak_rss_bytes": 5601755136,
+        "spool_peak_bytes": 0,
+        "other_gpu_pids": [],
+        "source_tree_hash": "30fefc5d418287b8d435b8e4d3d12ad8f3f5ff4c2100fd6251a785b1409419ce",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 426,
+          "height": 206,
+          "frame_count": 30,
+          "upstream_rows": {}
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          18.384628325999074,
+          3.307178147000741,
+          3.270904799001073,
+          3.2641310609997163,
+          3.2994573889991443
+        ],
+        "hot_complete_trial_median_seconds": 3.270904799001073,
+        "cold_worker_seconds": 14.074689252998724,
+        "hot_phase_wall_medians": {
+          "phase_artifact_hash_wall_seconds": 0.019427645000178018,
+          "phase_commit_wall_seconds": 0.009973283000363153,
+          "phase_forward_and_transfers_wall_seconds": 0.2726255959987611,
+          "phase_frame_read_wall_seconds": 0.021365348999097478,
+          "phase_jpeg_encode_wall_seconds": 0.0008167949999915436,
+          "phase_model_load_wall_seconds": 0.00013597699944511987,
+          "phase_official_preprocess_wall_seconds": 0.004665144000682631,
+          "phase_parquet_write_wall_seconds": 0.03218905000176164,
+          "phase_pnp_wall_seconds": 2.356653578000987,
+          "phase_prediction_arrays_wall_seconds": 3.692999962368049e-05,
+          "phase_reconstruction_postprocess_wall_seconds": 2.359199851000085,
+          "phase_runner_serialize_wall_seconds": 0.05454045800070162,
+          "phase_video_decode_wall_seconds": 0.007513870999900973,
+          "phase_video_seek_wall_seconds": 0.013784881999526988,
+          "phase_view_prepare_wall_seconds": 0.03751738800019666,
+          "phase_worker_request_wall_seconds": 2.6538757039998018
+        },
+        "output_rows": {
+          "reconstruction.parquet": 2
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "reconstruction.parquet.view_index": 0,
+              "reconstruction.parquet.camera_to_world": 0,
+              "reconstruction.parquet.intrinsics": 0,
+              "reconstruction-correspondences.npz.points": 0.0,
+              "reconstruction-correspondences.npz.confidence": 0.0,
+              "reconstruction-correspondences.npz.view_index": 0.0,
+              "reconstruction-correspondences.npz.source_pixel_xy": 0.0,
+              "reconstruction-pointcloud.npz.points": 0.0,
+              "reconstruction-pointcloud.npz.confidence": 0.0,
+              "reconstruction-pointcloud.npz.view_index": 0.0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "reconstruction.parquet.view_index": 0,
+              "reconstruction.parquet.camera_to_world": 0,
+              "reconstruction.parquet.intrinsics": 0,
+              "reconstruction-correspondences.npz.points": 0.0,
+              "reconstruction-correspondences.npz.confidence": 0.0,
+              "reconstruction-correspondences.npz.view_index": 0.0,
+              "reconstruction-correspondences.npz.source_pixel_xy": 0.0,
+              "reconstruction-pointcloud.npz.points": 0.0,
+              "reconstruction-pointcloud.npz.confidence": 0.0,
+              "reconstruction-pointcloud.npz.view_index": 0.0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "reconstruction.parquet.view_index": 0,
+              "reconstruction.parquet.camera_to_world": 0,
+              "reconstruction.parquet.intrinsics": 0,
+              "reconstruction-correspondences.npz.points": 0.0,
+              "reconstruction-correspondences.npz.confidence": 0.0,
+              "reconstruction-correspondences.npz.view_index": 0.0,
+              "reconstruction-correspondences.npz.source_pixel_xy": 0.0,
+              "reconstruction-pointcloud.npz.points": 0.0,
+              "reconstruction-pointcloud.npz.confidence": 0.0,
+              "reconstruction-pointcloud.npz.view_index": 0.0
+            }
+          }
+        ]
+      },
+      "split": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v4-final/fast3r-split/20261101_120333_791669_9f706696/report.json",
+        "report_sha256": "428b6f9bf3e958a8137eb6d2d6ca8d72d961238d13b498d9da13801fa1302564",
+        "status": "passed",
+        "hot_seconds": [
+          2.6771509160007554,
+          2.8905290010006865,
+          2.65845420000187
+        ],
+        "hot_median_seconds": 2.6771509160007554,
+        "gpu_step_hot_median_seconds": 0.32869004500025767,
+        "device_peak_bytes": 5404577792,
+        "cpu_runner_peak_bytes": 651681792,
+        "gpu_runner_peak_rss_bytes": 5720551424,
+        "spool_peak_bytes": 1606363,
+        "other_gpu_pids": [],
+        "source_tree_hash": "e94d1111efd4a19aff86fd2742a8b786374acc45614be8233ee780e614b26a19",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 426,
+          "height": 206,
+          "frame_count": 30,
+          "upstream_rows": {}
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          19.70995153000149,
+          4.692329917001189,
+          4.719414520999635,
+          4.800870054999905,
+          4.567184421001002
+        ],
+        "hot_complete_trial_median_seconds": 4.719414520999635,
+        "cold_worker_seconds": 13.293428380999103,
+        "hot_phase_wall_medians": {
+          "phase_artifact_hash_wall_seconds": 0.01987794200067583,
+          "phase_commit_wall_seconds": 0.01039748299990606,
+          "phase_forward_and_transfers_wall_seconds": 0.3127762519998214,
+          "phase_frame_read_wall_seconds": 0.019289978999950108,
+          "phase_jpeg_encode_wall_seconds": 0.0007655230001546443,
+          "phase_model_load_wall_seconds": 9.551400034979451e-05,
+          "phase_official_preprocess_wall_seconds": 0.005021640999984811,
+          "phase_parquet_write_wall_seconds": 0.03187701200113224,
+          "phase_pnp_wall_seconds": 2.2872346799995285,
+          "phase_prediction_arrays_wall_seconds": 3.947199911635835e-05,
+          "phase_reconstruction_postprocess_wall_seconds": 2.2898425189996487,
+          "phase_runner_serialize_wall_seconds": 0.060846948998005246,
+          "phase_spool_read_wall_seconds": 0.002182083999286988,
+          "phase_spool_write_wall_seconds": 0.0033676959992590128,
+          "phase_video_decode_wall_seconds": 0.0065672520013322355,
+          "phase_video_seek_wall_seconds": 0.01265367599989986,
+          "phase_view_prepare_wall_seconds": 0.03435805899971456,
+          "phase_worker_request_wall_seconds": 2.6762073269983375
+        },
+        "output_rows": {
+          "reconstruction.parquet": 2
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "reconstruction.parquet.view_index": 0,
+              "reconstruction.parquet.camera_to_world": 0,
+              "reconstruction.parquet.intrinsics": 0,
+              "reconstruction-correspondences.npz.points": 0.0,
+              "reconstruction-correspondences.npz.confidence": 0.0,
+              "reconstruction-correspondences.npz.view_index": 0.0,
+              "reconstruction-correspondences.npz.source_pixel_xy": 0.0,
+              "reconstruction-pointcloud.npz.points": 0.0,
+              "reconstruction-pointcloud.npz.confidence": 0.0,
+              "reconstruction-pointcloud.npz.view_index": 0.0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "reconstruction.parquet.view_index": 0,
+              "reconstruction.parquet.camera_to_world": 0,
+              "reconstruction.parquet.intrinsics": 0,
+              "reconstruction-correspondences.npz.points": 0.0,
+              "reconstruction-correspondences.npz.confidence": 0.0,
+              "reconstruction-correspondences.npz.view_index": 0.0,
+              "reconstruction-correspondences.npz.source_pixel_xy": 0.0,
+              "reconstruction-pointcloud.npz.points": 0.0,
+              "reconstruction-pointcloud.npz.confidence": 0.0,
+              "reconstruction-pointcloud.npz.view_index": 0.0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "reconstruction.parquet.view_index": 0,
+              "reconstruction.parquet.camera_to_world": 0,
+              "reconstruction.parquet.intrinsics": 0,
+              "reconstruction-correspondences.npz.points": 0.0,
+              "reconstruction-correspondences.npz.confidence": 0.0,
+              "reconstruction-correspondences.npz.view_index": 0.0,
+              "reconstruction-correspondences.npz.source_pixel_xy": 0.0,
+              "reconstruction-pointcloud.npz.points": 0.0,
+              "reconstruction-pointcloud.npz.confidence": 0.0,
+              "reconstruction-pointcloud.npz.view_index": 0.0
+            }
+          }
+        ]
+      }
+    },
+    "foundationpose": {
+      "baseline": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v3-controls/foundationpose-baseline/20261101_115655_699070_6d85c842/report.json",
+        "report_sha256": "bcec0c06e7eeaddbf266fc58cb2aecd68c8b820924a5ce957e076425c64b8a2b",
+        "status": "passed",
+        "hot_seconds": [
+          11.154878954999731,
+          10.290876867000406,
+          9.465996835000624
+        ],
+        "hot_median_seconds": 10.290876867000406,
+        "gpu_step_hot_median_seconds": 10.290876867000406,
+        "device_peak_bytes": 6463901696,
+        "cpu_runner_peak_bytes": 0,
+        "gpu_runner_peak_rss_bytes": 9916841984,
+        "spool_peak_bytes": 0,
+        "other_gpu_pids": [],
+        "source_tree_hash": "30fefc5d418287b8d435b8e4d3d12ad8f3f5ff4c2100fd6251a785b1409419ce",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 640,
+          "height": 480,
+          "frame_count": 3,
+          "upstream_rows": {
+            "sam2": {
+              "masks.parquet": 3,
+              "instances.parquet": 3,
+              "tracks.parquet": 3
+            }
+          }
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          25.417002049000075,
+          14.482433580000361,
+          11.71604957999989,
+          10.765548616998785,
+          9.896969131999867
+        ],
+        "hot_complete_trial_median_seconds": 10.765548616998785,
+        "cold_worker_seconds": 20.69419166300031,
+        "hot_phase_wall_medians": {},
+        "output_rows": {
+          "object_pose.parquet": 3
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "object_pose.parquet.transform": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "object_pose.parquet.transform": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "object_pose.parquet.transform": 0
+            }
+          }
+        ]
+      },
+      "profile": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v3-controls/foundationpose-profile/20261101_115816_216903_b3d28be3/report.json",
+        "report_sha256": "743d7fd2f3ad43522168c8426b0cc888ce1bc6f564bbb3a4e02a49109ec58c8c",
+        "status": "passed",
+        "hot_seconds": [
+          9.806196333000116,
+          8.951440867000201,
+          9.428812566999113
+        ],
+        "hot_median_seconds": 9.428812566999113,
+        "gpu_step_hot_median_seconds": 9.428812566999113,
+        "device_peak_bytes": 6463737856,
+        "cpu_runner_peak_bytes": 0,
+        "gpu_runner_peak_rss_bytes": 10177568768,
+        "spool_peak_bytes": 0,
+        "other_gpu_pids": [],
+        "source_tree_hash": "30fefc5d418287b8d435b8e4d3d12ad8f3f5ff4c2100fd6251a785b1409419ce",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 640,
+          "height": 480,
+          "frame_count": 3,
+          "upstream_rows": {
+            "sam2": {
+              "masks.parquet": 3,
+              "instances.parquet": 3,
+              "tracks.parquet": 3
+            }
+          }
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          25.352473802999157,
+          11.268374478000624,
+          10.346034609001435,
+          9.468515189000755,
+          9.960300341999755
+        ],
+        "hot_complete_trial_median_seconds": 9.960300341999755,
+        "cold_worker_seconds": 20.72511014200063,
+        "hot_phase_wall_medians": {
+          "phase_artifact_hash_wall_seconds": 0.006025251999744796,
+          "phase_commit_wall_seconds": 0.011257883001235314,
+          "phase_fp_register_including_render_wall_seconds": 1.9738796709989401,
+          "phase_fp_track_including_render_wall_seconds": 0.08319284499702917,
+          "phase_frame_read_wall_seconds": 0.00920795600177371,
+          "phase_mesh_load_wall_seconds": 0.3355232949998026,
+          "phase_model_load_wall_seconds": 0.00015229700147756375,
+          "phase_parquet_write_wall_seconds": 0.029190569001002586,
+          "phase_rgbd_prepare_wall_seconds": 0.043030045000705286,
+          "phase_runner_serialize_wall_seconds": 0.00018330899911234155,
+          "phase_upstream_read_wall_seconds": 0.007268229999681353,
+          "phase_video_decode_wall_seconds": 0.009070420001080493,
+          "phase_worker_request_wall_seconds": 9.428075797000929
+        },
+        "output_rows": {
+          "object_pose.parquet": 3
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "object_pose.parquet.transform": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "object_pose.parquet.transform": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "object_pose.parquet.transform": 0
+            }
+          }
+        ]
+      },
+      "split": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v4-final/foundationpose-split/20261101_120418_299367_7150b151/report.json",
+        "report_sha256": "ec7fba92aab3283a3ccf00788a330fa795b642afb0baf3f69bb19763f93926dc",
+        "status": "passed",
+        "hot_seconds": [
+          10.825221244000204,
+          9.402294088000417,
+          10.30986413699975
+        ],
+        "hot_median_seconds": 10.30986413699975,
+        "gpu_step_hot_median_seconds": 10.214404071999525,
+        "device_peak_bytes": 6463377408,
+        "cpu_runner_peak_bytes": 484859904,
+        "gpu_runner_peak_rss_bytes": 10346725376,
+        "spool_peak_bytes": 6453797,
+        "other_gpu_pids": [],
+        "source_tree_hash": "e94d1111efd4a19aff86fd2742a8b786374acc45614be8233ee780e614b26a19",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 640,
+          "height": 480,
+          "frame_count": 3,
+          "upstream_rows": {
+            "sam2": {
+              "masks.parquet": 3,
+              "instances.parquet": 3,
+              "tracks.parquet": 3
+            }
+          }
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          23.597871245001443,
+          14.13604373599992,
+          12.644226966000133,
+          11.21498018300008,
+          12.290283178001118
+        ],
+        "hot_complete_trial_median_seconds": 12.290283178001118,
+        "cold_worker_seconds": 16.81148935999954,
+        "hot_phase_wall_medians": {
+          "phase_artifact_hash_wall_seconds": 0.006539777999932994,
+          "phase_commit_wall_seconds": 0.012200332999782404,
+          "phase_fp_register_including_render_wall_seconds": 2.1541423769995163,
+          "phase_fp_track_including_render_wall_seconds": 0.08641802700003609,
+          "phase_frame_read_wall_seconds": 0.008713218998309458,
+          "phase_mesh_load_wall_seconds": 0.3863792799984367,
+          "phase_model_load_wall_seconds": 9.159600085695274e-05,
+          "phase_parquet_write_wall_seconds": 0.030150388998663402,
+          "phase_rgbd_prepare_wall_seconds": 0.04193778200169618,
+          "phase_runner_serialize_wall_seconds": 0.0006529229995066999,
+          "phase_spool_read_wall_seconds": 0.005400665000706795,
+          "phase_spool_write_wall_seconds": 0.009813307997319498,
+          "phase_upstream_read_wall_seconds": 0.0065959509993263055,
+          "phase_video_decode_wall_seconds": 0.00860894399920653,
+          "phase_worker_request_wall_seconds": 10.308656632998463
+        },
+        "output_rows": {
+          "object_pose.parquet": 3
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "object_pose.parquet.transform": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "object_pose.parquet.transform": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "object_pose.parquet.transform": 0
+            }
+          }
+        ]
+      }
+    },
+    "hamer": {
+      "baseline": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v4-final/hamer-baseline/20261101_120101_808578_fa0a26ac/report.json",
+        "report_sha256": "f5ed0a915fef83e46f2a8e7722c916302d2a5c1f1fc9fc1ba6e762638dff918c",
+        "status": "passed",
+        "hot_seconds": [
+          0.36701742200057197,
+          0.38851458200042543,
+          0.393343884999922
+        ],
+        "hot_median_seconds": 0.38851458200042543,
+        "gpu_step_hot_median_seconds": 0.38851458200042543,
+        "device_peak_bytes": 6887100416,
+        "cpu_runner_peak_bytes": 0,
+        "gpu_runner_peak_rss_bytes": 3746742272,
+        "spool_peak_bytes": 0,
+        "other_gpu_pids": [],
+        "source_tree_hash": "e94d1111efd4a19aff86fd2742a8b786374acc45614be8233ee780e614b26a19",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 426,
+          "height": 206,
+          "frame_count": 30,
+          "upstream_rows": {
+            "sam2": {
+              "masks.parquet": 30,
+              "instances.parquet": 60,
+              "tracks.parquet": 60
+            }
+          }
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          26.06955996099896,
+          0.916961925000578,
+          0.8629710969998996,
+          0.8706752479993156,
+          0.8975139660014975
+        ],
+        "hot_complete_trial_median_seconds": 0.8706752479993156,
+        "cold_worker_seconds": 22.375652951999655,
+        "hot_phase_wall_medians": {},
+        "output_rows": {
+          "hand_pose.parquet": 6
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "hand_pose.parquet.joints_3d": 0,
+              "hand_pose.parquet.global_orient": 0,
+              "hand_pose.parquet.mano_pose": 0,
+              "hand_pose.parquet.betas": 0,
+              "hand_pose.parquet.camera_translation": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "hand_pose.parquet.joints_3d": 0,
+              "hand_pose.parquet.global_orient": 0,
+              "hand_pose.parquet.mano_pose": 0,
+              "hand_pose.parquet.betas": 0,
+              "hand_pose.parquet.camera_translation": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "hand_pose.parquet.joints_3d": 0,
+              "hand_pose.parquet.global_orient": 0,
+              "hand_pose.parquet.mano_pose": 0,
+              "hand_pose.parquet.betas": 0,
+              "hand_pose.parquet.camera_translation": 0
+            }
+          }
+        ]
+      },
+      "profile": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v4-final/hamer-profile/20261101_120148_276522_9c346918/report.json",
+        "report_sha256": "410bb7dd3d005f1e667ae054535edb9549b37235259972b5bd3dae6abf23bc93",
+        "status": "passed",
+        "hot_seconds": [
+          0.3982897480000247,
+          0.4687066819988104,
+          0.43272009799875377
+        ],
+        "hot_median_seconds": 0.43272009799875377,
+        "gpu_step_hot_median_seconds": 0.43272009799875377,
+        "device_peak_bytes": 6887362560,
+        "cpu_runner_peak_bytes": 0,
+        "gpu_runner_peak_rss_bytes": 3746525184,
+        "spool_peak_bytes": 0,
+        "other_gpu_pids": [],
+        "source_tree_hash": "e94d1111efd4a19aff86fd2742a8b786374acc45614be8233ee780e614b26a19",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 426,
+          "height": 206,
+          "frame_count": 30,
+          "upstream_rows": {
+            "sam2": {
+              "masks.parquet": 30,
+              "instances.parquet": 60,
+              "tracks.parquet": 60
+            }
+          }
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          25.69396394999967,
+          0.8742502610002703,
+          1.0131661480008916,
+          1.0217371870003262,
+          1.016935174999162
+        ],
+        "hot_complete_trial_median_seconds": 1.016935174999162,
+        "cold_worker_seconds": 22.1026355160011,
+        "hot_phase_wall_medians": {
+          "phase_artifact_hash_wall_seconds": 0.0070945159986877115,
+          "phase_commit_wall_seconds": 0.011480736000521574,
+          "phase_crop_collate_wall_seconds": 0.008155606998116127,
+          "phase_crop_prepare_wall_seconds": 0.0005096290005894843,
+          "phase_d2h_wall_seconds": 0.004513308998866705,
+          "phase_forward_wall_seconds": 0.3286556509992806,
+          "phase_frame_read_wall_seconds": 0.06774812900039251,
+          "phase_h2d_wall_seconds": 0.004344194998338935,
+          "phase_hand_postprocess_wall_seconds": 0.0007197559989435831,
+          "phase_model_load_wall_seconds": 0.0007128719971660757,
+          "phase_parquet_write_wall_seconds": 0.039706102999844006,
+          "phase_runner_serialize_wall_seconds": 0.000710608999725082,
+          "phase_upstream_read_wall_seconds": 0.007651108000573004,
+          "phase_video_decode_wall_seconds": 0.007603268000821117,
+          "phase_video_seek_wall_seconds": 0.058320919999459875,
+          "phase_worker_request_wall_seconds": 0.4309427970001707
+        },
+        "output_rows": {
+          "hand_pose.parquet": 6
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "hand_pose.parquet.joints_3d": 0,
+              "hand_pose.parquet.global_orient": 0,
+              "hand_pose.parquet.mano_pose": 0,
+              "hand_pose.parquet.betas": 0,
+              "hand_pose.parquet.camera_translation": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "hand_pose.parquet.joints_3d": 0,
+              "hand_pose.parquet.global_orient": 0,
+              "hand_pose.parquet.mano_pose": 0,
+              "hand_pose.parquet.betas": 0,
+              "hand_pose.parquet.camera_translation": 0
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "hand_pose.parquet.joints_3d": 0,
+              "hand_pose.parquet.global_orient": 0,
+              "hand_pose.parquet.mano_pose": 0,
+              "hand_pose.parquet.betas": 0,
+              "hand_pose.parquet.camera_translation": 0
+            }
+          }
+        ]
+      },
+      "split": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v4-final/hamer-split/20261101_120233_455584_52cdf6bb/report.json",
+        "report_sha256": "92fa724dcfd4d5bbce41457fa6d92a2caada1603f1560df4f14d182c4cb9b8e2",
+        "status": "passed",
+        "hot_seconds": [
+          0.39206946900048933,
+          0.3990511950014479,
+          0.6111822070015478
+        ],
+        "hot_median_seconds": 0.3990511950014479,
+        "gpu_step_hot_median_seconds": 0.278912871999637,
+        "device_peak_bytes": 6883201024,
+        "cpu_runner_peak_bytes": 686899200,
+        "gpu_runner_peak_rss_bytes": 3692568576,
+        "spool_peak_bytes": 4722108,
+        "other_gpu_pids": [],
+        "source_tree_hash": "e94d1111efd4a19aff86fd2742a8b786374acc45614be8233ee780e614b26a19",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 426,
+          "height": 206,
+          "frame_count": 30,
+          "upstream_rows": {
+            "sam2": {
+              "masks.parquet": 30,
+              "instances.parquet": 60,
+              "tracks.parquet": 60
+            }
+          }
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          31.32663787799902,
+          2.171976817999166,
+          2.160892084999432,
+          2.150594179000109,
+          2.4273399020003126
+        ],
+        "hot_complete_trial_median_seconds": 2.160892084999432,
+        "cold_worker_seconds": 24.804147415001353,
+        "hot_phase_wall_medians": {
+          "phase_artifact_hash_wall_seconds": 0.006109780999395298,
+          "phase_commit_wall_seconds": 0.010123550000571413,
+          "phase_crop_collate_wall_seconds": 0.002926626999396831,
+          "phase_crop_prepare_wall_seconds": 0.00804528599655896,
+          "phase_d2h_wall_seconds": 0.001797824999812292,
+          "phase_forward_wall_seconds": 0.2592458319995785,
+          "phase_frame_read_wall_seconds": 0.06301762699877145,
+          "phase_h2d_wall_seconds": 0.002451218999340199,
+          "phase_hand_postprocess_wall_seconds": 0.00023585399867442902,
+          "phase_model_load_wall_seconds": 0.00021205800112511497,
+          "phase_parquet_write_wall_seconds": 0.03523225200115121,
+          "phase_runner_serialize_wall_seconds": 0.0010474379996594507,
+          "phase_spool_read_wall_seconds": 0.0041419179979129694,
+          "phase_spool_write_wall_seconds": 0.007315118002225063,
+          "phase_upstream_read_wall_seconds": 0.007159673999922234,
+          "phase_video_decode_wall_seconds": 0.007019873000899679,
+          "phase_video_seek_wall_seconds": 0.053964302998792846,
+          "phase_worker_request_wall_seconds": 0.39750844500122184
+        },
+        "output_rows": {
+          "hand_pose.parquet": 6
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "hand_pose.parquet.joints_3d": 4.470348358154297e-08,
+              "hand_pose.parquet.global_orient": 1.7881393432617188e-07,
+              "hand_pose.parquet.mano_pose": 1.1175870895385742e-06,
+              "hand_pose.parquet.betas": 1.0728836059570312e-06,
+              "hand_pose.parquet.camera_translation": 1.4593771346937956e-06
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "hand_pose.parquet.joints_3d": 4.470348358154297e-08,
+              "hand_pose.parquet.global_orient": 1.7881393432617188e-07,
+              "hand_pose.parquet.mano_pose": 1.1175870895385742e-06,
+              "hand_pose.parquet.betas": 1.0728836059570312e-06,
+              "hand_pose.parquet.camera_translation": 1.4593771346937956e-06
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "hand_pose.parquet.joints_3d": 4.470348358154297e-08,
+              "hand_pose.parquet.global_orient": 1.7881393432617188e-07,
+              "hand_pose.parquet.mano_pose": 1.1175870895385742e-06,
+              "hand_pose.parquet.betas": 1.0728836059570312e-06,
+              "hand_pose.parquet.camera_translation": 1.4593771346937956e-06
+            }
+          }
+        ]
+      }
+    },
+    "sam2": {
+      "baseline": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v3-controls/sam2-baseline/20261101_115541_498245_7d7ddbb0/report.json",
+        "report_sha256": "22348b989526e6e1caa7291a83d743c7ba33493aba8625f2314419cba41fb82e",
+        "status": "passed",
+        "hot_seconds": [
+          4.192670964001081,
+          4.080981365999833,
+          4.084820091999063
+        ],
+        "hot_median_seconds": 4.084820091999063,
+        "gpu_step_hot_median_seconds": 4.084820091999063,
+        "device_peak_bytes": 3325906944,
+        "cpu_runner_peak_bytes": 0,
+        "gpu_runner_peak_rss_bytes": 3466178560,
+        "spool_peak_bytes": 0,
+        "other_gpu_pids": [],
+        "source_tree_hash": "30fefc5d418287b8d435b8e4d3d12ad8f3f5ff4c2100fd6251a785b1409419ce",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 426,
+          "height": 206,
+          "frame_count": 30,
+          "upstream_rows": {}
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          13.594204451999758,
+          4.770786002000023,
+          4.714336209999601,
+          4.594501159999709,
+          4.612318330000562
+        ],
+        "hot_complete_trial_median_seconds": 4.612318330000562,
+        "cold_worker_seconds": 10.026526851001108,
+        "hot_phase_wall_medians": {},
+        "output_rows": {
+          "masks.parquet": 30,
+          "instances.parquet": 60,
+          "tracks.parquet": 60
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "instances.parquet.mask_rle": true,
+              "masks.parquet.mask_rle": true
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "instances.parquet.mask_rle": true,
+              "masks.parquet.mask_rle": true
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "instances.parquet.mask_rle": true,
+              "masks.parquet.mask_rle": true
+            }
+          }
+        ]
+      },
+      "profile": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v3-controls/sam2-profile/20261101_115618_320186_da627b55/report.json",
+        "report_sha256": "8b05bc45e152b12b3f25ca3f077a192322ed44a22d34dcc4b19ddcead1de1266",
+        "status": "passed",
+        "hot_seconds": [
+          4.01598538700091,
+          4.07210033299998,
+          4.158155039000121
+        ],
+        "hot_median_seconds": 4.07210033299998,
+        "gpu_step_hot_median_seconds": 4.07210033299998,
+        "device_peak_bytes": 3323744256,
+        "cpu_runner_peak_bytes": 0,
+        "gpu_runner_peak_rss_bytes": 3447431168,
+        "spool_peak_bytes": 0,
+        "other_gpu_pids": [],
+        "source_tree_hash": "30fefc5d418287b8d435b8e4d3d12ad8f3f5ff4c2100fd6251a785b1409419ce",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 426,
+          "height": 206,
+          "frame_count": 30,
+          "upstream_rows": {}
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          13.182097105000139,
+          4.774895107000702,
+          4.5273884479993285,
+          4.620287036999798,
+          4.753375272000994
+        ],
+        "hot_complete_trial_median_seconds": 4.620287036999798,
+        "cold_worker_seconds": 9.693595876999098,
+        "hot_phase_wall_medians": {
+          "phase_artifact_hash_wall_seconds": 0.01604213999780768,
+          "phase_commit_wall_seconds": 0.009927879998940625,
+          "phase_mask_d2h_wall_seconds": 1.3906083979982213,
+          "phase_mask_encode_wall_seconds": 0.025291701002061018,
+          "phase_model_load_wall_seconds": 0.00020469199989747722,
+          "phase_parquet_write_wall_seconds": 0.06772588700005144,
+          "phase_prompt_prepare_wall_seconds": 0.030751731001146254,
+          "phase_runner_serialize_wall_seconds": 0.0004402510003274074,
+          "phase_sam_propagate_wall_seconds": 1.8114394629938033,
+          "phase_sam_video_init_wall_seconds": 0.6081245090008451,
+          "phase_worker_request_wall_seconds": 4.069949923999957
+        },
+        "output_rows": {
+          "masks.parquet": 30,
+          "instances.parquet": 60,
+          "tracks.parquet": 60
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "instances.parquet.mask_rle": true,
+              "masks.parquet.mask_rle": true
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "instances.parquet.mask_rle": true,
+              "masks.parquet.mask_rle": true
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "instances.parquet.mask_rle": true,
+              "masks.parquet.mask_rle": true
+            }
+          }
+        ]
+      },
+      "split": {
+        "report_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/v4-final/sam2-split/20261101_120538_939648_1ecb495f/report.json",
+        "report_sha256": "e7eca49cdb637add3d5ac0eae8d749af7f14f504879e7ce6f53e9c8cf549fc71",
+        "status": "passed",
+        "hot_seconds": [
+          4.481215068002712,
+          4.276846155000385,
+          4.486776267001915
+        ],
+        "hot_median_seconds": 4.481215068002712,
+        "gpu_step_hot_median_seconds": 4.405761871001232,
+        "device_peak_bytes": 3316076544,
+        "cpu_runner_peak_bytes": 475414528,
+        "gpu_runner_peak_rss_bytes": 3410776064,
+        "spool_peak_bytes": 668266,
+        "other_gpu_pids": [],
+        "source_tree_hash": "e94d1111efd4a19aff86fd2742a8b786374acc45614be8233ee780e614b26a19",
+        "input_specification": {
+          "fps": 10.0,
+          "width": 426,
+          "height": 206,
+          "frame_count": 30,
+          "upstream_rows": {}
+        },
+        "model_cache_hits": [
+          0,
+          1,
+          1,
+          1,
+          1
+        ],
+        "trial_elapsed_seconds": [
+          19.804135755999596,
+          6.786663016999228,
+          6.2823343070012925,
+          6.1362141570007225,
+          6.359729824998794
+        ],
+        "hot_complete_trial_median_seconds": 6.2823343070012925,
+        "cold_worker_seconds": 12.597198894998655,
+        "hot_phase_wall_medians": {
+          "phase_artifact_hash_wall_seconds": 0.018060481997963507,
+          "phase_commit_wall_seconds": 0.011260559998845565,
+          "phase_mask_d2h_wall_seconds": 1.4585139579921815,
+          "phase_mask_encode_wall_seconds": 0.02328117800425389,
+          "phase_mask_pack_wall_seconds": 0.0006043669982318534,
+          "phase_model_load_wall_seconds": 0.00029368399918894283,
+          "phase_parquet_write_wall_seconds": 0.07643946700227389,
+          "phase_prompt_prepare_wall_seconds": 9.122999472310767e-06,
+          "phase_runner_serialize_wall_seconds": 0.0009013110011437675,
+          "phase_sam_propagate_wall_seconds": 1.8668226770005276,
+          "phase_sam_video_init_wall_seconds": 0.6796744780003792,
+          "phase_spool_read_wall_seconds": 0.0020151900007476797,
+          "phase_spool_write_wall_seconds": 0.0021305749996827217,
+          "phase_worker_request_wall_seconds": 4.479045910000423
+        },
+        "output_rows": {
+          "masks.parquet": 30,
+          "instances.parquet": 60,
+          "tracks.parquet": 60
+        },
+        "output_comparisons": [
+          {
+            "passed": true,
+            "differences": {
+              "instances.parquet.mask_rle": true,
+              "masks.parquet.mask_rle": true
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "instances.parquet.mask_rle": true,
+              "masks.parquet.mask_rle": true
+            }
+          },
+          {
+            "passed": true,
+            "differences": {
+              "instances.parquet.mask_rle": true,
+              "masks.parquet.mask_rle": true
+            }
+          }
+        ]
+      }
+    }
+  },
+  "native_v3_comparison": {
+    "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/comparison-v3.json",
+    "sha256": "90857d33212d82beaaf2937c065d44e9a3369cf75a5398fc3a6cbcebb13d9f62"
+  },
+  "final_native_comparison": {
+    "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/comparison-final.json",
+    "sha256": "c661f4011384baf83d5f96db8f18159fa124def2cdc2b59f1b76879f67c998ac"
+  },
+  "final_calibration": {
+    "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/calibration-final.json",
+    "sha256": "0d75125aa60744e6c6f95ec7b227aaacb025ab3e922eb9d654400c48015d4c1f"
+  },
+  "schedule_calibration": {
+    "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/calibration-v3.json",
+    "sha256": "b7abf6db20eac2e56e087d5f4f85d9da1b2fd0ae82399af176f8888e1af1b0ca"
+  },
+  "scheduling": {
+    "index": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/index.json",
+      "sha256": "8f24c678391c568d675bc68aef0217724f29343ff1ff5038d0646a4e17ee568d"
+    },
+    "runs": {
+      "baseline-w4": [
+        {
+          "variant": "baseline-w4",
+          "repeat": 0,
+          "run_id": "baseline-w4-r0-007160",
+          "elapsed_seconds": 122.53860881400033,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 81.58165085600012,
+          "clip_model_commit_latency_p95_seconds": 115.03012013435364,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/baseline-w4-r0-007160.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=baseline-w4-r0-007160/run_summary.json",
+            "sha256": "fbaed8ed2ba457ac5e634bf0bfff94bfb976df63f390769617e27967a528e6c4"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/baseline-w4-r0-007160.json",
+            "sha256": "971e7dca6b042a86da5e722b5b9253520848b71c326d248f329b5ae000930068"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 7826460672,
+            "device_peak_bytes": 5406478336,
+            "scratch_peak_bytes": 16835706,
+            "external_phase_peak_bytes": 0,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 110.964,
+          "unique_source_video_seconds_per_gpu_hour": 117.51398305702624,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 5.0,
+              "model_load_seconds": 23.423775811002997,
+              "inference_seconds": 52.977296951994504,
+              "runner_roundtrip_seconds": 52.967608948994894,
+              "write_seconds": 0.8922431130031327,
+              "spool_peak_bytes": null,
+              "result_peak_bytes": 185369
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 5.0,
+              "model_load_seconds": 20.816773593001926,
+              "inference_seconds": 55.10093357399819,
+              "runner_roundtrip_seconds": 55.09653268200054,
+              "write_seconds": 1.1427119550007774,
+              "spool_peak_bytes": null,
+              "result_peak_bytes": 623951
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 2,
+            "input": 0,
+            "post": 0,
+            "split_reserved_bytes": 0,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 9012559,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        },
+        {
+          "variant": "baseline-w4",
+          "repeat": 1,
+          "run_id": "baseline-w4-r1-eeeeb1",
+          "elapsed_seconds": 95.8783857769995,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 77.47391154199977,
+          "clip_model_commit_latency_p95_seconds": 88.45000195503235,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/baseline-w4-r1-eeeeb1.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=baseline-w4-r1-eeeeb1/run_summary.json",
+            "sha256": "85ad6a94d29bccdbed9d4eef86b8b21e4ee6baf7b8d327fe0beb0085048acca9"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/baseline-w4-r1-eeeeb1.json",
+            "sha256": "10281b3ec7f44425039fd125114be10793e17ce9a5d0693fc682d372d986f69e"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6258479104,
+            "device_peak_bytes": 5412507648,
+            "scratch_peak_bytes": 16838164,
+            "external_phase_peak_bytes": 0,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 86.606,
+          "unique_source_video_seconds_per_gpu_hour": 150.19026325174585,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 6.0,
+              "model_load_seconds": 13.710589012000128,
+              "inference_seconds": 41.30411963000006,
+              "runner_roundtrip_seconds": 41.29529595799977,
+              "write_seconds": 0.901381046998722,
+              "spool_peak_bytes": null,
+              "result_peak_bytes": 185369
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 6.0,
+              "model_load_seconds": 12.965269296002589,
+              "inference_seconds": 42.39920892400187,
+              "runner_roundtrip_seconds": 42.394402174997595,
+              "write_seconds": 1.1212873199983733,
+              "spool_peak_bytes": null,
+              "result_peak_bytes": 623951
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 2,
+            "input": 0,
+            "post": 0,
+            "split_reserved_bytes": 0,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 9012559,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ],
+      "heuristic-w1": [
+        {
+          "variant": "heuristic-w1",
+          "repeat": 0,
+          "run_id": "heuristic-w1-r0-82921c",
+          "elapsed_seconds": 201.13600663600118,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 150.11997175399847,
+          "clip_model_commit_latency_p95_seconds": 201.0943410396576,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/heuristic-w1-r0-82921c.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=heuristic-w1-r0-82921c/run_summary.json",
+            "sha256": "42cce8ead468779d368470510ef629f820d1ae563ba6e8102c96b143fe64faf9"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/heuristic-w1-r0-82921c.json",
+            "sha256": "607f12b2d1ca8bce1ca1a73cb6c86cea37d4b964cac5d0fa2f2f6285b5cf1955"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 8782897152,
+            "device_peak_bytes": 5406347264,
+            "scratch_peak_bytes": 24503114,
+            "external_phase_peak_bytes": 11421582,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 192.936,
+          "unique_source_video_seconds_per_gpu_hour": 71.59334741123648,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 56.345501752004566,
+              "inference_seconds": 83.54682658999627,
+              "runner_roundtrip_seconds": 104.93997771300201,
+              "write_seconds": 0.9085288919995946,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203331
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 61.22623860599924,
+              "inference_seconds": 118.65582273599466,
+              "runner_roundtrip_seconds": 139.04988344899903,
+              "write_seconds": 1.1885732569990068,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 633506
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 15,
+            "input": 2,
+            "post": 1,
+            "split_reserved_bytes": 1006632960,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 125829120,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        },
+        {
+          "variant": "heuristic-w1",
+          "repeat": 1,
+          "run_id": "heuristic-w1-r1-9e211c",
+          "elapsed_seconds": 202.4122986830007,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 150.63466632700147,
+          "clip_model_commit_latency_p95_seconds": 201.422101020813,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/heuristic-w1-r1-9e211c.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=heuristic-w1-r1-9e211c/run_summary.json",
+            "sha256": "d9333eb673b7c5927ceec3b758eed03c8dcb57f8d51a903d9ab25dfeb0d651aa"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/heuristic-w1-r1-9e211c.json",
+            "sha256": "71897e16a6d64ff594258e6abd9c9a8176746d2819a73efb33991058f79eafe5"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 8863170560,
+            "device_peak_bytes": 5412704256,
+            "scratch_peak_bytes": 24428611,
+            "external_phase_peak_bytes": 11421582,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 194.049,
+          "unique_source_video_seconds_per_gpu_hour": 71.14192217416561,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 56.89476453100178,
+              "inference_seconds": 84.66211635000036,
+              "runner_roundtrip_seconds": 104.96104949899927,
+              "write_seconds": 0.920893264001279,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203331
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 60.8513549470008,
+              "inference_seconds": 115.34758044600312,
+              "runner_roundtrip_seconds": 134.70438680599182,
+              "write_seconds": 1.158387256995411,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 633506
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 15,
+            "input": 2,
+            "post": 1,
+            "split_reserved_bytes": 1006632960,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 125829120,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ],
+      "heuristic-w4": [
+        {
+          "variant": "heuristic-w4",
+          "repeat": 0,
+          "run_id": "heuristic-w4-r0-161c65",
+          "elapsed_seconds": 88.24224799000149,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 53.13799923100123,
+          "clip_model_commit_latency_p95_seconds": 82.23317193984985,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/heuristic-w4-r0-161c65.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=heuristic-w4-r0-161c65/run_summary.json",
+            "sha256": "4fe5ec788a6853f5ee45999fc3b13d11da9c80176fa0d6dc0f0e99a3fef5918e"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/heuristic-w4-r0-161c65.json",
+            "sha256": "b706f138c11ebe1be7952ae9f88a421305dcfd0e5a02719fc55901c743c8b9c9"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6384451584,
+            "device_peak_bytes": 5407035392,
+            "scratch_peak_bytes": 24423531,
+            "external_phase_peak_bytes": 11332712,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 79.912,
+          "unique_source_video_seconds_per_gpu_hour": 163.18713913126544,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 6.0,
+              "model_load_seconds": 16.118075058002432,
+              "inference_seconds": 41.30516684500071,
+              "runner_roundtrip_seconds": 54.72490643800302,
+              "write_seconds": 0.9384145080020971,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203331
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 6.0,
+              "model_load_seconds": 15.899164628001017,
+              "inference_seconds": 70.30346058100076,
+              "runner_roundtrip_seconds": 85.19225198299318,
+              "write_seconds": 1.2404002179955569,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 14,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 939524096,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 117440512,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        },
+        {
+          "variant": "heuristic-w4",
+          "repeat": 1,
+          "run_id": "heuristic-w4-r1-01c0db",
+          "elapsed_seconds": 85.81342320099975,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 50.68957981600033,
+          "clip_model_commit_latency_p95_seconds": 78.17254996299744,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/heuristic-w4-r1-01c0db.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=heuristic-w4-r1-01c0db/run_summary.json",
+            "sha256": "ce3adcd22b79a73c79df22c2893ffabaa4c1199e923fed48da471f52ae57546b"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/heuristic-w4-r1-01c0db.json",
+            "sha256": "edec62278de13a1bc14412d3751389ec17490a4c32c350235e96de31f4388fd5"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6715256832,
+            "device_peak_bytes": 5412442112,
+            "scratch_peak_bytes": 24425140,
+            "external_phase_peak_bytes": 11332712,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 77.572,
+          "unique_source_video_seconds_per_gpu_hour": 167.8059150055237,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 6.0,
+              "model_load_seconds": 14.759851948998403,
+              "inference_seconds": 39.981722303000424,
+              "runner_roundtrip_seconds": 53.47496630999922,
+              "write_seconds": 0.9603444949989353,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203331
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 6.0,
+              "model_load_seconds": 15.180715766004141,
+              "inference_seconds": 67.94262335299754,
+              "runner_roundtrip_seconds": 83.08226498200384,
+              "write_seconds": 1.2368705049993878,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 14,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 939524096,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 117440512,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ],
+      "heuristic-w8": [
+        {
+          "variant": "heuristic-w8",
+          "repeat": 0,
+          "run_id": "heuristic-w8-r0-20deb4",
+          "elapsed_seconds": 70.37563284899989,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 40.32300855699941,
+          "clip_model_commit_latency_p95_seconds": 62.12999987602234,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/heuristic-w8-r0-20deb4.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=heuristic-w8-r0-20deb4/run_summary.json",
+            "sha256": "3835f4432adc1ba2fa7b97b5a27e8acca9833489a55b0d636a37415ea04049b5"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/heuristic-w8-r0-20deb4.json",
+            "sha256": "0a3185bd88096f26bd12fb211f27b664ed2be86197a179d7f96efa00881e69af"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6296608768,
+            "device_peak_bytes": 5406248960,
+            "scratch_peak_bytes": 24934125,
+            "external_phase_peak_bytes": 12465455,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 61.952,
+          "unique_source_video_seconds_per_gpu_hour": 204.6162772119873,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 6.938699742997414,
+              "inference_seconds": 31.382313819000046,
+              "runner_roundtrip_seconds": 39.18073436399936,
+              "write_seconds": 0.9100805999987642,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.639867041996695,
+              "inference_seconds": 45.915220273996965,
+              "runner_roundtrip_seconds": 55.235931954995976,
+              "write_seconds": 1.1939283609990525,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 15,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 1006632960,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 125829120,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        },
+        {
+          "variant": "heuristic-w8",
+          "repeat": 1,
+          "run_id": "heuristic-w8-r1-251fad",
+          "elapsed_seconds": 70.43820825299917,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 39.71109456100021,
+          "clip_model_commit_latency_p95_seconds": 61.565961837768555,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/heuristic-w8-r1-251fad.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=heuristic-w8-r1-251fad/run_summary.json",
+            "sha256": "e8b81259c0c2ed6c5c49418bef107ab3cc9e285d75997fc4a4e457da7cd129b5"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/heuristic-w8-r1-251fad.json",
+            "sha256": "c0dc57ad3b6a4a62f89171df40f0c8b2f50077cd7d8eef7571f924c9835bcc0c"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6168993792,
+            "device_peak_bytes": 5412507648,
+            "scratch_peak_bytes": 25166804,
+            "external_phase_peak_bytes": 12241830,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 61.045,
+          "unique_source_video_seconds_per_gpu_hour": 204.43450163124876,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 6.8734013799949025,
+              "inference_seconds": 31.029680657000426,
+              "runner_roundtrip_seconds": 42.35178128600455,
+              "write_seconds": 0.9636002160004864,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.475078176999887,
+              "inference_seconds": 56.04629671500152,
+              "runner_roundtrip_seconds": 68.62247958100488,
+              "write_seconds": 1.2256943520023924,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 14,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 939524096,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 117440512,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ],
+      "cost-all": [
+        {
+          "variant": "cost-all",
+          "repeat": 0,
+          "run_id": "cost-all-r0-627e31",
+          "elapsed_seconds": 71.01731866599948,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 40.8109616369984,
+          "clip_model_commit_latency_p95_seconds": 62.27762317657471,
+          "decision_count": 16,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/cost-all-r0-627e31.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=cost-all-r0-627e31/run_summary.json",
+            "sha256": "6f53fb1ccb3066117517ebc5b3c66b12f6e79d919511b557b55f8bf490844a85"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/cost-all-r0-627e31.json",
+            "sha256": "e433bf31423776f5286433cb834a1f2ce7a37b80545e7b79ce8dd2e0cc9af793"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6200692736,
+            "device_peak_bytes": 5404676096,
+            "scratch_peak_bytes": 24686321,
+            "external_phase_peak_bytes": 11902118,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 62.481,
+          "unique_source_video_seconds_per_gpu_hour": 202.767441386015,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 6.808513213005426,
+              "inference_seconds": 31.390545191996353,
+              "runner_roundtrip_seconds": 41.217547582993575,
+              "write_seconds": 1.0081461040026625,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.480469264999556,
+              "inference_seconds": 51.924356438996256,
+              "runner_roundtrip_seconds": 63.54980530100511,
+              "write_seconds": 1.2297465749998082,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 14,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 939524096,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 109167754,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        },
+        {
+          "variant": "cost-all",
+          "repeat": 1,
+          "run_id": "cost-all-r1-2da6bc",
+          "elapsed_seconds": 70.75571053699969,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 40.91727002100015,
+          "clip_model_commit_latency_p95_seconds": 60.28609108924866,
+          "decision_count": 16,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/cost-all-r1-2da6bc.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=cost-all-r1-2da6bc/run_summary.json",
+            "sha256": "d48e1e9f2a53b78656bddce62f0869d20ac4a779452bb45652c00d1a0f95be2f"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/cost-all-r1-2da6bc.json",
+            "sha256": "9cfcff7e419a4747bfef6269b004ed91bb265005fcdc96d6eb379e1c4fe154c2"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6350888960,
+            "device_peak_bytes": 5412245504,
+            "scratch_peak_bytes": 24686754,
+            "external_phase_peak_bytes": 11902118,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 62.435,
+          "unique_source_video_seconds_per_gpu_hour": 203.51714216013602,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 6.91670410900042,
+              "inference_seconds": 30.981121300999803,
+              "runner_roundtrip_seconds": 39.74740651000502,
+              "write_seconds": 0.9878860389999318,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.570561776001341,
+              "inference_seconds": 48.93022693000057,
+              "runner_roundtrip_seconds": 59.83919662799781,
+              "write_seconds": 1.202992467004151,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 16,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 1073741824,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 125849893,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ],
+      "cost-no-load": [
+        {
+          "variant": "cost-no-load",
+          "repeat": 0,
+          "run_id": "cost-no-load-r0-810a03",
+          "elapsed_seconds": 68.03035627999998,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 39.033565829999134,
+          "clip_model_commit_latency_p95_seconds": 57.75091910362244,
+          "decision_count": 16,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/cost-no-load-r0-810a03.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=cost-no-load-r0-810a03/run_summary.json",
+            "sha256": "bd77e6386140fef160690e026a2c804a9315f2749538f6d32c2ad9120cc5e709"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/cost-no-load-r0-810a03.json",
+            "sha256": "353023e8f91c210cc7f1f49ba5b3dce60fb173fa6a3b0ca06b45aa443c2c9b16"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 9259499520,
+            "device_peak_bytes": 5404741632,
+            "scratch_peak_bytes": 25324482,
+            "external_phase_peak_bytes": 12600676,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 59.664,
+          "unique_source_video_seconds_per_gpu_hour": 211.6702129374767,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 6.0,
+              "model_load_seconds": 15.65507059799529,
+              "inference_seconds": 40.10083068399763,
+              "runner_roundtrip_seconds": 52.7683042249937,
+              "write_seconds": 0.9040794849988742,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.648001810001006,
+              "inference_seconds": 52.414327796999714,
+              "runner_roundtrip_seconds": 63.23040180200405,
+              "write_seconds": 1.2848500949967274,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 15,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 1006632960,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 125829120,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        },
+        {
+          "variant": "cost-no-load",
+          "repeat": 1,
+          "run_id": "cost-no-load-r1-ef6697",
+          "elapsed_seconds": 65.65749819300072,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 37.087022955000066,
+          "clip_model_commit_latency_p95_seconds": 55.30114412307739,
+          "decision_count": 16,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/cost-no-load-r1-ef6697.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=cost-no-load-r1-ef6697/run_summary.json",
+            "sha256": "8e7bbedf2832b2205e4464af13b9ad96fc565b223441186cb0ec5de5a162f9f1"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/cost-no-load-r1-ef6697.json",
+            "sha256": "76b8fa67720fca9337c29ceb101dc5f12cf89c8ff82a39dbb36d2300799ec95d"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6674116608,
+            "device_peak_bytes": 5403922432,
+            "scratch_peak_bytes": 26907974,
+            "external_phase_peak_bytes": 14207039,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 57.14,
+          "unique_source_video_seconds_per_gpu_hour": 219.31996186743348,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 6.0,
+              "model_load_seconds": 14.358736102993134,
+              "inference_seconds": 38.2555782299969,
+              "runner_roundtrip_seconds": 50.473784084004365,
+              "write_seconds": 0.9038188589984202,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.489722095997422,
+              "inference_seconds": 51.0560577809938,
+              "runner_roundtrip_seconds": 61.62445077900156,
+              "write_seconds": 1.2862589880041924,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 15,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 1006632960,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 125829120,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ],
+      "cost-no-service": [
+        {
+          "variant": "cost-no-service",
+          "repeat": 0,
+          "run_id": "cost-no-service-r0-d9b2b0",
+          "elapsed_seconds": 69.88914097500128,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 39.97032312899864,
+          "clip_model_commit_latency_p95_seconds": 59.06436610221863,
+          "decision_count": 16,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/cost-no-service-r0-d9b2b0.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=cost-no-service-r0-d9b2b0/run_summary.json",
+            "sha256": "d379e9b3d56507ef0698afc1f30d24a0fe984b7a6bcb378b4db4b3f8c5b43e26"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/cost-no-service-r0-d9b2b0.json",
+            "sha256": "4df7b449da6ff6200933af03080e1056e62c76d38740aa05c349a5295cbe84df"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6349721600,
+            "device_peak_bytes": 5404839936,
+            "scratch_peak_bytes": 24686995,
+            "external_phase_peak_bytes": 11762153,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 61.296,
+          "unique_source_video_seconds_per_gpu_hour": 206.04059227385196,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 6.8803916049964755,
+              "inference_seconds": 30.85186122900268,
+              "runner_roundtrip_seconds": 41.67550805700557,
+              "write_seconds": 0.9960954030011635,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.614196564996746,
+              "inference_seconds": 53.50217038200208,
+              "runner_roundtrip_seconds": 66.0267023389988,
+              "write_seconds": 1.196853256000395,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 14,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 939524096,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 109167754,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        },
+        {
+          "variant": "cost-no-service",
+          "repeat": 1,
+          "run_id": "cost-no-service-r1-2ba670",
+          "elapsed_seconds": 71.18613989200094,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 40.377470141998856,
+          "clip_model_commit_latency_p95_seconds": 62.45529103279114,
+          "decision_count": 16,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/cost-no-service-r1-2ba670.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=cost-no-service-r1-2ba670/run_summary.json",
+            "sha256": "5ed3273f728ae5d3f706952576088eeffc46cbbaf3e37d664a4ab032edd8d064"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/cost-no-service-r1-2ba670.json",
+            "sha256": "0b19b1126616e6022a0ff949efe20a6a8c90a4c3957be6a8b0d16ccb48693e0f"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6377086976,
+            "device_peak_bytes": 5404577792,
+            "scratch_peak_bytes": 24686933,
+            "external_phase_peak_bytes": 11762153,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 62.847,
+          "unique_source_video_seconds_per_gpu_hour": 202.28656901254598,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.252109830000336,
+              "inference_seconds": 31.58126207799978,
+              "runner_roundtrip_seconds": 43.004681953994805,
+              "write_seconds": 0.9687365740010137,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.516499821000252,
+              "inference_seconds": 54.956050744000095,
+              "runner_roundtrip_seconds": 67.73739987599765,
+              "write_seconds": 1.2146663940002327,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 14,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 939524096,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 109167754,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ],
+      "cost-no-release": [
+        {
+          "variant": "cost-no-release",
+          "repeat": 0,
+          "run_id": "cost-no-release-r0-f607b3",
+          "elapsed_seconds": 71.60955558600108,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 40.327040464000675,
+          "clip_model_commit_latency_p95_seconds": 62.69292187690735,
+          "decision_count": 16,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/cost-no-release-r0-f607b3.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=cost-no-release-r0-f607b3/run_summary.json",
+            "sha256": "b1159e9eeb63222c80384dac2ec76906f2db4002ef0e31ff4df9a89070978c0e"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/cost-no-release-r0-f607b3.json",
+            "sha256": "c4f3d91503ef572ffcf7b76c6afbf973cb30ab49542d5c65dfa987aa6cc158f1"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6164103168,
+            "device_peak_bytes": 5405134848,
+            "scratch_peak_bytes": 24934391,
+            "external_phase_peak_bytes": 12465455,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 63.069,
+          "unique_source_video_seconds_per_gpu_hour": 201.09048132139296,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.037985618004313,
+              "inference_seconds": 30.968428732003304,
+              "runner_roundtrip_seconds": 38.95372155399491,
+              "write_seconds": 0.9654132219966414,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.961876593999477,
+              "inference_seconds": 46.424736314003894,
+              "runner_roundtrip_seconds": 55.91862972400122,
+              "write_seconds": 1.1878215960023226,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 15,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 1006632960,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 125829120,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        },
+        {
+          "variant": "cost-no-release",
+          "repeat": 1,
+          "run_id": "cost-no-release-r1-a349dc",
+          "elapsed_seconds": 70.78157759200076,
+          "unique_video_seconds": 4.0,
+          "queue_wait_p95_seconds": 39.82125852900026,
+          "clip_model_commit_latency_p95_seconds": 61.872374057769775,
+          "decision_count": 16,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/telemetry/cost-no-release-r1-a349dc.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/runs/run_id=cost-no-release-r1-a349dc/run_summary.json",
+            "sha256": "630ef2dfa9309ba338f11efedf6d2ec9fcd00d5a247eba8f22ec50eb8d29fc1b"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-persistent-v3/configs/cost-no-release-r1-a349dc.json",
+            "sha256": "4ba645aefe58d8ef046af88a317c3b797cee603104a616e910534b55ee88d0c8"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 6312292352,
+            "device_peak_bytes": 5405200384,
+            "scratch_peak_bytes": 24686897,
+            "external_phase_peak_bytes": 11902118,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 62.335,
+          "unique_source_video_seconds_per_gpu_hour": 203.44276702907774,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.011596637996263,
+              "inference_seconds": 31.00478807000036,
+              "runner_roundtrip_seconds": 41.08738350499698,
+              "write_seconds": 0.9807106879961793,
+              "spool_peak_bytes": 1332332,
+              "result_peak_bytes": 203672
+            },
+            "fast3r": {
+              "calls": 8,
+              "model_cache_hit": 7.0,
+              "model_load_seconds": 7.706755607001469,
+              "inference_seconds": 52.910647256006996,
+              "runner_roundtrip_seconds": 64.46214407299703,
+              "write_seconds": 1.1880844939951203,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 634035
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 8,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 14,
+            "input": 2,
+            "post": 2,
+            "split_reserved_bytes": 939524096,
+            "prepared_bytes": 12206745
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 109167754,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608
+            }
+          },
+          "verified_artifacts": 64,
+          "output_rows": {
+            "reconstruction.parquet": 16,
+            "masks.parquet": 175,
+            "instances.parquet": 275,
+            "tracks.parquet": 275
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 1.0,
+              "processed_frames": 0,
+              "expected_frames": 25,
+              "frame_coverage": 0.0,
+              "nonempty_instance_rows": 0,
+              "object_count": 0,
+              "empty_stages": [
+                "sam2"
+              ]
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 75,
+              "object_count": 3,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 50,
+              "object_count": 2,
+              "empty_stages": []
+            },
+            {
+              "status": "pass",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 25,
+              "expected_frames": 25,
+              "frame_coverage": 1.0,
+              "nonempty_instance_rows": 25,
+              "object_count": 1,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ]
+    },
+    "summary": {
+      "baseline-w4": {
+        "elapsed_seconds": [
+          122.53860881400033,
+          95.8783857769995
+        ],
+        "elapsed_median_seconds": 109.20849729549991,
+        "elapsed_min_max_seconds": [
+          95.8783857769995,
+          122.53860881400033
+        ],
+        "clip_commit_p95_seconds": [
+          115.03012013435364,
+          88.45000195503235
+        ],
+        "cold_model_calls": [
+          6.0,
+          4.0
+        ],
+        "peak_rss_bytes": 7826460672,
+        "device_peak_bytes": 5412507648,
+        "scratch_peak_bytes": 16838164,
+        "unique_source_video_seconds_per_gpu_hour": [
+          117.51398305702624,
+          150.19026325174585
+        ]
+      },
+      "heuristic-w1": {
+        "elapsed_seconds": [
+          201.13600663600118,
+          202.4122986830007
+        ],
+        "elapsed_median_seconds": 201.77415265950094,
+        "elapsed_min_max_seconds": [
+          201.13600663600118,
+          202.4122986830007
+        ],
+        "clip_commit_p95_seconds": [
+          201.0943410396576,
+          201.422101020813
+        ],
+        "cold_model_calls": [
+          16.0,
+          16.0
+        ],
+        "peak_rss_bytes": 8863170560,
+        "device_peak_bytes": 5412704256,
+        "scratch_peak_bytes": 24503114,
+        "unique_source_video_seconds_per_gpu_hour": [
+          71.59334741123648,
+          71.14192217416561
+        ]
+      },
+      "heuristic-w4": {
+        "elapsed_seconds": [
+          88.24224799000149,
+          85.81342320099975
+        ],
+        "elapsed_median_seconds": 87.02783559550062,
+        "elapsed_min_max_seconds": [
+          85.81342320099975,
+          88.24224799000149
+        ],
+        "clip_commit_p95_seconds": [
+          82.23317193984985,
+          78.17254996299744
+        ],
+        "cold_model_calls": [
+          4.0,
+          4.0
+        ],
+        "peak_rss_bytes": 6715256832,
+        "device_peak_bytes": 5412442112,
+        "scratch_peak_bytes": 24425140,
+        "unique_source_video_seconds_per_gpu_hour": [
+          163.18713913126544,
+          167.8059150055237
+        ]
+      },
+      "heuristic-w8": {
+        "elapsed_seconds": [
+          70.37563284899989,
+          70.43820825299917
+        ],
+        "elapsed_median_seconds": 70.40692055099953,
+        "elapsed_min_max_seconds": [
+          70.37563284899989,
+          70.43820825299917
+        ],
+        "clip_commit_p95_seconds": [
+          62.12999987602234,
+          61.565961837768555
+        ],
+        "cold_model_calls": [
+          2.0,
+          2.0
+        ],
+        "peak_rss_bytes": 6296608768,
+        "device_peak_bytes": 5412507648,
+        "scratch_peak_bytes": 25166804,
+        "unique_source_video_seconds_per_gpu_hour": [
+          204.6162772119873,
+          204.43450163124876
+        ]
+      },
+      "cost-all": {
+        "elapsed_seconds": [
+          71.01731866599948,
+          70.75571053699969
+        ],
+        "elapsed_median_seconds": 70.88651460149958,
+        "elapsed_min_max_seconds": [
+          70.75571053699969,
+          71.01731866599948
+        ],
+        "clip_commit_p95_seconds": [
+          62.27762317657471,
+          60.28609108924866
+        ],
+        "cold_model_calls": [
+          2.0,
+          2.0
+        ],
+        "peak_rss_bytes": 6350888960,
+        "device_peak_bytes": 5412245504,
+        "scratch_peak_bytes": 24686754,
+        "unique_source_video_seconds_per_gpu_hour": [
+          202.767441386015,
+          203.51714216013602
+        ]
+      },
+      "cost-no-load": {
+        "elapsed_seconds": [
+          68.03035627999998,
+          65.65749819300072
+        ],
+        "elapsed_median_seconds": 66.84392723650035,
+        "elapsed_min_max_seconds": [
+          65.65749819300072,
+          68.03035627999998
+        ],
+        "clip_commit_p95_seconds": [
+          57.75091910362244,
+          55.30114412307739
+        ],
+        "cold_model_calls": [
+          3.0,
+          3.0
+        ],
+        "peak_rss_bytes": 9259499520,
+        "device_peak_bytes": 5404741632,
+        "scratch_peak_bytes": 26907974,
+        "unique_source_video_seconds_per_gpu_hour": [
+          211.6702129374767,
+          219.31996186743348
+        ]
+      },
+      "cost-no-service": {
+        "elapsed_seconds": [
+          69.88914097500128,
+          71.18613989200094
+        ],
+        "elapsed_median_seconds": 70.53764043350111,
+        "elapsed_min_max_seconds": [
+          69.88914097500128,
+          71.18613989200094
+        ],
+        "clip_commit_p95_seconds": [
+          59.06436610221863,
+          62.45529103279114
+        ],
+        "cold_model_calls": [
+          2.0,
+          2.0
+        ],
+        "peak_rss_bytes": 6377086976,
+        "device_peak_bytes": 5404839936,
+        "scratch_peak_bytes": 24686995,
+        "unique_source_video_seconds_per_gpu_hour": [
+          206.04059227385196,
+          202.28656901254598
+        ]
+      },
+      "cost-no-release": {
+        "elapsed_seconds": [
+          71.60955558600108,
+          70.78157759200076
+        ],
+        "elapsed_median_seconds": 71.19556658900092,
+        "elapsed_min_max_seconds": [
+          70.78157759200076,
+          71.60955558600108
+        ],
+        "clip_commit_p95_seconds": [
+          62.69292187690735,
+          61.872374057769775
+        ],
+        "cold_model_calls": [
+          2.0,
+          2.0
+        ],
+        "peak_rss_bytes": 6312292352,
+        "device_peak_bytes": 5405200384,
+        "scratch_peak_bytes": 24934391,
+        "unique_source_video_seconds_per_gpu_hour": [
+          201.09048132139296,
+          203.44276702907774
+        ]
+      }
+    },
+    "common_output_rows": {
+      "reconstruction.parquet": 16,
+      "masks.parquet": 175,
+      "instances.parquet": 275,
+      "tracks.parquet": 275
+    }
+  },
+  "longer_rgb_chain": {
+    "index": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/index.json",
+      "sha256": "72448e85431ce54cd7a76a3d3f0421ef14336d0d810820347453c211a3109c9c"
+    },
+    "runs": {
+      "baseline-w4": [
+        {
+          "variant": "baseline-w4",
+          "repeat": 0,
+          "run_id": "baseline-w4-r0-f524b3",
+          "elapsed_seconds": 142.06273448200045,
+          "unique_video_seconds": 8.0,
+          "queue_wait_p95_seconds": 65.6595847130011,
+          "clip_model_commit_latency_p95_seconds": 122.03974103927612,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/telemetry/baseline-w4-r0-f524b3.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/run_summary.json",
+            "sha256": "0cfd120961b6056f45cf911a1f936be5f5572302fd388cad015b128e4c0cdba6"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/configs/baseline-w4-r0-f524b3.json",
+            "sha256": "4852a1743754ae753ad3c44d7c030a0fb8452746235688b4b5dd496e1b877bf5"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 14100537344,
+            "device_peak_bytes": 6890737664,
+            "scratch_peak_bytes": 26325704,
+            "external_phase_peak_bytes": 0,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 119.257,
+          "unique_source_video_seconds_per_gpu_hour": 202.7273380666131,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 1,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 9.413285619999442,
+              "inference_seconds": 65.59997738299899,
+              "runner_roundtrip_seconds": 65.58421623199865,
+              "write_seconds": 0.2494362130000809,
+              "spool_peak_bytes": null,
+              "result_peak_bytes": 1391225
+            },
+            "fast3r": {
+              "calls": 1,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 8.535579133000283,
+              "inference_seconds": 16.829007021000507,
+              "runner_roundtrip_seconds": 16.827678559999185,
+              "write_seconds": 0.13550741600010952,
+              "spool_peak_bytes": null,
+              "result_peak_bytes": 623477
+            },
+            "hamer": {
+              "calls": 1,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 18.899943386004452,
+              "inference_seconds": 33.78156474400021,
+              "runner_roundtrip_seconds": 33.77910003100078,
+              "write_seconds": 0.07664140999986557,
+              "spool_peak_bytes": null,
+              "result_peak_bytes": 825034
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 1,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 2,
+            "input": 0,
+            "post": 0,
+            "split_reserved_bytes": 0,
+            "prepared_bytes": 24211296
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 9779833,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608,
+              "hamer": 8388608
+            }
+          },
+          "verified_artifacts": 10,
+          "output_rows": {
+            "reconstruction.parquet": 2,
+            "hand_pose.parquet": 80,
+            "masks.parquet": 200,
+            "instances.parquet": 600,
+            "tracks.parquet": 600
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 200,
+              "expected_frames": 400,
+              "frame_coverage": 0.5,
+              "nonempty_instance_rows": 594,
+              "object_count": 3,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ],
+      "heuristic-w4": [
+        {
+          "variant": "heuristic-w4",
+          "repeat": 0,
+          "run_id": "heuristic-w4-r0-f46509",
+          "elapsed_seconds": 138.01656990799893,
+          "unique_video_seconds": 8.0,
+          "queue_wait_p95_seconds": 60.11135230099899,
+          "clip_model_commit_latency_p95_seconds": 115.10423803329468,
+          "decision_count": 0,
+          "telemetry_path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/telemetry/heuristic-w4-r0-f46509.json",
+          "summary": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=heuristic-w4-r0-f46509/run_summary.json",
+            "sha256": "c63d4ff54cf5c50ce82ffbf8166ab4d45001d2db3b0708a8a252c2b46a696e9b"
+          },
+          "config": {
+            "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/configs/heuristic-w4-r0-f46509.json",
+            "sha256": "5a7b430c4cd41aeddd2f87c1fc788674b483f35fc20bf02994cac8e7eb4b2902"
+          },
+          "telemetry": {
+            "sampling_interval_s": 0.2,
+            "scope": "coordinator process tree; entire CUDA device; run .work plus this run external phase namespaces",
+            "peak_rss_bytes": 13432315904,
+            "device_peak_bytes": 6891720704,
+            "scratch_peak_bytes": 90295723,
+            "external_phase_peak_bytes": 64568053,
+            "foreign_compute_pids": [],
+            "errors": []
+          },
+          "pipeline_elapsed_seconds": 113.992,
+          "unique_source_video_seconds_per_gpu_hour": 208.67059672036422,
+          "stage_metrics": {
+            "sam2": {
+              "calls": 1,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 10.039184830000522,
+              "inference_seconds": 62.17124840199722,
+              "runner_roundtrip_seconds": 64.63868184700004,
+              "write_seconds": 0.5078155179999158,
+              "spool_peak_bytes": 10658573,
+              "result_peak_bytes": 1471801
+            },
+            "fast3r": {
+              "calls": 1,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 11.053099026999917,
+              "inference_seconds": 20.5876951299997,
+              "runner_roundtrip_seconds": 23.93203174900009,
+              "write_seconds": 0.2119075319988042,
+              "spool_peak_bytes": 1606363,
+              "result_peak_bytes": 633478
+            },
+            "hamer": {
+              "calls": 1,
+              "model_cache_hit": 0.0,
+              "model_load_seconds": 21.568308774001707,
+              "inference_seconds": 38.27360775899797,
+              "runner_roundtrip_seconds": 41.60947062000014,
+              "write_seconds": 0.0817559720017016,
+              "spool_peak_bytes": 62961690,
+              "result_peak_bytes": 907939
+            }
+          },
+          "queue_peaks": {
+            "active_clips": 1,
+            "prepare": 1,
+            "compute": 1,
+            "uncommitted_results": 2,
+            "input": 2,
+            "post": 1,
+            "split_reserved_bytes": 536870912,
+            "prepared_bytes": 24211296
+          },
+          "memory_budget": {
+            "reserved_peak_bytes": 16777216,
+            "remaining_bytes": 0,
+            "stage_estimates_bytes": {
+              "sam2": 8388608,
+              "fast3r": 8388608,
+              "hamer": 8388608
+            }
+          },
+          "verified_artifacts": 10,
+          "output_rows": {
+            "reconstruction.parquet": 2,
+            "hand_pose.parquet": 80,
+            "masks.parquet": 200,
+            "instances.parquet": 600,
+            "tracks.parquet": 600
+          },
+          "quality": [
+            {
+              "status": "review",
+              "empty_mask_rate": 0.0,
+              "processed_frames": 200,
+              "expected_frames": 400,
+              "frame_coverage": 0.5,
+              "nonempty_instance_rows": 594,
+              "object_count": 3,
+              "empty_stages": []
+            }
+          ],
+          "retry_events": 0
+        }
+      ]
+    },
+    "summary": {
+      "baseline-w4": {
+        "elapsed_seconds": [
+          142.06273448200045
+        ],
+        "elapsed_median_seconds": 142.06273448200045,
+        "elapsed_min_max_seconds": [
+          142.06273448200045,
+          142.06273448200045
+        ],
+        "clip_commit_p95_seconds": [
+          122.03974103927612
+        ],
+        "cold_model_calls": [
+          3.0
+        ],
+        "peak_rss_bytes": 14100537344,
+        "device_peak_bytes": 6890737664,
+        "scratch_peak_bytes": 26325704,
+        "unique_source_video_seconds_per_gpu_hour": [
+          202.7273380666131
+        ]
+      },
+      "heuristic-w4": {
+        "elapsed_seconds": [
+          138.01656990799893
+        ],
+        "elapsed_median_seconds": 138.01656990799893,
+        "elapsed_min_max_seconds": [
+          138.01656990799893,
+          138.01656990799893
+        ],
+        "clip_commit_p95_seconds": [
+          115.10423803329468
+        ],
+        "cold_model_calls": [
+          3.0
+        ],
+        "peak_rss_bytes": 13432315904,
+        "device_peak_bytes": 6891720704,
+        "scratch_peak_bytes": 90295723,
+        "unique_source_video_seconds_per_gpu_hour": [
+          208.67059672036422
+        ]
+      }
+    },
+    "common_output_rows": {
+      "reconstruction.parquet": 2,
+      "hand_pose.parquet": 80,
+      "masks.parquet": 200,
+      "instances.parquet": 600,
+      "tracks.parquet": 600
+    }
+  },
+  "long_coverage": [
+    {
+      "variant": "baseline-w4",
+      "input_frames": 400,
+      "mask_rows": 200,
+      "hand_rows": 80,
+      "hand_ids": [
+        1,
+        2
+      ],
+      "instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "mask_frame_range": [
+        200,
+        399
+      ],
+      "hand_frame_range": [
+        200,
+        395
+      ]
+    },
+    {
+      "variant": "heuristic-w4",
+      "input_frames": 400,
+      "mask_rows": 200,
+      "hand_rows": 80,
+      "hand_ids": [
+        1,
+        2
+      ],
+      "instance_ids": [
+        1,
+        2,
+        3
+      ],
+      "mask_frame_range": [
+        200,
+        399
+      ],
+      "hand_frame_range": [
+        200,
+        395
+      ]
+    }
+  ],
+  "validation": {
+    "tests": 248,
+    "skipped": 0,
+    "junit": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/regression-clean.xml",
+      "sha256": "0385269acfbabf16e275d34ead00fac4c80be40652279320de89cae8fdb835d1"
+    },
+    "deselected": 11,
+    "wall_seconds": 214.18
+  },
+  "retained_exploration": {
+    "v1": "one array file per field/per-frame SAM mask; correct outputs but excessive mounted-filesystem IO",
+    "v2": "contiguous array blocks and grouped SAM masks; mounted-filesystem scratch",
+    "v3": "explicit local scratch and per-stage split; schedule snapshots match this package",
+    "empty_long_chain": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-persistent-v3/index.json",
+      "sha256": "d6cf8425871a750aced211bc3b27c4bdcb7e79620c858612d1a61f8e7bf6e681"
+    },
+    "per_task_schedule": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-v3/index.json",
+      "sha256": "e61b6c6d5cb6e8442fa7f4632d16ebaca3693491a28f9ed9c4614187fb1b04b3"
+    },
+    "per_task_interpretation": {
+      "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/scheduler-v3/interpretation.json",
+      "sha256": "36cd58553ee6fceb073cd5792215a3dc742f883111f244985770edbcf2e18de3"
+    }
+  },
+  "limits": [
+    "Two scheduling repetitions only, reversed variant order on repetition 2; cold process/startup costs included.",
+    "Seeded stage probes support numerical adapter equivalence; production scheduling PnP RNG is not fixed.",
+    "RSS sums processes and may count shared pages repeatedly; sampled peaks can miss transients; VRAM is device scope.",
+    "Retained prepared files count in scratch; release cost term retires active admission bytes, not physical disk when keep_prepared=true.",
+    "8-second/400-frame RGB case is longer than the short probes, not minutes/hours or TB-scale validation.",
+    "No physical multi-GPU, automated capacity tuning, shared SAM2 loader, global RAM/temp hard limit, or external-framework throughput comparison."
+  ],
+  "isolation_audit": {
+    "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/isolation-audit.json",
+    "sha256": "3c76419321013a80f762f897ff3a57592c374e195bb385c312eddfa886147af2",
+    "main_head_unchanged": true,
+    "main_tracked_diff_unchanged": true,
+    "imported_files_unchanged": true
+  },
+  "cleanup_audit": {
+    "external_phase_array_files_remaining": 0
+  }
+}

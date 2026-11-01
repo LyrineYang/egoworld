@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import numpy as np
+from egoworld.utils.timing import timed, phase
 
 
 def array(value):
@@ -13,6 +14,7 @@ def array(value):
     return np.asarray(value)
 
 
+@timed("upstream_read")
 def rows(receipts, stage, artifact, columns=None):
     import pyarrow.parquet as pq
     receipt = receipts[stage]
@@ -43,13 +45,16 @@ def frame_reader(path):
     return cap
 
 
+@timed("frame_read")
 def read_frame(cap, index):
     if hasattr(cap, "read_index"):
         return cap.read_index(index)
     import cv2
     if int(cap.get(cv2.CAP_PROP_POS_FRAMES)) != index:
-        cap.set(cv2.CAP_PROP_POS_FRAMES, index)
-    ok, frame = cap.read()
+        with phase("video_seek"):
+            cap.set(cv2.CAP_PROP_POS_FRAMES, index)
+    with phase("video_decode"):
+        ok, frame = cap.read()
     if not ok:
         raise ValueError(f"Cannot decode frame {index}")
     return frame

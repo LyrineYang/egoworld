@@ -63,7 +63,7 @@ def diagnostic(args):
     from egoworld.diagnostics.replay import run_diagnostic
     result = run_diagnostic(args.config, args.source_run, args.clip_id, args.stage, args.output_dir,
         mode="probe" if args.command == "gpu-probe" else "replay", warmup=args.warmup, repeats=args.repeats,
-        gpu_device=args.gpu_device, timeout_s=args.timeout_s,
+        gpu_device=args.gpu_device, timeout_s=args.timeout_s, random_seed=args.seed,
         video_manifest=args.video_manifest, clip_manifest=args.clip_manifest)
     print(json.dumps(result, indent=2))
     if result["status"] != "passed":
@@ -117,6 +117,14 @@ def build_parser() -> argparse.ArgumentParser:
     sub = parser.add_subparsers(dest="command")
     from egoworld.product.cli import add_parser
     add_parser(sub)
+
+    calibrate_cmd = sub.add_parser("schedule-calibrate", help="Build an explicit scheduler cost profile from verified gpu-probe reports")
+    calibrate_cmd.add_argument("--reports", nargs="+", required=True)
+    calibrate_cmd.add_argument("--output", required=True)
+    def calibrate(args):
+        from egoworld.diagnostics.calibration import build_calibration
+        print(json.dumps(build_calibration(args.reports, args.output), indent=2))
+    calibrate_cmd.set_defaults(func=calibrate)
 
     manifest = sub.add_parser("make-manifest", help="Build manifests")
     manifest.add_argument("--config", required=True)
@@ -178,6 +186,7 @@ def build_parser() -> argparse.ArgumentParser:
         command.add_argument("--output-dir", required=True, help="Each invocation creates a new subdirectory")
         command.add_argument("--video-manifest", help="Original manifest, required when it cannot be located automatically")
         command.add_argument("--clip-manifest", help="Original manifest, required when it cannot be located automatically")
+        command.add_argument("--seed", type=int, help="Optional diagnostic-only random seed; retained in the report")
         command.add_argument("--gpu-device", type=int, default=0, help="Index within the current CUDA_VISIBLE_DEVICES (default: 0)")
         command.add_argument("--timeout-s", type=float, help="Per-call runner timeout, including the cold startup")
         if name == "gpu-probe":

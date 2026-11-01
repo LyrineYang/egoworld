@@ -49,7 +49,7 @@ def provenance(config, videos, clips):
         code_hash = "unavailable"
     identity = {"source_tree_hash": digest.hexdigest(), "git_commit": code_hash, "local_assets": assets,
                 "input_manifests": {"videos": sha256_file(videos), "clips": sha256_file(clips)}}
-    behavior = {"operators": asdict(config.operators), "coordinates": asdict(config.coordinates),
+    behavior = {"operators": asdict(config.operators), "split_stages": sorted(config.execution.split_stages) if config.execution.split_execution else [], "coordinates": asdict(config.coordinates),
                 "metrics": asdict(config.metrics), "dataset_hash": config.dataset_hash,
                 "model_versions": config.model_versions, "schema": OUTPUT_SCHEMA_VERSION, **identity}
     identity["fingerprint"] = hashlib.sha256(json.dumps(behavior, sort_keys=True).encode()).hexdigest()

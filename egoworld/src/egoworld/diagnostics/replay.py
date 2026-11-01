@@ -95,7 +95,9 @@ def _freeze_depth(config, clip, directory, inputs):
 
 def run_diagnostic(config_path, source_run, clip_id, stage, output_dir, *, mode='replay',
                    warmup=1, repeats=3, gpu_device=0, timeout_s=None,
-                   video_manifest=None, clip_manifest=None):
+                   video_manifest=None, clip_manifest=None, random_seed=None):
+    if random_seed is not None and (not isinstance(random_seed, int) or isinstance(random_seed, bool) or not 0 <= random_seed < 2**32):
+        raise ValueError('random_seed must be an unsigned 32-bit integer')
     if stage not in STAGE_DEPENDENCIES or mode not in ('replay', 'probe'):
         raise ValueError('Unknown diagnostic mode or stage')
     if not isinstance(warmup, int) or isinstance(warmup, bool) or warmup < 0 or not isinstance(repeats, int) or isinstance(repeats, bool) or repeats < 1:
@@ -110,9 +112,10 @@ def run_diagnostic(config_path, source_run, clip_id, stage, output_dir, *, mode=
     report = {'version': 1, 'invocation_id': identifier, 'mode': mode, 'stage': stage,
               'status': 'running', 'started_at': datetime.now(timezone.utc).isoformat(),
               'report_path': str(root / 'report.json'), 'trials': [],
-              'automatic_resource_plan': False, 'configuration_modified': False}
+              'automatic_resource_plan': False, 'configuration_modified': False, 'random_seed': random_seed}
     write_json(root / 'report.json', report)
     session = None
+    cpu_session = None
     prepared = None
     started = time.perf_counter()
     try:
@@ -155,7 +158,7 @@ def run_diagnostic(config_path, source_run, clip_id, stage, output_dir, *, mode=
         selected['debug_dir'] = str(root / 'debug')
         if stage == 'foundationpose':
             lineage['depth_sha256_by_frame'] = _freeze_depth(snapshot, clip, inputs_dir, inputs)
-        job = {'clip': clip, 'stage': stage, 'work_dir': str(root / 'prepared'), 'directory': str(root / 'outputs')}
+        job = {'clip': clip, 'stage': stage, 'invocation_id': identifier, 'work_dir': str(root / 'prepared'), 'directory': str(root / 'outputs')}
         prepare_started = time.perf_counter()
         prepared = PrepareActor(snapshot).prepare(job)
         if sha256_file(clip['video_path']) != lineage['video']['checksum']:
@@ -169,7 +172,7 @@ def run_diagnostic(config_path, source_run, clip_id, stage, output_dir, *, mode=
         report['input_specification']['upstream_rows'] = {name: {file: info.get('rows') for file, info in receipt['files'].items()}
                                                         for name, receipt in inputs.items()}
         report['measurement_fingerprint'] = digest({'identity': identity, 'lineage': lineage,
-            'prepared_sha256': report['prepared_sha256'], 'config': supplied, 'gpu_environment': environment})
+            'prepared_sha256': report['prepared_sha256'], 'config': supplied, 'gpu_environment': environment, 'random_seed': random_seed})
         job['fingerprint'] = report['measurement_fingerprint']
         write_json(root / 'config.execution.json', snapshot)
         write_json(root / 'report.json', report)
@@ -183,16 +186,51 @@ def run_diagnostic(config_path, source_run, clip_id, stage, output_dir, *, mode=
             record = {'index': number, 'phase': phase, 'status': 'running', 'directory': str(trial_dir)}
             report['trials'].append(record)
             write_json(root / 'report.json', report)
-            trial_job = dict(job, directory=str(trial_dir / 'outputs'), work_dir=str(trial_dir / 'work'))
+            trial_job = dict(job, directory=str(trial_dir / 'outputs'), work_dir=str(trial_dir / 'work'), trial=number)
             request, response = trial_dir / 'request.json', trial_dir / 'response.json'
             write_json(request, {'config': snapshot, 'job': trial_job, 'prepared': prepared,
-                                 'inputs': inputs, 'diagnostics': True})
+                                 'inputs': inputs, 'diagnostics': True, 'random_seed': random_seed})
             trial_started = time.perf_counter()
             try:
                 if session is None:
                     session = RunnerSession(command, stage, root / 'logs', config.execution.worker_threads,
                                             environment=environment, working_dir=params.get('working_dir'))
-                packet = session.run(request, response, timeout)
+                if config.execution.split_execution and stage in config.execution.split_stages:
+                    if cpu_session is None:
+                        cpu_session = RunnerSession(command, stage, root / 'logs' / 'cpu', config.execution.worker_threads,
+                            environment=dict(environment, CUDA_VISIBLE_DEVICES=''), working_dir=params.get('working_dir'))
+                    phase_packet, observed = None, []
+                    for operation in ('input', 'infer', 'post'):
+                        phase_dir = trial_dir / operation; phase_dir.mkdir()
+                        phase_job = dict(trial_job, _operation=operation)
+                        phase_prepared = dict(prepared)
+                        if phase_packet is not None:
+                            phase_prepared['_phase_input'] = phase_packet
+                        phase_request, phase_response = phase_dir / 'request.json', phase_dir / 'response.json'
+                        write_json(phase_request, {'config': snapshot, 'job': phase_job, 'prepared': phase_prepared,
+                                                  'inputs': inputs, 'diagnostics': True, 'random_seed': random_seed})
+                        phase_packet = (session if operation == 'infer' else cpu_session).run(phase_request, phase_response, timeout)
+                        observed.append({'operation': operation, 'request': str(phase_request), 'response': str(phase_response),
+                            'diagnostics': phase_packet.get('diagnostics', {}), 'runtime': phase_packet.get('runtime', {}),
+                            'error': phase_packet.get('error')})
+                        record['phase_observations'] = observed
+                        if 'error' in phase_packet:
+                            break
+                        if builtin and phase_packet.get('runtime', {}).get('source_tree_hash') != source_identity():
+                            raise ValueError('Split runner source differs from the diagnostic coordinator')
+                    packet = phase_packet
+                    if 'error' not in packet:
+                        gpu_observation = next(o for o in observed if o['operation'] == 'infer')
+                        packet['runtime'] = gpu_observation['runtime']
+                        diagnostic = dict(gpu_observation['diagnostics'])
+                        diagnostic['gpu_step_wall_seconds'] = diagnostic['synchronized_stage_wall_seconds']
+                        diagnostic['synchronized_stage_wall_seconds'] = sum(o['diagnostics']['synchronized_stage_wall_seconds'] for o in observed)
+                        diagnostic['cpu_process_peak_rss_bytes'] = max(o['diagnostics'].get('process_tree_peak_rss_bytes') or 0 for o in observed if o['operation'] != 'infer')
+                        diagnostic['rss_scope'] = 'GPU runner peak plus separate CPU runner peak; not a simultaneous whole-pipeline RSS measurement'
+                        packet['diagnostics'] = diagnostic
+                    write_json(response, packet)
+                else:
+                    packet = session.run(request, response, timeout)
                 record['runner_roundtrip_seconds'] = time.perf_counter() - trial_started
                 for name in ('diagnostics', 'runtime'):
                     if name in packet:
@@ -223,11 +261,16 @@ def run_diagnostic(config_path, source_run, clip_id, stage, output_dir, *, mode=
         report.update(status='interrupted' if isinstance(exc, KeyboardInterrupt) else 'failed',
                       error={'type': type(exc).__name__, 'message': str(exc)})
     finally:
-        if session is not None:
-            try:
-                session.close()
-            except Exception as exc:
-                report.update(status='failed', cleanup_error=str(exc))
+        for runner in (session, cpu_session):
+            if runner is not None:
+                try:
+                    runner.close()
+                except Exception as exc:
+                    report.update(status='failed', cleanup_error=str(exc))
+        from egoworld.pipeline.spool import release_spool
+        if 'config' in locals():
+            for trial in root.glob('trials/*'):
+                release_spool(vars(config.execution), str(trial / 'work'), stage)
         from egoworld.pipeline.input_cache import release_prepared_cache
         try:
             report['released_input_cache_bytes'] = release_prepared_cache(prepared)

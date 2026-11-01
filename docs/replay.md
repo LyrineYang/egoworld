@@ -93,7 +93,8 @@ GPU 名称/容量/架构（可用时）、设备 UUID 与驱动（可用时）�
 
 - `runner_roundtrip_seconds`：从协调端发起到返回完整结果，包括冷进程启动、协议和结果序列化。
 - `synchronized_stage_wall_seconds`：模型进程内阶段调用墙钟；已有 CUDA 工作在边界显式同步。
-  它包含加载、解码、预处理、GPU 运算和后处理，**不是纯 GPU 前向时间**。当前尚未对各模型内部逐项插桩。
+  它包含加载、解码、预处理、GPU 运算和后处理，**不是纯 GPU 前向时间**。
+  可显式启用 `phase_profiling` 查看内部区间；区间可能重叠，不能相加推算利用率。
 - `model_load_seconds`、`model_cache_hit`、`process_cpu_seconds`、`result_bytes`：复用现有算子/runner 统计。
 - `write_seconds`：本次独立 Writer 的写出时间；固定输入准备时间单独记录，不混入热模型时间。
 - `process_tree_peak_rss_bytes`：Linux `/proc` 采样的模型进程及后代 RSS 总和；共享页可能重复计数，短峰值可能漏掉。
@@ -120,6 +121,15 @@ NVML 绑定可用 `pip install '.[diagnostics]'` 安装到**实际模型 runner*
 若显式启用 [共享输入缓存](input-cache.md)，同一探针的冷调用构建输入缓存，预热/热调用可复用；
 因此必须将“仅模型热”和“模型与输入都热”两种实验分开。用两份显式实验配置做开/关对照，生产配置不自动改变。
 每次调用保留命中/淘汰/构建/读写统计，退出清除缓存数据并记录 `released_input_cache_bytes`，其它可追溯产物保留。
+
+可选的 `execution.split_execution` 复用现有 runner 协议，把所选阶段分成 CPU 输入、GPU 推理和 CPU 后处理。
+每次 trial 额外保留 `input/`、`infer/`、`post/` 的请求、响应与运行身份。
+此时 `gpu_step_wall_seconds` 只覆盖 GPU worker 的步骤；`synchronized_stage_wall_seconds` 是三个 worker 步骤墙钟之和，
+不含全部进程启动、协议与 Writer 成本。完整 trial 用 `elapsed_seconds` 比较。
+CPU/GPU runner RSS 分开记录，两个峰值之和不是同时内存峰值。临时交接块退出后回收，原始报告和输出继续保留。
+
+`replay` / `gpu-probe` 的 `--seed 0` 可显式固定 Python、NumPy、Torch 和 OpenCV 随机源，便于数值回归；
+不保证所有第三方 GPU 算子严格确定性。执行配置、预算及校准命令见 [执行设计](throughput-execution.md)。
 
 ## 建议的边界
 

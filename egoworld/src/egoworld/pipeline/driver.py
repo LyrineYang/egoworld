@@ -223,6 +223,7 @@ def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id
             else:
                 backend = backend_factory(asdict(config))
             engine = Engine(config, backend, fingerprint, emit)
+            engine.invocation_id = invocation_id
             summary.update(engine.run(itertools.chain([first], source)))
             summary["status"] = "failed" if summary["failed_clips"] else "passed"
         except BaseException as exc:
@@ -233,7 +234,13 @@ def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id
             raise
         finally:
             from egoworld.pipeline.input_cache import cache_root, clear_cache
-            for cleanup in ([backend.close] if backend else []) + ([ray.shutdown] if ray else []) + [lambda: clear_cache(cache_root(asdict(config), root / ".work"))]:
+            def clear_phase_scratch():
+                from egoworld.pipeline.spool import release_spool
+                for folder in (root / ".work").glob("*"):
+                    if folder.is_dir():
+                        for stage in GPU_STAGES:
+                            release_spool(vars(config.execution), str(folder), stage)
+            for cleanup in ([backend.close] if backend else []) + ([ray.shutdown] if ray else []) + [lambda: clear_cache(cache_root(asdict(config), root / ".work")), clear_phase_scratch]:
                 try:
                     cleanup()
                 except Exception as exc:

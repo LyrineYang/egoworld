@@ -13,11 +13,18 @@ def execute(request_path, response_path, actor=None):
     request = json.loads(Path(request_path).read_text())
     request["config"]["operators"][request["job"]["stage"]]["params"].pop("runner_command", None)
     actor = actor or ModelActor(request["config"])
+    if request.get('random_seed') is not None:
+        seed = request['random_seed']
+        import random
+        import cv2
+        import torch
+        random.seed(seed); np.random.seed(seed); torch.manual_seed(seed)
+        cv2.setRNGSeed(seed % (2**31 - 1))
     observer = None
     if request.get("diagnostics"):
         from egoworld.contracts import GPU_STAGES
         from egoworld.diagnostics.observations import TrialObserver, runtime_identity
-        observer = TrialObserver(request["job"]["stage"] in GPU_STAGES).__enter__()
+        observer = TrialObserver(request["job"]["stage"] in GPU_STAGES and request["job"].get("_operation") not in ("input", "post")).__enter__()
     try:
         packet = actor.process(request["job"], request["prepared"], request["inputs"])
     except Exception as exc:
@@ -33,12 +40,19 @@ def execute(request_path, response_path, actor=None):
     if observer:
         packet["diagnostics"] = observer.finish()
         packet["runtime"] = runtime_identity()
+    serialize_start = time.perf_counter()
     files = {}
     for name, arrays in packet.pop("arrays", {}).items():
         file = Path(response_path).parent / name
         np.savez_compressed(file, **arrays)
         files[name] = str(file.resolve())
     packet["array_files"] = files
+    if request["config"]["execution"].get("phase_profiling"):
+        # Includes NPZ encoding and JSON conversion, excludes the last small
+        # response-file publication (measured by the parent's runner roundtrip).
+        json.dumps(packet)
+        stats = packet.setdefault("stats", {})
+        stats["phase_runner_serialize_wall_seconds"] = stats.get("phase_runner_serialize_wall_seconds", 0.) + time.perf_counter() - serialize_start
     write_json(response_path, packet)
     return actor, True
 

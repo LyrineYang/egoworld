@@ -42,7 +42,8 @@
 | Fast3R | 共享解码帧；保留 JPEG 和官方 loader，避免未经对照改变像素/预处理语义 |
 | SAM2 | 暂保留官方 loader 专用解码路径，未实现与其它模型共用视频状态 |
 
-本版没有跨重叠 clip 的源帧去重，也没有 CPU 预取池或跨帧 HaMeR batch。
+缓存本身没有跨重叠 clip 的源帧去重。CPU 输入池与跨帧 HaMeR batch 已由可选的阶段拆分实现，
+它们不依赖启用缓存，也不会让 SAM2 官方 loader 自动共享其它模型的解码结果。
 共享帧要求解码器构建身份相同；不同 OpenCV/FFmpeg 构建使用不同键，避免把潜在像素差异静默混在一起。
 本机 HaMeR/Fast3R 环境都是 OpenCV 4.11；FoundationPose 是 4.14，因而它能复用自身重复调用的帧，
 但不会命中前两者生成的帧。若要在这些异构环境间也只解码一次，需要先统一并验证解码环境，
@@ -76,6 +77,10 @@ crop 当前主要用于同一输入重复诊断、重试或同 run 再消费；�
 复制出的帧、DataLoader batch、模型私有堆、操作系统页缓存和 CUDA 显存**不受它硬限制**。
 没有新增常驻 Python 数组 LRU；实际主机余量仍须结合进程树 RSS、并发 worker 数和原有反压预算判断。
 这完成了有界输入缓存的机制，没有完成第五部分 E 的全进程 RAM/全临时盘统一准入。
+
+阶段拆分另有短生命周期的 `split_block_bytes`、`split_stage_bytes`、`split_total_bytes` 与
+`split_directory`，用于 CPU/GPU 交接。这些块不是输入缓存，不参与跨阶段命中；由逻辑阶段的
+提交、失败及 driver 清理释放。两层预算均需纳入机器容量评估，详见 [执行设计](throughput-execution.md)。
 
 ## 可观测性
 

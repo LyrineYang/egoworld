@@ -4,6 +4,7 @@ from egoworld.utils.performance import timed_load
 from pathlib import Path
 import sys
 import numpy as np
+from egoworld.utils.timing import phase, timed
 from egoworld.operators.common import frame_reader, read_frame, rows, decode_rle, rgbd_assets
 
 
@@ -25,8 +26,7 @@ class FoundationPoseOperator:
             self.glctx = dr.RasterizeCudaContext()
         return FoundationPose
 
-    def run(self, clip, video_path, inputs):
-        import trimesh
+    def prepare_frames(self, clip, video_path, inputs):
         assets = rgbd_assets(self.params["assets_manifest"])
         video_assets = assets.get(clip["video_id"])
         if not video_assets:
@@ -37,18 +37,13 @@ class FoundationPoseOperator:
         depth_scale = float(video_assets["depth_scale_to_meters"])
         if not np.isfinite(depth_scale) or depth_scale <= 0:
             raise ValueError("depth_scale_to_meters must be positive")
-        objects = self.params["objects"]
-        cls = self._load()
-        trackers, output, meshes = {}, [], {}
-        cached_frame, image, depth = None, None, None
+        selected = [row for row in rows(inputs, "sam2", "instances")
+                    if row["label"] in self.params["objects"] and row["area_px"]]
+        from itertools import groupby
         cap = frame_reader(video_path)
         try:
-            for row in sorted(rows(inputs, "sam2", "instances"), key=lambda r: (r["frame_index"], r["object_id"])):
-                if row["label"] not in objects or not row["area_px"]:
-                    continue
-                spec = objects[row["label"]]
-                frame = row["frame_index"]
-                if frame != cached_frame:
+            for frame, detections in groupby(sorted(selected, key=lambda r: (r["frame_index"], r["object_id"])), key=lambda r: r["frame_index"]):
+                with phase("rgbd_prepare"):
                     depth_path = video_assets["depth_pattern"].format(frame_index=frame)
                     if Path(depth_path).suffix == ".npy":
                         depth = np.load(depth_path, allow_pickle=False).astype(np.float32) * depth_scale
@@ -61,14 +56,32 @@ class FoundationPoseOperator:
                     image = read_frame(cap, frame - clip["frame_start"])[..., ::-1].copy()
                     if depth.shape != image.shape[:2] or not np.isfinite(depth).all() or np.any(depth < 0):
                         raise ValueError("Depth must be finite and aligned to RGB resolution")
-                    cached_frame = frame
+                yield {"intrinsics": intrinsics, "image": image, "depth": depth, "rows": list(detections)}
+        finally:
+            cap.release()
+
+    def infer_frames(self, batches):
+        import trimesh
+        from itertools import chain
+        batches = iter(batches)
+        first = next(batches, None)  # validates calibration before any GPU load
+        if first is None:
+            return {"tables": {"object_pose": []}}
+        batches = chain([first], batches)
+        cls = self._load()
+        trackers, output, meshes = {}, [], {}
+        for data in batches:
+            intrinsics, image, depth = data["intrinsics"], data["image"], data["depth"]
+            for row in data["rows"]:
+                frame, spec = row["frame_index"], self.params["objects"][row["label"]]
                 if row["object_id"] not in trackers:
                     mesh_scale = float(spec["mesh_scale_to_meters"])
                     if not np.isfinite(mesh_scale) or mesh_scale <= 0:
                         raise ValueError("mesh_scale_to_meters must be finite and positive")
                     key = (spec["mesh_path"], mesh_scale)
                     if key not in meshes:
-                        mesh = trimesh.load(spec["mesh_path"], force="mesh")
+                        with phase("mesh_load"):
+                            mesh = trimesh.load(spec["mesh_path"], force="mesh")
                         mesh.apply_scale(mesh_scale)
                         meshes[key] = mesh
                     mesh = meshes[key].copy()  # trackers may mutate meshes; never share their state
@@ -78,15 +91,18 @@ class FoundationPoseOperator:
                     mask = decode_rle(row["mask_rle"])
                     if mask.shape != depth.shape or not np.any((depth > 0) & mask):
                         raise ValueError("Registration mask must align with RGB-D and contain valid depth")
-                    pose = tracker.register(K=intrinsics, rgb=image.copy(), depth=depth.copy(), ob_mask=mask,
-                                            iteration=int(self.params.get("register_iterations", 5)))
+                    with phase("fp_register_including_render", cuda=True):
+                        pose = tracker.register(K=intrinsics, rgb=image.copy(), depth=depth.copy(), ob_mask=mask,
+                                                iteration=int(self.params.get("register_iterations", 5)))
                     trackers[row["object_id"]] = tracker
                 else:
-                    pose = trackers[row["object_id"]].track_one(rgb=image.copy(), depth=depth.copy(), K=intrinsics,
-                                                        iteration=int(self.params.get("track_iterations", 2)))
+                    with phase("fp_track_including_render", cuda=True):
+                        pose = trackers[row["object_id"]].track_one(rgb=image.copy(), depth=depth.copy(), K=intrinsics,
+                                                            iteration=int(self.params.get("track_iterations", 2)))
                 output.append({"frame_index": frame, "timestamp_s": row["timestamp_s"],
                     "object_id": row["object_id"], "label": row["label"], "transform": np.asarray(pose).reshape(-1).tolist(),
                     "coord_frame": "object_to_camera", "length_unit": "meters", "mesh_path": spec["mesh_path"]})
-        finally:
-            cap.release()
         return {"tables": {"object_pose": output}}
+
+    def run(self, clip, video_path, inputs):
+        return self.infer_frames(self.prepare_frames(clip, video_path, inputs))

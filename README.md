@@ -31,7 +31,7 @@ The engineering contribution is the path from model predictions to a recoverable
 | One expensive stage fails after others finish | Per-stage commits, schema/hash validation, dependency-aware invalidation | Reuse valid stages and rebuild affected descendants; preserve independent branches |
 | Models disagree about formats, frames, and scale | Shared output contracts with source frame/time and explicit coordinate, unit, and scale fields | Join annotations by source frame and interpret their geometry correctly |
 
-**Research focus: scheduling under model-switch and resource costs.** The current scheduler combines completion events, model reuse, waiting protection, and bounded admission. The next question is whether measured switching costs, stage durations, and intermediate-data pressure can improve useful throughput over these fixed heuristics while preserving output quality and recovery. This is proposed research; target-hardware gains have not been established. See the [comparison and validation method](docs/design.md#11-调度作为突破点研究问题与验证方法).
+**Research focus: scheduling under model-switch and resource costs.** The default scheduler combines completion events, model reuse, waiting protection, and bounded admission. Optional CPU/GPU phase execution and an explicitly calibrated cost policy now allow measured switching costs, stage durations, and intermediate-data pressure to influence scheduling. They preserve logical stage commits and do not automatically change resources, precision, or sampling. Target-server gains have not been established. See the [execution guide](docs/throughput-execution.md) and [comparison method](docs/design.md#11-调度作为突破点研究问题与验证方法).
 
 **Design insight: time alignment and geometry alignment are different problems.** Source frame indices let you associate observations across stages. A shared metric world frame still requires calibration and scale alignment. EgoWorld records the existing conventions so downstream work can make that distinction. See the [engineering rationale and research opportunities](docs/overview.md#7-项目定位工程贡献与研究-insight).
 
@@ -143,6 +143,8 @@ The detailed guides are currently maintained in Chinese.
 | [Output reference](docs/outputs.md) | Model-to-output mapping, coordinate frames, units, and required assets |
 | [Data recipes](docs/data-recipes.md) | Selectable data types, shared kernels, verified cache reuse, wrist coordinates and metric world exports |
 | [Architecture](docs/design.md) | Scheduling, resource limits, stage commits, and throughput design |
+| [Phase execution](docs/throughput-execution.md) | Optional CPU/GPU steps, bounded handoffs, profiling, and explicit cost calibration |
+| [Throughput validation](docs/throughput-validation.md) | Native output checks, single-GPU scheduling ablations, resource peaks, and limitations |
 | [Testing](docs/testing.md) | CPU checks, Ray integration, real-model smoke tests, and verification boundaries |
 | [Requirements](docs/requirements.md) | Supported scope and its implementation and test coverage |
 
