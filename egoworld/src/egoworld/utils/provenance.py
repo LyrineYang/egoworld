@@ -31,6 +31,18 @@ def provenance(config, videos, clips):
                     if file.is_file() and file.suffix in (".safetensors", ".bin", ".json"):
                         assets[str(file.resolve())] = {"sha256": sha256_file(str(file))}
         visit(operator["params"])
+        if stage == "hamer":
+            # load_hamer derives these paths instead of receiving them as
+            # explicit operator parameters. They still change model behavior.
+            params = operator["params"]
+            checkpoint = Path(params["checkpoint"])
+            root = Path(params.get("working_dir", Path.cwd()))
+            implicit = {"model_config": checkpoint.parent.parent / "model_config.yaml",
+                        "mano_right": root / "_DATA/data/mano/MANO_RIGHT.pkl",
+                        "mano_mean_params": root / "_DATA/data/mano_mean_params.npz"}
+            for name, file in implicit.items():
+                assets[f"hamer.implicit.{name}"] = {"path": str(file.resolve()),
+                    "sha256": sha256_file(str(file)) if file.is_file() else None}
     try:
         code_hash = subprocess.run(["git", "rev-parse", "HEAD"], cwd=package, check=True, capture_output=True, text=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):

@@ -46,10 +46,12 @@ class Fast3ROperator:
         cap = frame_reader(video_path)
         try:
             with tempfile.TemporaryDirectory(prefix="egoworld-fast3r-") as folder:
-                files = []
+                files, source_sizes = [], []
                 for index in indices:
                     path = str(Path(folder) / f"{index:09d}.jpg")
-                    if not cv2.imwrite(path, read_frame(cap, int(index))):
+                    frame = read_frame(cap, int(index))
+                    source_sizes.append((frame.shape[1], frame.shape[0]))
+                    if not cv2.imwrite(path, frame):
                         raise IOError(f"Cannot write sampled view {path}")
                     files.append(path)
                 images = load_images(files, size=int(self.params.get("image_size", 512)), verbose=False)
@@ -68,7 +70,7 @@ class Fast3ROperator:
         calibrated = "metric_scale" in self.params
         if not np.isfinite(scale) or scale <= 0 or (calibrated and not self.params.get("metric_scale_source")):
             raise ValueError("Metric scaling requires a positive factor and metric_scale_source")
-        output, points, confidences, point_views = [], [], [], []
+        output, points, confidences, point_views, source_pixels = [], [], [], [], []
         budget = int(self.params.get("max_points", 100000))
         if budget < views:
             raise ValueError("max_points must be at least max_views")
@@ -98,6 +100,15 @@ class Fast3ROperator:
             points.append(xyz.reshape(-1, 3)[selected] * scale)
             confidences.append(confidence.ravel()[selected])
             point_views.append(np.full(len(selected), j, dtype=np.int32))
-        return {"tables": {"reconstruction": output}, "arrays": {"reconstruction-pointcloud.npz": {
-            "points": np.concatenate(points), "confidence": np.concatenate(confidences), "view_index": np.concatenate(point_views)}},
+            if self.params.get("save_correspondences", False):
+                from egoworld.product.geometry import fast3r_source_pixels
+                pixels = np.stack([selected % width, selected // width], axis=1)
+                source_pixels.append(fast3r_source_pixels(pixels, source_sizes[j],
+                    int(self.params.get("image_size", 512)), (width, height)))
+        arrays = {"reconstruction-pointcloud.npz": {
+            "points": np.concatenate(points), "confidence": np.concatenate(confidences), "view_index": np.concatenate(point_views)}}
+        if source_pixels:
+            arrays["reconstruction-correspondences.npz"] = {
+                **arrays["reconstruction-pointcloud.npz"], "source_pixel_xy": np.concatenate(source_pixels)}
+        return {"tables": {"reconstruction": output}, "arrays": arrays,
             "stats": {"views": len(output), "points": sum(map(len, points))}}

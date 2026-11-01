@@ -1,0 +1,19 @@
+version: 1
+config: ../configs/rgb.json
+inputs: [../../data/samples/epic-dough-3s.mp4]
+outputs: [robot_joints]
+output_dir: /mnt/d/EgoWorld/runs/data
+cache:
+  root: /mnt/d/EgoWorld/cache/stages
+operators:
+  sam2:
+    prompting:
+      prompt_text: 'hand .'
+      box_threshold: 0.22
+      text_threshold: 0.22
+      max_boxes_per_frame: 4
+  hamer:
+    object_ids: [1, 2]
+    handedness_by_id: {'1': right, '2': left}
+  dex_retarget:
+    input_transform: dex_wrist

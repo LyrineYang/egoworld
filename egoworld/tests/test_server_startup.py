@@ -32,6 +32,7 @@ def server_case(tmp_path):
     hand = config["operators"]["hamer"]["params"]
     hand.update(checkpoint=file("hamer/_DATA/hamer_ckpts/checkpoints/hamer.ckpt"), working_dir=str(tmp_path / "hamer"))
     file("hamer/_DATA/hamer_ckpts/model_config.yaml"); file("hamer/_DATA/data/mano/MANO_RIGHT.pkl")
+    file("hamer/_DATA/data/mano_mean_params.npz")
     pose = config["operators"]["foundationpose"]["params"]
     pose.update(repo_path=str(tmp_path / "fp"), assets_manifest=file("assets.json", json.dumps({"v": {
         "intrinsics": [100, 0, 32, 0, 100, 32, 0, 0, 1], "depth_pattern": "depth/{frame_index:09d}.npy", "depth_scale_to_meters": .001}})))
@@ -55,7 +56,22 @@ def test_static_assets_for_all_enabled_models_without_gpu(server_case):
     assert report["ok"], [c for c in report["checks"] if not c["ok"]]
 
 
-@pytest.mark.parametrize("missing", ["sam2.pt", "hamer/_DATA/data/mano/MANO_RIGHT.pkl", "fp/weights/2024-01-11-20-02-45/model_best.pth", "robots/hand.urdf", "fast3r/model.safetensors"])
+def test_runner_python_keeps_virtual_environment_symlink(tmp_path):
+    import venv
+
+    environment = tmp_path / "isolated environment"
+    venv.EnvBuilder(with_pip=False, symlinks=True).create(environment)
+    python = environment / "bin/python"
+    config = tmp_path / "config.json"
+    config.write_text(json.dumps({"operators": {"sam2": {"params": {
+        "runner_command": [str(python), "-c", "import sys; print(sys.prefix)"]}}}}))
+    command = load_config(str(config)).operators.sam2.params["runner_command"]
+    assert command[0] == str(python)
+    result = subprocess.run(command, check=True, capture_output=True, text=True)
+    assert Path(result.stdout.strip()) == environment
+
+
+@pytest.mark.parametrize("missing", ["sam2.pt", "hamer/_DATA/data/mano/MANO_RIGHT.pkl", "hamer/_DATA/data/mano_mean_params.npz", "fp/weights/2024-01-11-20-02-45/model_best.pth", "robots/hand.urdf", "fast3r/model.safetensors"])
 def test_missing_model_assets_fail_before_launch(server_case, missing):
     path, _ = server_case; (path.parent / missing).unlink()
     assert not asset_report(load_config(str(path)).resolved())["ok"]
@@ -109,6 +125,23 @@ def test_worker_doctor_protocol_reports_missing_runtime_as_json(server_case):
     # This local environment has no Fast3R/CUDA. Failure must be a diagnostic report.
     assert result.returncode == (0 if report["ok"] else 1)
     assert not any(c["name"] == "ray" for c in report["checks"])
+
+
+@pytest.mark.parametrize("stage,missing", [("foundationpose", "pycocotools.mask"), ("hamer", "chumpy")])
+def test_doctor_rejects_missing_input_decoder(server_case, monkeypatch, stage, missing):
+    from egoworld import preflight
+    path, _ = server_case
+    torch = SimpleNamespace(__version__="2.5.1", cuda=SimpleNamespace(
+        device_count=lambda: 1, get_device_name=lambda _: "fixture GPU"))
+    def import_module(name):
+        if name == missing:
+            raise ModuleNotFoundError(f"Input decoder is missing: {missing}")
+        return torch if name == "torch" else SimpleNamespace()
+    monkeypatch.setattr(preflight.importlib, "import_module", import_module)
+    report = preflight.runtime_report(str(path), gpu=True, stages=[stage],
+                                      external=False, coordinator=False)
+    assert not report["ok"]
+    assert any(c["name"] == missing and not c["ok"] for c in report["checks"])
 
 
 def test_documented_launch_cli_commits_all_stages_and_resumes(server_case, monkeypatch, thread_backend, capsys):

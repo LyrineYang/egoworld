@@ -119,6 +119,20 @@ run_id=dataset_001/
 
 Only enabled stages produce annotations. Use `egoworld schema` to inspect field definitions and `egoworld plan --config config.local/job.json` to view stage dependencies. A completed run confirms execution; its quality reports and sampled annotations still need review.
 
+## Choose the data you need
+
+Output recipes automatically include the required model kernels and reuse verified stage outputs across runs:
+
+```bash
+egoworld data catalog
+egoworld data plan --recipe egoworld/recipes/hand-joints.yaml
+egoworld data run --recipe /absolute/path/to/my-recipe.yaml
+```
+
+Select masks, boxes, tracks, hand joints, MANO parameters, robot joints, object poses, cameras or point clouds, with optional field selection.
+Calibrated `world_*` outputs combine compatible results in a named metric reference frame. They require measured scale evidence; world hands additionally require metric hand correspondences.
+See the [recipe, cache and world-coordinate guide](docs/data-recipes.md) for options and templates. Configure local model paths before running the templates.
+
 ## Documentation
 
 The detailed guides are currently maintained in Chinese.
@@ -127,6 +141,7 @@ The detailed guides are currently maintained in Chinese.
 | --- | --- |
 | [Server guide](docs/server.md) | Installation, configuration, processing, recovery, and troubleshooting |
 | [Output reference](docs/outputs.md) | Model-to-output mapping, coordinate frames, units, and required assets |
+| [Data recipes](docs/data-recipes.md) | Selectable data types, shared kernels, verified cache reuse, wrist coordinates and metric world exports |
 | [Architecture](docs/design.md) | Scheduling, resource limits, stage commits, and throughput design |
 | [Testing](docs/testing.md) | CPU checks, Ray integration, real-model smoke tests, and verification boundaries |
 | [Requirements](docs/requirements.md) | Supported scope and its implementation and test coverage |
@@ -136,10 +151,11 @@ The detailed guides are currently maintained in Chinese.
 | Evidence | Current status |
 | --- | --- |
 | CPU data flow, contracts, fault recovery, CLI and offline reports | Local regression passed; see [test scope and records](docs/testing.md) |
-| Real Ray processes with model test doubles | Previously passed locally; these checks do not run CUDA inference |
-| Real-model inference and annotation quality | Target-hardware validation pending |
+| Real Ray processes with model test doubles | Linux/WSL2 regression passed, including actor SIGKILL cleanup; these checks do not run CUDA inference |
+| Real-model inference | SAM2/DINO → HaMeR → Dex plus Fast3R passed RGB inference/resume on an 8 GB RTX 4060 Laptop; FoundationPose passed a separate official RGB-D/mesh sample |
+| Annotation quality | Left-hand and two-hand clips passed with manually confirmed handedness. All 18 HaMeR rows matched the upstream API; corresponding Allegro outputs passed strict URDF limits and FK after fixing upstream bound expansion. See [records and limits](docs/testing.md#2026-11-01-dex-严格限位与左右手复现); motion accuracy and automatic handedness remain unverified |
 | 16 GB fit, multi-GPU scaling and server throughput | Configuration templates available; target-hardware measurements pending |
 
-The current contribution is an integration and execution system. New perception algorithms, a fused metric world representation, and downstream robot-learning gains would require separate evidence.
+The current contribution is an integration and execution system with optional calibrated world exports. New perception algorithms, cross-clip global mapping and downstream robot-learning gains require separate evidence.
 
 **Licensing.** A project license has not yet been specified. Integrated models and assets remain subject to their respective upstream licenses.

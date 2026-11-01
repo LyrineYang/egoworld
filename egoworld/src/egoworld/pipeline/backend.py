@@ -28,8 +28,13 @@ class RayBackend:
 
     def _actor(self, cls, resources):
         threads = str(self.config["execution"].get("worker_threads", 1))
+        environment = {key: threads for key in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")}
+        if cls is ModelActor:
+            # Ray otherwise SIGKILLs the direct child guard before it can reap
+            # the runner's separate process group. The guard owns that cleanup.
+            environment["RAY_kill_child_processes_on_worker_exit"] = "false"
         return self.ray.remote(cls).options(**resources, max_restarts=0, max_task_retries=0,
-            runtime_env={"env_vars": {key: threads for key in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")}}).remote(self.config)
+            runtime_env={"env_vars": environment}).remote(self.config)
 
     def available(self, kind, stage=None):
         pool = "write" if kind in ("write", "finalize") else ("gpu" if stage in GPU_STAGES else "cpu") if kind == "compute" else kind

@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 import json
 import math
+import os
 
 
 @dataclass
@@ -308,7 +309,9 @@ def load_config(path: str) -> PipelineConfig:
                   (name == "model_name_or_path" and (value.startswith((".", "/", "~")) or Path(value).exists()))):
                 params[name] = str(Path(value).expanduser().resolve())
             elif name == "runner_command" and isinstance(value, list):
-                params[name] = [str(Path(arg).expanduser().resolve()) if isinstance(arg, str) and
+                # Resolving a venv's Python symlink selects the system interpreter
+                # and silently loses that environment's installed dependencies.
+                params[name] = [os.path.abspath(os.path.expanduser(arg)) if isinstance(arg, str) and
                                (arg.startswith(("./", "../", "~")) or Path(arg).is_file()) else arg for arg in value]
     for operator in vars(config.operators).values():
         resolve_params(operator.params)
