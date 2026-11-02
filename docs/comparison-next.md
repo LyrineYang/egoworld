@@ -4,6 +4,10 @@
 
 目前生产清洗/缓存与调度代码已经集成，297 项适用回归和短样例原生整链有独立记录。[既有 A 层 pilot](equal-work-benchmark.md) 是标注后的 CPU 清洗，不能代表完整产品。以下工作接续已有实现，不引入新模型或训练。
 
+## 本轮已推进到原生产品试验
+
+两条完整手部 pipeline 已实跑，原生 Data-Juicer 保留 CPU/算子/导出默认设置；最终两端各 6 条有限手部预测，EgoWorld auto 100.77 秒、Data-Juicer CPU 61.18 秒。已完成原生产物观察，不计算不同模型/输出范围的框架加速比。严格同模型 C1 与全三组对应输出仍待完成。详情见 [C1 报告](c1-native-comparison-20261102.md) 和 [服务器交接](handoff-server-comparison-20261102.md)。
+
 ## 可立即使用的 B 层工程入口
 
 `egoworld/scripts/verify_stage_datajuicer.py` 接受原生 `egoworld.worker` 保存的完整阶段 `request.json`，先通过原生 ModelActor，再通过真实 Data-Juicer DefaultExecutor + `egoworld_stage_mapper` 调用同一 runner 和 Writer。两边使用同一个外层解释器、配置、prepared clip、上游 receipts 和模型环境；没有把已有下游预测当成模型调用。
