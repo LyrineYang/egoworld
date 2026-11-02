@@ -155,10 +155,14 @@ def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id
     if manifest_path.is_file() and json.loads(manifest_path.read_text()).get("config_fingerprint") != fingerprint:
         raise ValueError("Input/model/code settings changed; choose a new run_id")
     root.mkdir(parents=True, exist_ok=True)
+    from egoworld.pipeline.records import new_record, preserve_legacy_summary
+    preserve_legacy_summary(root)
     init_stage_db(config.paths.state_db_path)
     manifest = config.to_run_manifest() | {"created_at": datetime.now(timezone.utc).isoformat(),
         "config_fingerprint": fingerprint, "config": asdict(config), "provenance": identity,
-        "output_schema_version": OUTPUT_SCHEMA_VERSION, "stages": enabled_stages(config)}
+        "output_schema_version": OUTPUT_SCHEMA_VERSION, "stages": enabled_stages(config),
+        "input_manifest_paths": {"videos": str(Path(video_manifest_path).resolve()),
+                                 "clips": str(Path(clip_manifest_path).resolve())}}
     write_run_manifest(str(manifest_path), manifest)
 
     def tasks():
@@ -184,14 +188,30 @@ def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id
     except StopIteration:
         raise ValueError("No input clips; build nonempty manifests first")
     import itertools
-    backend, ray = None, None
+    backend, ray, engine = None, None, None
+    invocation_id, invocation_dir = new_record(root / "invocations")
+    import shutil
+    invocation_manifest = dict(manifest)
+    invocation_manifest["input_manifest_paths"] = {}
+    for name, source_path in (("videos", video_manifest_path), ("clips", clip_manifest_path)):
+        destination = invocation_dir / (name + Path(source_path).suffix)
+        shutil.copyfile(source_path, destination)
+        from egoworld.utils.hashing import sha256_file
+        if sha256_file(str(destination)) != identity["input_manifests"][name]:
+            raise ValueError("Input manifests changed during startup")
+        invocation_manifest["input_manifest_paths"][name] = str(destination)
+    write_run_manifest(str(invocation_dir / "run_manifest.json"), invocation_manifest)
     started = time.perf_counter()
-    summary = {"status": "failed", "run_id": config.run_id}
+    summary = {"status": "running", "run_id": config.run_id, "invocation_id": invocation_id,
+               "started_at": datetime.now(timezone.utc).isoformat()}
+    write_json(invocation_dir / "run_summary.json", summary)
     events_path = root / "events.jsonl"
-    with events_path.open("a", encoding="utf-8") as events:
+    with events_path.open("a", encoding="utf-8") as events, (invocation_dir / "events.jsonl").open("w", encoding="utf-8") as invocation_events:
         def emit(**event):
-            event.update(ts=datetime.now(timezone.utc).isoformat(), run_id=config.run_id)
-            events.write(json.dumps(event, ensure_ascii=False) + "\n"); events.flush()
+            event.update(ts=datetime.now(timezone.utc).isoformat(), run_id=config.run_id, invocation_id=invocation_id)
+            line = json.dumps(event, ensure_ascii=False) + "\n"
+            for stream in (events, invocation_events):
+                stream.write(line); stream.flush()
         try:
             if backend_factory is None:
                 import ray
@@ -204,20 +224,34 @@ def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id
             else:
                 backend = backend_factory(asdict(config))
             engine = Engine(config, backend, fingerprint, emit)
+            engine.invocation_id = invocation_id
             summary.update(engine.run(itertools.chain([first], source)))
             summary["status"] = "failed" if summary["failed_clips"] else "passed"
         except BaseException as exc:
+            if engine is not None:
+                summary.update(engine.summary())
             summary["error"] = str(exc)
             summary["status"] = "interrupted" if isinstance(exc, KeyboardInterrupt) else "failed"
             raise
         finally:
-            if backend:
-                backend.close()
-            if ray:
-                ray.shutdown()
+            from egoworld.pipeline.input_cache import cache_root, clear_cache
+            def clear_phase_scratch():
+                from egoworld.pipeline.spool import release_spool
+                for folder in (root / ".work").glob("*"):
+                    if folder.is_dir():
+                        for stage in GPU_STAGES:
+                            release_spool(vars(config.execution), str(folder), stage)
+            for cleanup in ([backend.close] if backend else []) + ([ray.shutdown] if ray else []) + [lambda: clear_cache(cache_root(asdict(config), root / ".work")), clear_phase_scratch]:
+                try:
+                    cleanup()
+                except Exception as exc:
+                    summary["cleanup_error"] = str(exc)
+                    summary["status"] = "failed"
             summary.update(elapsed_seconds=round(time.perf_counter() - started, 3), states=run_counts(config.paths.state_db_path, config.run_id))
             summary["scheduled_frames_per_wall_second"] = summary.get("successful_scheduled_frames", 0) / max(.001, summary["elapsed_seconds"])
+            summary["finished_at"] = datetime.now(timezone.utc).isoformat()
+            write_json(invocation_dir / "run_summary.json", summary)
             write_json(str(root / "run_summary.json"), summary)
-    if summary["failed_clips"]:
-        raise RuntimeError(f"Pipeline {config.run_id} failed for {summary['failed_clips']} clip(s); see {root / 'events.jsonl'}")
+    if summary.get("failed_clips") or summary.get("cleanup_error"):
+        raise RuntimeError(f"Pipeline {config.run_id} failed for {summary.get('failed_clips', 0)} clip(s); see {root / 'events.jsonl'}")
     return config.run_id

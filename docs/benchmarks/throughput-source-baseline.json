@@ -1,0 +1,28 @@
+{
+  "main_head": "e0638a23553d8be935c334248bc3fc539d918ba0",
+  "main_diff_sha256": "c4c544da48c75a1b99de2ace97999f1091a719b5a3745799ed498af8fedc95bf",
+  "source_worktree": "/home/lyrine/projects/egoworld",
+  "imported_untracked": {
+    "docs/data-recipes.md": "04e6876b56f37b3a668a84401d51d830ca05f3ec9179e784a814cc6e8f6041c9",
+    "docs/datajuicer-efficiency-research-20261101.md": "7d07ad084ad51f8304ee388345cb8e46f09fbb7bcf1a26af1ab4eff4d8ae5ed8",
+    "egoworld/env/reproduction-rgb-constraints.txt": "a96a47f38a195bb926f2f70724d95c6544201333b236e78921a1d8200f18eb94",
+    "egoworld/recipes/hand-joints.yaml": "cf1335c77f4e0eab23593459a4937d4207ce37333922d28270b5e5cc7835e49b",
+    "egoworld/recipes/metric-world.yaml": "f2ba5432c2a24e4bf44a6c094ac47de92ac4b104768ec374296d348d866082ab",
+    "egoworld/recipes/robot-hand.yaml": "9b206a8a1f69fe49cb2c26aee15a53f0acaa19742282b5570d7f1a1e82aec700",
+    "egoworld/scripts/fetch_reproduction_sample.py": "3fc458ccfc9735439a2dcf1421b96ef824fbd86c7720f7c7d281ce97d0ba0aa5",
+    "egoworld/scripts/research_input_costs.py": "989fe09fdba9267c7510ba0e33d2e3c60252f91deee3be51f2bad030e6d61ee0",
+    "egoworld/scripts/verify_dex_output.py": "ca367fd6430e907143d875f77a4bffa74bbd7ffe3348c8a01d93424bd868f654",
+    "egoworld/scripts/verify_hamer_output.py": "a773ed30d358fe928d3099a2e57eda58a99ab2820d8ab8f062b708db6eed09c3",
+    "egoworld/src/egoworld/hand_coordinates.py": "d77fd5a535ca96a2a02d122bf51a001986158d7743b55e2a0c893f42f26e9348",
+    "egoworld/src/egoworld/product/__init__.py": "1528c97d9775cc879c28c7c1cc179eb774ededbed3440033f9ba37d1f6aa3a86",
+    "egoworld/src/egoworld/product/cache.py": "2841387d2727611ceb9e112cbfbc972e0bfd0a3094f016ff360bbd50629b9e7d",
+    "egoworld/src/egoworld/product/cli.py": "7a8ae4a2d8415bfbff180dc593a8ea1b4a3424a8cfe052560c17f0e26bbe7602",
+    "egoworld/src/egoworld/product/geometry.py": "532ee2b0d4c968e49e795d418c0224b2220da357df1910b7fff952a6e7164b6b",
+    "egoworld/src/egoworld/product/recipes.py": "77a81149d364e70cd9032229c84864511efdc3496a8abc8e60a2896d6119daa6",
+    "egoworld/src/egoworld/product/registry.py": "55f1c10331074db8d46918f06d1b9eac2a4e0e67e01292187b63fa3d5618d65a",
+    "egoworld/src/egoworld/product/world.py": "9f6963e62dc5dd69a506632ed900935066adc16d2889b83054e3af0e06f8d771",
+    "egoworld/tests/test_hand_coordinates.py": "90400bea3bbc38e106a1f6b684ec4294f711806c5a9121652b4a60c5bc375371",
+    "egoworld/tests/test_product_geometry.py": "2ba5d93f2863a846edca4bd922d5d0ceb45a917fa923798fc744468d6ca4d0c8",
+    "egoworld/tests/test_product_recipes.py": "da1e0a2dee79565dddc6aa390b95d41a5364fcae6fe57801347722dcf66474c2"
+  }
+}

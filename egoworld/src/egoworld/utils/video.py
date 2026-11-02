@@ -63,13 +63,15 @@ def iter_frames(
     end_frame = frames_from_seconds(end_s, fps)
     cap.set(cv2.CAP_PROP_POS_FRAMES, start_frame)
     frame_idx = start_frame
-    while cap.isOpened() and frame_idx <= end_frame:
-        ret, frame_bgr = cap.read()
-        if not ret:
-            break
-        if (frame_idx - start_frame) % stride == 0:
-            frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
-            timestamp_s = seconds_from_frames(frame_idx, fps)
-            yield frame_idx - start_frame, timestamp_s, frame_rgb
-        frame_idx += 1
-    cap.release()
+    try:
+        while cap.isOpened() and frame_idx <= end_frame:
+            ret, frame_bgr = cap.read()
+            if not ret:
+                break
+            if (frame_idx - start_frame) % stride == 0:
+                frame_rgb = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
+                timestamp_s = seconds_from_frames(frame_idx, fps)
+                yield frame_idx - start_frame, timestamp_s, frame_rgb
+            frame_idx += 1
+    finally:
+        cap.release()

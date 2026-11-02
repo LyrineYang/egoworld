@@ -86,8 +86,7 @@ def stage_identity(config, provenance, stage, clip, upstream, runtime):
     if "model_sources" in runtime:
         runtime["model_sources"] = {k: v for k, v in runtime["model_sources"].items() if k in packages.get(stage, ())}
     return {"version": 2, "schema_version": OUTPUT_SCHEMA_VERSION, "stage": stage,
-            "split_execution": getattr(config.execution, "split_execution", False) and stage in getattr(config.execution, "split_stages", []),
-            "sources": source_identity(stage), "models": {stage: config.model_versions.get(stage)},
+            "split_execution": config.execution.split_execution and stage in config.execution.split_stages, "sources": source_identity(stage), "models": {stage: config.model_versions.get(stage)},
             "params": semantic_params(params, paths), "assets": normalized_assets, "extra_assets": extras, "runtime": runtime,
             "clip": {k: clip[k] for k in ("frame_start", "frame_end", "fps", "video_sha256")},
             "upstream": upstream, "coordinates": asdict(config.coordinates),

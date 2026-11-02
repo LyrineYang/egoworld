@@ -12,3 +12,5 @@ EgoWorld turns egocentric video into inspectable hand, object, and scene data. T
 | [Website design](../website-design.md) | Visual direction, content structure, and the future website handoff |
 
 The detailed [server guide](../server.md), [output reference](../outputs.md), [scheduling design](../design.md), and [test records](../testing.md) are maintained in Chinese. Historical notes under `docs/archive/` describe earlier intentions and are not a current feature list.
+
+The integration branch also documents [replay and GPU probes](../replay.md), [phase execution](../throughput-execution.md), [single-GPU validation](../throughput-validation.md), and the [equal-input/output benchmark protocol and pilot](../equal-work-benchmark.md).

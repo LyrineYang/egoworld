@@ -123,6 +123,17 @@ class ExecutionConfig:
     model_residency_tasks: int = 8
     max_stage_wait_s: float = 60.0
     measure_gpu_memory: bool = False
+    phase_profiling: bool = False
+    split_execution: bool = False
+    split_stages: List[str] = field(default_factory=lambda: ["sam2", "hamer", "foundationpose", "fast3r"])
+    phase_workers: int = 2
+    split_stage_bytes: int = 512 * 1024**2
+    split_total_bytes: int = 2 * 1024**3
+    split_block_bytes: int = 64 * 1024**2
+    split_directory: Optional[str] = None
+    scheduling_policy: str = "heuristic"
+    scheduling_profile: str = ""
+    cost_terms: List[str] = field(default_factory=lambda: ["load", "service", "release"])
 
 
 @dataclass
@@ -165,6 +176,8 @@ class PipelineConfig:
         return resolved
 
     def validate(self) -> None:
+        from egoworld.pipeline.input_cache import options
+        options(self.extra)
         if not isinstance(self.num_gpus, int) or isinstance(self.num_gpus, bool) or self.num_gpus < 0:
             raise ValueError("num_gpus must be a nonnegative integer")
         for name in ("max_in_flight_cpu", "max_in_flight_gpu", "max_in_flight_write"):
@@ -207,6 +220,31 @@ class PipelineConfig:
             raise ValueError("Execution timeouts must be positive")
         if self.execution.external_runner_mode not in ("auto", "per_task", "persistent"):
             raise ValueError("external_runner_mode must be auto, per_task or persistent")
+        for key in ("phase_profiling", "split_execution"):
+            if not isinstance(getattr(self.execution, key), bool):
+                raise ValueError(f"execution.{key} must be boolean")
+        for key in ("phase_workers", "split_stage_bytes", "split_total_bytes", "split_block_bytes"):
+            v = getattr(self.execution, key)
+            if not isinstance(v, int) or isinstance(v, bool) or v < 1:
+                raise ValueError(f"execution.{key} must be a positive integer")
+        if self.execution.split_directory is not None and (not isinstance(self.execution.split_directory, str) or not Path(self.execution.split_directory).is_absolute()):
+            raise ValueError("split_directory must be an absolute local directory")
+        if not self.execution.split_block_bytes <= self.execution.split_stage_bytes <= self.execution.split_total_bytes:
+            raise ValueError("split_block_bytes <= split_stage_bytes <= split_total_bytes is required")
+        if self.execution.scheduling_policy not in ("heuristic", "cost"):
+            raise ValueError("scheduling_policy must be heuristic or cost")
+        if self.execution.scheduling_policy == "cost" and not self.execution.scheduling_profile:
+            raise ValueError("cost scheduling requires an explicit scheduling_profile")
+        if not isinstance(self.execution.cost_terms, list) or set(self.execution.cost_terms) - {"load", "service", "release"}:
+            raise ValueError("cost_terms must select load, service and/or release")
+        if not isinstance(self.execution.split_stages, list) or set(self.execution.split_stages) - GPU_STAGES:
+            raise ValueError("split_stages must contain only GPU stages")
+        if self.execution.split_execution:
+            for name in self.execution.split_stages:
+                op = getattr(self.operators, name)
+                command = op.params.get("runner_command")
+                if op.enabled and command and not any(command[i:i + 2] == ["-m", "egoworld.worker"] for i in range(len(command) - 1)):
+                    raise ValueError("split_execution requires the built-in egoworld.worker protocol")
         if not isinstance(self.execution.measure_gpu_memory, bool):
             raise ValueError("measure_gpu_memory must be boolean")
         if not math.isfinite(self.execution.max_stage_wait_s) or self.execution.max_stage_wait_s <= 0:

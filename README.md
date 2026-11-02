@@ -24,7 +24,7 @@ Local development: [output recipes](docs/data-recipes.md) and [CPU quality scree
 | --- | --- | --- |
 | Enable the annotation branches your dataset needs. | Resume valid stages after an interrupted run. | Inspect structured outputs, quality checks, and an offline run report. |
 
-> **Research software · actively developed.** The public baseline contains five annotation stages. Output recipes, cross-run caches, and calibrated world exports have development prototypes; their integration status is documented in the [status ledger](docs/en/status.md). Throughput gains and downstream learning improvements remain research questions.
+> **Research software · actively developed.** This branch integrates five annotation stages, output recipes, verified caches, replay, GPU probes, and optional CPU/GPU phase execution. See the [status ledger](docs/en/status.md) and [local validation](docs/throughput-validation.md) for evidence and limits. Throughput gains and downstream learning improvements remain research questions.
 
 ## One workflow, several views
 
@@ -104,9 +104,13 @@ run_id=first_run/
 
 Only enabled stages produce associated outputs. Use `egoworld schema` for field definitions and `egoworld plan --config config.local/job.json` for dependencies.
 
+## Choose the data you need
+
+Output recipes select data types, include shared model kernels, and reuse verified stage outputs across runs. Run `egoworld data catalog` or see the [recipe and coordinate guide](docs/data-recipes.md). Calibrated world outputs require metric scale evidence and compatible coordinate frames.
+
 ## Research, with an evidence trail
 
-The next phase focuses on **quality-preserving efficiency**: less repeated identity checking and decoding, bounded intermediate data, better model reuse, and explainable filtering. New model families are not the immediate priority.
+The core research goal is **more complete and efficient cleaning and processing of embodied data than general-purpose systems such as Data-Juicer**, evaluated with the same inputs, model behavior, output requirements, and cleaning rules. Superiority remains a hypothesis. The next phase focuses on **quality-preserving efficiency**: less repeated identity checking and decoding, bounded intermediate data, better model reuse, and explainable filtering. New model families are not the immediate priority.
 
 | Workstream | Next question |
 | --- | --- |
@@ -115,7 +119,7 @@ The next phase focuses on **quality-preserving efficiency**: less repeated ident
 | Quality & geometry | Which outputs are usable, and which require calibration or review? |
 | Reproducible evaluation | How do execution strategies compare with identical models, inputs, and quality requirements? |
 
-CPU and Ray regression records exist for the public baseline. Later development work reports short real-model runs on an 8 GB RTX 4060 Laptop and a separate RGB-D/mesh example; those results depend on changes not all published here. Large-scale throughput, multi-GPU scaling, automatic handedness, and downstream learning gains are not established. See the [evidence ledger](docs/en/status.md).
+CPU and Ray regression records and short real-model runs on an 8 GB RTX 4060 Laptop are available for this branch, including a separate RGB-D/mesh example. Optional [phase execution and cost calibration](docs/throughput-execution.md) have [local throughput measurements](docs/throughput-validation.md); these do not establish an advantage over another framework. Large-scale throughput, multi-GPU scaling, automatic handedness, and downstream learning gains are not established. See the [evidence ledger](docs/en/status.md) and [equal-input/output experiment protocol](docs/equal-work-benchmark.md).
 
 ## Explore further
 

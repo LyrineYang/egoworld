@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 from egoworld.utils.performance import timed_load
+from egoworld.utils.timing import phase, timed
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -94,6 +95,8 @@ class Sam2Operator(Operator):
         start_s: float,
         end_s: float,
         params: Dict[str, Any] | None = None,
+        mask_sink=None,
+        prepared_prompts=None,
     ) -> Dict[str, Any]:
         params = params or self.params
         self._ensure_predictor()
@@ -107,11 +110,10 @@ class Sam2Operator(Operator):
             fps = video_info.fps or 30.0
 
             prompt_cfg = _load_prompt_config(params.get("prompting", {}))
-            prompt_frames = _collect_prompt_frames(
-                clip_path,
-                prompt_cfg.prompt_interval_s,
-                prompt_cfg.max_prompts_per_clip,
-            )
+            with phase("prompt_prepare"):
+                prompt_frames = prepared_prompts if prepared_prompts is not None else _collect_prompt_frames(
+                    clip_path, prompt_cfg.prompt_interval_s, prompt_cfg.max_prompts_per_clip)
+
 
             if not prompt_frames:
                 return _empty_result(video_path, start_s, end_s)
@@ -126,7 +128,8 @@ class Sam2Operator(Operator):
             device_type = "cuda" if "cuda" in device else "cpu"
 
             with torch.inference_mode(), torch.autocast(device_type=device_type, dtype=autocast_dtype):
-                state = _init_state_with_fallback(predictor, clip_path)
+                with phase("sam_video_init", cuda=True):
+                    state = _init_state_with_fallback(predictor, clip_path)
                 obj_id = 1
                 tracked_boxes: Dict[int, Tuple[float, float, float, float]] = {}
                 objects: Dict[int, Dict[str, Any]] = {}
@@ -168,37 +171,23 @@ class Sam2Operator(Operator):
                 empty_count = 0
                 total_count = 0
 
-                for out_frame_idx, out_obj_ids, out_mask_logits in predictor.propagate_in_video(state):
+                for out_frame_idx, out_obj_ids, out_mask_logits in _timed_propagation(predictor, state):
                     total_count += 1
-                    mask = _union_masks(out_mask_logits)
-                    if mask is None:
-                        empty_count += 1
-                        continue
-                    if not np.any(mask):
-                        empty_count += 1
-                    rle = encode_mask_rle(mask)
-                    frame_index = out_frame_idx + int(round(start_s * fps))
-                    frames.append(
-                        {
-                            "frame_index": int(frame_index),
-                            "timestamp_s": float(seconds_from_frames(frame_index, fps)),
-                            "mask_rle": rle,
-                        }
-                    )
-                    instance_masks = _instance_masks(out_mask_logits)
-                    if len(instance_masks) != len(out_obj_ids):
+                    with phase("mask_d2h", cuda=True):
+                        masks = _instance_masks(out_mask_logits)
+                    if len(masks) != len(out_obj_ids):
                         raise ValueError("SAM2 object IDs and masks have different lengths")
-                    for object_id, object_mask in zip(out_obj_ids, instance_masks):
-                        ys, xs = np.nonzero(object_mask)
-                        info = objects.get(int(object_id), {"label": "unknown", "detection_score": None})
-                        instances.append({
-                            "frame_index": int(frame_index),
-                            "timestamp_s": float(seconds_from_frames(frame_index, fps)),
-                            "object_id": int(object_id), **info,
-                            "mask_rle": encode_mask_rle(object_mask),
-                            "area_px": int(object_mask.sum()),
-                            "bbox_xyxy": [int(xs.min()), int(ys.min()), int(xs.max()) + 1, int(ys.max()) + 1] if len(xs) else None,
-                        })
+                    empty_count += int(not np.any(masks))
+                    frame_index = int(out_frame_idx + int(round(start_s * fps)))
+                    data = {"frame_index": frame_index, "fps": fps, "object_ids": list(map(int, out_obj_ids)),
+                            "objects": {str(k): v for k, v in objects.items()}, "shape": list(masks.shape)}
+                    if mask_sink is not None:
+                        with phase("mask_pack"):
+                            data["packed"] = np.packbits(masks.reshape(-1))
+                        mask_sink(data)
+                    else:
+                        union, per_object = encode_masks(data, masks)
+                        frames.extend(union); instances.extend(per_object)
 
                 empty_rate = empty_count / max(1, total_count)
                 return {
@@ -212,6 +201,9 @@ class Sam2Operator(Operator):
                     "video_path": video_path,
                 }
         finally:
+            # State belongs to this clip; no predictor state enters the model cache.
+            if "state" in locals():
+                del state
             if clip_path != video_path:
                 try:
                     os.remove(clip_path)
@@ -305,8 +297,10 @@ def _add_box_prompt(predictor: Any, state: Any, frame_idx: int, obj_id: int, box
 
 
 def _instance_masks(mask_logits: Any) -> np.ndarray:
+    if mask_logits is None:
+        return np.empty((0, 0, 0), dtype=np.uint8)
     if hasattr(mask_logits, "detach"):
-        mask_logits = mask_logits.detach().cpu().numpy()
+        mask_logits = (mask_logits > 0).detach().cpu().numpy()
     masks = np.asarray(mask_logits)
     if masks.ndim == 2:
         masks = masks[None]
@@ -453,3 +447,37 @@ def _resolve_model_cfg(config_path: str | None) -> str | None:
     except Exception:
         return config_path
     return config_path
+
+
+def _timed_propagation(predictor, state):
+    iterator = iter(predictor.propagate_in_video(state))
+    try:
+        while True:
+            with phase("sam_propagate", cuda=True):
+                try:
+                    item = next(iterator)
+                except StopIteration:
+                    return
+            yield item
+    finally:
+        if hasattr(iterator, "close"):
+            iterator.close()
+
+
+@timed("mask_encode")
+def encode_masks(data, masks=None):
+    if masks is None:
+        masks = np.unpackbits(data["packed"], count=int(np.prod(data["shape"]))).reshape(data["shape"])
+    if not masks.size:
+        return [], []
+    frame, fps = data["frame_index"], data["fps"]
+    common = {"frame_index": frame, "timestamp_s": float(seconds_from_frames(frame, fps))}
+    frames = [{**common, "mask_rle": encode_mask_rle(np.any(masks, axis=0).astype(np.uint8))}]
+    instances = []
+    for object_id, mask in zip(data["object_ids"], masks):
+        ys, xs = np.nonzero(mask)
+        info = data["objects"].get(str(object_id), {"label": "unknown", "detection_score": None})
+        instances.append({**common, "object_id": int(object_id), **info, "mask_rle": encode_mask_rle(mask),
+            "area_px": int(mask.sum()),
+            "bbox_xyxy": [int(xs.min()), int(ys.min()), int(xs.max())+1, int(ys.max())+1] if len(xs) else None})
+    return frames, instances

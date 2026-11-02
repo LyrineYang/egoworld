@@ -4,6 +4,8 @@ from pathlib import Path
 import tempfile
 import time
 import numpy as np
+from egoworld.utils.timing import phase, timed
+from egoworld.utils.performance import timed_load
 from egoworld.operators.common import array, frame_reader, read_frame, frame_fields
 
 
@@ -14,15 +16,11 @@ class Fast3ROperator:
         self.params = params
         self.model = None
 
-    def run(self, clip, video_path, inputs):
-        import cv2
+    @timed_load
+    def _load(self):
         import torch
         from fast3r.models.fast3r import Fast3R
-        from fast3r.dust3r.inference_multiview import inference
-        from fast3r.dust3r.utils.image import load_images
-        from fast3r.dust3r.cloud_opt.init_im_poses import fast_pnp
         device = torch.device(self.params.get("device", "cuda"))
-        load_started = time.perf_counter()
         if self.model is None:
             model = Fast3R.from_pretrained(self.params["model_name_or_path"])
             implementation = self.params.get("attn_implementation")
@@ -37,7 +35,11 @@ class Fast3ROperator:
                 if not changed:
                     raise ValueError("Fast3R version exposes no configurable attention modules")
             self.model = model.to(device).eval()
-        self._model_load_seconds = getattr(self, "_model_load_seconds", 0.) + time.perf_counter() - load_started
+
+    @timed("view_prepare")
+    def prepare(self, clip, video_path):
+        import cv2
+        from fast3r.dust3r.utils.image import load_images
         count = clip["frame_end"] - clip["frame_start"]
         views = min(int(self.params.get("max_views", 8)), count)
         if views < 2:
@@ -51,21 +53,42 @@ class Fast3ROperator:
                     path = str(Path(folder) / f"{index:09d}.jpg")
                     frame = read_frame(cap, int(index))
                     source_sizes.append((frame.shape[1], frame.shape[0]))
-                    if not cv2.imwrite(path, frame):
-                        raise IOError(f"Cannot write sampled view {path}")
+                    with phase("jpeg_encode"):
+                        if not cv2.imwrite(path, frame):
+                            raise IOError(f"Cannot write sampled view {path}")
                     files.append(path)
-                images = load_images(files, size=int(self.params.get("image_size", 512)), verbose=False)
-                # Upstream loss_of_one_batch interprets precision strings; a
-                # float32 dtype object does not disable its default autocast.
-                precision = {"fp32": "32", "fp16": "16-mixed", "bf16": "bf16-mixed"}[self.params.get("dtype", "fp32")]
-                with torch.inference_mode():
-                    result = inference(images, self.model, device, dtype=precision, verbose=False, profiling=False)
-                # Current upstream returns a dict when profiling=False. Some
-                # earlier snapshots return (dict, profiling_info).
-                if isinstance(result, tuple):
-                    result = result[0]
+                with phase("official_preprocess"):
+                    images = load_images(files, size=int(self.params.get("image_size", 512)), verbose=False)
         finally:
             cap.release()
+        return {"images": images, "indices": indices, "source_sizes": source_sizes}
+
+    def infer(self, data):
+        import torch
+        from fast3r.dust3r.inference_multiview import inference
+        self._load()
+        images = data["images"]
+        # Only img was a Torch tensor in the official loader; true_shape is NumPy.
+        for view in images:
+            if isinstance(view, dict) and isinstance(view.get("img"), np.ndarray):
+                view["img"] = torch.from_numpy(view["img"])
+        precision = {"fp32": "32", "fp16": "16-mixed", "bf16": "bf16-mixed"}[self.params.get("dtype", "fp32")]
+        # Official API includes H2D and to_cpu. Name the combined span honestly.
+        with phase("forward_and_transfers", cuda=True), torch.inference_mode():
+            result = inference(images, self.model, torch.device(self.params.get("device", "cuda")),
+                               dtype=precision, verbose=False, profiling=False)
+        if isinstance(result, tuple):
+            result = result[0]
+        with phase("prediction_arrays"):
+            preds = [{key: array(pred[key]) for key in ("pts3d_in_other_view", "conf")} for pred in result["preds"]]
+        return {"preds": preds, "indices": data["indices"], "source_sizes": data["source_sizes"]}
+
+    @timed("reconstruction_postprocess")
+    def postprocess(self, clip, data):
+        import torch
+        from fast3r.dust3r.cloud_opt.init_im_poses import fast_pnp
+        indices, source_sizes = data["indices"], data["source_sizes"]
+        views, result = len(indices), data
         scale = float(self.params.get("metric_scale", 1.0))
         calibrated = "metric_scale" in self.params
         if not np.isfinite(scale) or scale <= 0 or (calibrated and not self.params.get("metric_scale_source")):
@@ -82,8 +105,9 @@ class Fast3ROperator:
             valid = np.isfinite(xyz).all(-1) & np.isfinite(confidence) & (confidence > float(self.params.get("min_confidence", 1.0)))
             if valid.sum() < 8:
                 raise ValueError(f"Fast3R view {j} has too few confident points for pose estimation")
-            focal, pose = fast_pnp(torch.from_numpy(xyz), None, torch.from_numpy(valid), "cpu",
-                                   pp=None, niter_PnP=int(self.params.get("pnp_iterations", 10)))
+            with phase("pnp"):
+                focal, pose = fast_pnp(torch.from_numpy(xyz), None, torch.from_numpy(valid), "cpu",
+                                       pp=None, niter_PnP=int(self.params.get("pnp_iterations", 10)))
             if focal is None or pose is None:
                 raise ValueError(f"Fast3R PnP failed for view {j}; no identity fallback is written")
             pose = array(pose).copy(); pose[:3, 3] *= scale
@@ -112,3 +136,6 @@ class Fast3ROperator:
                 **arrays["reconstruction-pointcloud.npz"], "source_pixel_xy": np.concatenate(source_pixels)}
         return {"tables": {"reconstruction": output}, "arrays": arrays,
             "stats": {"views": len(output), "points": sum(map(len, points))}}
+
+    def run(self, clip, video_path, inputs):
+        return self.postprocess(clip, self.infer(self.prepare(clip, video_path)))

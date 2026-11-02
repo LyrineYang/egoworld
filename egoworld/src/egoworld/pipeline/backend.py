@@ -20,6 +20,8 @@ class RayBackend:
             definitions += [("gpu", ModelActor, {"num_cpus": 1, "num_gpus": 1}, group) for group in groups]
         if config["operators"]["dex_retarget"]["enabled"] and "dex_retarget" in compute_stages:
             definitions += [("cpu", ModelActor, {"num_cpus": 1}, ["dex_retarget"])] * config["execution"]["cpu_operator_workers"]
+        if config["execution"].get("split_execution") and any(config["operators"][s]["enabled"] for s in config["execution"].get("split_stages", GPU_STAGES)):
+            definitions += [("phase", ModelActor, {"num_cpus": 1}, list(GPU_STAGES))] * config["execution"]["phase_workers"]
         required_cpus = sum(resources["num_cpus"] for _, _, resources, _ in definitions)
         if ray.cluster_resources().get("CPU", 0) < required_cpus:
             raise ValueError(f"Worker pools require {required_cpus} Ray CPUs; reduce execution worker counts")
@@ -34,6 +36,8 @@ class RayBackend:
             # Ray otherwise SIGKILLs the direct child guard before it can reap
             # the runner's separate process group. The guard owns that cleanup.
             environment["RAY_kill_child_processes_on_worker_exit"] = "false"
+        if cls is ModelActor and not resources.get("num_gpus"):
+            environment["CUDA_VISIBLE_DEVICES"] = ""
         return self.ray.remote(cls).options(**resources, max_restarts=0, max_task_retries=0,
             runtime_env={"env_vars": environment}).remote(self.config)
 
@@ -41,7 +45,7 @@ class RayBackend:
         required = self.config.get("extra", {}).get("required_compute_stages")
         if kind == "compute" and stage is not None and required is not None and stage not in required:
             raise ValueError("A cached dependency changed after admission; rerun with the verified stage cache")
-        pool = "write" if kind in ("write", "finalize") else ("gpu" if stage in GPU_STAGES else "cpu") if kind == "compute" else kind
+        pool = "phase" if kind in ("input", "post") else "write" if kind in ("write", "finalize") else ("gpu" if stage in GPU_STAGES else "cpu") if kind == "compute" else kind
         return [i for i, slot in enumerate(self.slots) if slot["kind"] == pool and not slot["busy"]
                 and (stage is None or stage in slot["stages"])]
 
@@ -57,10 +61,13 @@ class RayBackend:
                     for i in self.available("compute", stage)), default=1)
 
     def submit(self, kind, job, prepared=None, inputs=None, result=None):
-        candidates = self.available(kind, job.get("stage") if kind == "compute" else None)
+        candidates = self.available(kind, job.get("stage") if kind in ("compute", "input", "post") else None)
         if not candidates:
             raise RuntimeError("No idle worker")
-        index = min(candidates, key=lambda i: self.slots[i]["last_stage"] != job.get("stage"))
+        selected = job.pop("_preferred_slot", None)
+        if selected is not None and selected not in candidates:
+            raise RuntimeError("Selected worker is no longer feasible")
+        index = selected if selected is not None else min(candidates, key=lambda i: self.slots[i]["last_stage"] != job.get("stage"))
         slot = self.slots[index]; slot["busy"] = True
         if kind == "compute":
             stage = job["stage"]
@@ -68,8 +75,12 @@ class RayBackend:
             slot["last_stage"] = stage
         if kind == "prepare":
             ref = slot["actor"].prepare.remote(job)
-        elif kind == "compute":
-            ref, result = slot["actor"].compute.options(num_returns=2).remote(job, prepared, inputs)
+        elif kind in ("compute", "input", "post"):
+            if kind in ("input", "post"):
+                job["_operation"] = kind
+            elif self.config["execution"].get("split_execution") and job["stage"] in self.config["execution"].get("split_stages", GPU_STAGES):
+                job["_operation"] = "infer"
+            ref, result = slot["actor"].compute.options(num_returns=2).remote(job, prepared, inputs, result)
         elif kind == "write":
             ref = slot["actor"].write_stage.remote(job, result)
         else:
@@ -94,11 +105,13 @@ class RayBackend:
                     value = task["result"]
                 self.ray.kill(slot["actor"], no_restart=True)
                 self._replace(slot)
-            elif task["kind"] == "compute":
+            elif task["kind"] in ("compute", "input", "post"):
                 try:
                     status = self.ray.get(ref)  # small status return; never the model payload
                     if status:
                         task["job"]["_result_bytes"] = status["result_bytes"]
+                        if status.get("work_units") is not None:
+                            task["job"]["_work_units"] = status["work_units"]
                     value = task["result"]
                 except Exception as exc:
                     error = exc

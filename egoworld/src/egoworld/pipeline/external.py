@@ -20,19 +20,20 @@ def runner_environment(threads):
 
 
 class RunnerSession:
-    def __init__(self, command, stage, log_dir, threads):
+    def __init__(self, command, stage, log_dir, threads, *, environment=None, working_dir=None):
         self.key = (tuple(command), stage)
         self.folder = tempfile.TemporaryDirectory(prefix="ew-runner-")
         self.mailbox = Path(self.folder.name)
         log_dir.mkdir(parents=True, exist_ok=True)
         self.log_path = log_dir / f"{stage}-{uuid4().hex}.log"
         env = runner_environment(threads)
+        env.update(environment or {})
         with self.log_path.open("wb") as log:
             try:
                 self.process = subprocess.Popen(
                     [sys.executable, "-m", "egoworld.utils.process_guard", "--"] + list(command) +
                     ["--serve", str(self.mailbox), "--stage", stage], stdin=subprocess.PIPE,
-                    stdout=log, stderr=subprocess.STDOUT, start_new_session=True, env=env)
+                    stdout=log, stderr=subprocess.STDOUT, start_new_session=True, env=env, cwd=working_dir)
             except BaseException:
                 self.folder.cleanup()
                 raise

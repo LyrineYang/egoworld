@@ -5,6 +5,7 @@ from functools import wraps
 import resource
 import sys
 import time
+from egoworld.utils.timing import phase
 
 
 def timed_load(method):
@@ -12,7 +13,8 @@ def timed_load(method):
     def load(self, *args, **kwargs):
         start = time.perf_counter()
         try:
-            return method(self, *args, **kwargs)
+            with phase("model_load", cuda=True):
+                return method(self, *args, **kwargs)
         finally:
             self._model_load_seconds = getattr(self, "_model_load_seconds", 0.) + time.perf_counter() - start
     return load

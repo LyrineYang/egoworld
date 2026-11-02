@@ -1,5 +1,7 @@
 # Research plan
 
+**Core objective:** Test whether specialization for embodied data yields more complete cleaning and higher processing efficiency than Data-Juicer under identical inputs, model behavior, output requirements, and acceptance rules. This is the intended central result, not an established claim.
+
 **Question:** How can an egocentric annotation system produce more usable hand, object, and scene data per unit of time and memory while preserving model behavior, geometric meaning, and recoverability?
 
 This plan targets quality-preserving systems improvements. It does not presume a speedup, a new perception model, or downstream learning gains.
@@ -84,3 +86,7 @@ A performance claim needs a pinned revision, reproducible commands, permitted in
 Keep negative results. A slower cache on mounted storage or a fixed window matching a complex scheduler informs design.
 
 Project sources: [original plan](../archive/plan.md), [scheduling design](../design.md), [project review](../overview.md), and development discussions reviewed on 2026-11-02. The [status ledger](status.md) separates intent from publication.
+
+### Executable first step
+
+The [equal-work pilot](../equal-work-benchmark.md) now freezes existing hand annotations and executes the same contract-validation function through a streaming reference and a pinned Data-Juicer DefaultExecutor custom Mapper. It preserves every decision and rejection reason, checks exact accepted outputs, and suppresses performance ratios if any planned invocation fails or diverges. This measures fresh-process CPU artifact cleaning. The streaming reference is experimental, not the production EgoWorld recipe executor; matched model inference and complete end-to-end comparisons remain pending.

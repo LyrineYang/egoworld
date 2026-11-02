@@ -2,6 +2,7 @@
 from pathlib import Path
 import json
 import numpy as np
+from egoworld.utils.timing import timed, phase
 
 
 def array(value):
@@ -11,24 +12,6 @@ def array(value):
             value = value.float()  # NumPy has no native torch.bfloat16 representation.
         value = value.numpy()
     return np.asarray(value)
-
-
-def iter_rows(receipts, stage, artifact, columns=None):
-    import pyarrow.parquet as pq
-    from contextlib import nullcontext
-    try:
-        from egoworld.utils.timing import phase
-    except ModuleNotFoundError:
-        phase = lambda name: nullcontext()
-    receipt = receipts[stage]
-    iterator = iter(pq.ParquetFile(Path(receipt["directory"]) / f"{artifact}.parquet").iter_batches(batch_size=512, columns=columns))
-    while True:
-        with phase("upstream_read"):
-            try:
-                data = next(iterator).to_pylist()
-            except StopIteration:
-                return
-        yield from data
 
 
 def rows(receipts, stage, artifact, columns=None):
@@ -48,6 +31,11 @@ def rgbd_assets(path):
 
 
 def frame_reader(path):
+    from egoworld.pipeline.input_cache import CURRENT
+    cache = CURRENT.get()
+    if cache is not None and str(Path(path).resolve()) == cache.spec["video_path"]:
+        from egoworld.operators.cached_inputs import CachedFrameReader
+        return CachedFrameReader(path, cache)
     import cv2
     cap = cv2.VideoCapture(str(path))
     if not cap.isOpened():
@@ -82,3 +70,21 @@ def decode_rle(text):
     if np.any(counts < 0) or counts.sum() != total:
         raise ValueError("Invalid RLE counts")
     return np.repeat(np.arange(len(counts)) % 2, counts).reshape(rle["size"], order="F").astype(bool)
+
+
+def iter_rows(receipts, stage, artifact, columns=None):
+    import pyarrow.parquet as pq
+    from contextlib import nullcontext
+    try:
+        from egoworld.utils.timing import phase
+    except ModuleNotFoundError:
+        phase = lambda name: nullcontext()
+    receipt = receipts[stage]
+    iterator = iter(pq.ParquetFile(Path(receipt["directory"]) / f"{artifact}.parquet").iter_batches(batch_size=512, columns=columns))
+    while True:
+        with phase("upstream_read"):
+            try:
+                data = next(iterator).to_pylist()
+            except StopIteration:
+                return
+        yield from data
