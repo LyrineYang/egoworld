@@ -1,38 +1,37 @@
-# 当前分支合入 main 的准备
+# 集成验收与 main 发布基线
 
-2026-11-02：在独立 worktree 的 `codex/stage-replay-gpu-probe` 上准备集成。main 的英文文档/网站提交 `529a175` 已通过 `88851e0` 合入本分支；README 冲突已处理，保留英文展示、网站资产和本分支功能入口。main 的已提交历史是本分支的祖先。
+2026-11-02：`codex/data-quality-efficiency` 已包含清洗/产品代码、main 的英文文档和网站提交 `529a175`，以及关联任务 `codex/stage-replay-gpu-probe` 至 `3e2aa5d` 的全部提交。验收基线为 `248b0c2`，工作区干净；远端 main 核验为 `529a175`，是集成分支的祖先，可快进合并。用户本次已授权合入 main、commit 和推送。
 
-## 已纳入的内容
+此前 [准备时的哈希清单](benchmarks/integration-readiness-2026-11-02.json) 是另一任务开发期间的历史观察；其中“主工作区仍未提交”的状态已经结束，不能用旧快照覆盖当前实现。
 
-- 可追溯阶段回放、runner 复用、逐次性能/错误记录和 NVML 冷/热预检。
-- 有预算的采样帧/crop 缓存与 memmap 生命周期、可选 CPU/GPU 阶段拆分、HaMeR 合批和 mask 搬运优化。
-- 可选实测成本排序、单卡原生输出检查和调度消融记录。资源只给建议，不自动改配置。
-- `94961f2` 导入的产品/适配器快照：输出 recipes、验证缓存、坐标/机器人限位修正及校准 world 接口。
-- 本次新增的 [同输入同输出实验设计与 CPU 清洗 pilot](equal-work-benchmark.md)，独立放在 experiments 目录，不改另一任务正在开发的生产清洗模块。
+## 纳入的实现
 
-## 当前合并边界
+- 模型前视频清洗、质量/运动统计、精确重复与空白过滤、按输出需求的分支准入。
+- 13 类输出 recipes、验证后的阶段与派生缓存、哈希会话、可选可信资产登记、缓存管理及产品 CLI。
+- 共同帧/crop 缓存、mask 搬运复用、HaMeR 合批、CPU/GPU 阶段拆分、runner 驻留、成本调度、回放和 GPU 预检。
+- 手部坐标与 Dex 严格限位修正、左右手复现、RGB-D 标定世界接口。
+- 独立的同输入/输出实验协议、真实 Data-Juicer CPU 清洗 pilot，以及共同 runner 的可选生产阶段 Mapper。
 
-主工作区仍有另一任务的活跃未提交修改。本次只读取并记录它们，没有在那里 stash、commit、reset、checkout 或覆盖文件，也没有移动 main 分支。
+## 集成验收
 
-[准备时的哈希清单](benchmarks/integration-readiness-2026-11-02.json) 区分：与本分支相同、与此前导入快照相同、导入后又有新变化的文件。清单只是一次观察，不能用来认定活跃工作区已经冻结。
+| 检查 | 结果及边界 |
+| --- | --- |
+| 完整适用 CPU/Ray 回归 | 297 passed / 11 deselected，121.83 秒；native smoke 单独记录 |
+| 当前生产源码 | `0b05f2ca23124447a18a0d3265f825def23d9b447be55c7f652f9030bb818dbc`，76 个 Python 文件与原生验证快照一致 |
+| 原生手部/机器人 | 双手 12 行、右手机器人 6 行；与原样例全部数值列最大差为 0 |
+| 左手 CPU-only | 只运行剩余 Dex，6 行左手机器人映射；左右手限位和独立 FK 通过 |
+| 原生组合路径 | SAM/HaMeR/Fast3R/Dex 全部重算，观察到真实共同帧命中 |
+| 世界与缓存 | RGB-D 样例 3 相机/3 物体/5459 世界点；最终源码全命中和派生复用通过 |
+| 清洗 | 有效/重复/损坏/空白混合只保留有效输入；全坏输入在探测模型前返回 rejected |
+| 分支过滤 | 显式过滤 HaMeR/Dex 时保留 boxes，不加载被过滤模型 |
+| 结束状态 | 临时块数组零残留、模型 worker 零残留；handoff 与已下载模型保留 |
 
-最新产品工作涉及 `product/cleaning.py`、`gates.py`、`quality.py`、`identity.py`、`store.py`、`derived.py`、`benchmark.py`，以及 recipe/cache/world、哈希/来源验证、CLI/config、帧采样和模型/阶段准备。后几类与本分支的执行优化存在语义交集；即使 Git 自动合并成功，也需要核对行为。
+原始验收目录：`/mnt/d/EgoWorld/runs/implementation-20261102/`，包括 `completion-audit.json`、`final-regression.xml`、`integrated-native/acceptance.json` 和最终源码运行记录。上述数值属于短样例复现；世界误差与随机性边界见 [实现台账](efficiency-implementation-20261102.md)。这次文档和独立比较准备入口的变更没有改动已验收的生产包。
 
-## 最终集成顺序
+本轮新增比较准备：真实 Data-Juicer 左右手 Dex 阶段均通过，每侧 6 行完整字段精确一致；31 项针对性测试通过。详见 [比较接入验收](benchmarks/comparison-prep-2026-11-02.json)。未修改生产包，也未把这一阶段检查写成整链性能结论。
 
-1. 由正在开发产品功能的任务保存并提交其完整变更，保留其测试与运行记录。不要用旧快照覆盖新工作，也不要直接清理脏目录。
-2. 在本独立 worktree 合入该提交。重点复核配置字段、HaMeR 输入采样与 crop 语义、阶段拆分准备路径、缓存身份与失效范围、清洗先后顺序、恢复提交与 QC 关系。
-3. 对最终组合跑 CPU/Ray 回归；对真正改变采样、预处理、身份或输出语义的模型路径补原生输出对照。旧校准报告的 source hash 不得改名伪装成新版本。
-4. 确认主工作区干净、main 仍是待集成分支的祖先，再在主工作区执行 `git merge --ff-only codex/stage-replay-gpu-probe`。如果 main 已新增提交，先完成第 2–3 步。此时无需重新创建同内容补丁或重复导入旧文件。
+## 发布与比较
 
-本次请求是准备合并；实际推进 main 尚未执行。没有发布、推送或部署变更。详细检查结果与实际实验记录随本分支提交，不能将本次回归结果归于另一任务仍在变化的未提交代码。
+以正常 fast-forward 推进 main，保留两条分支历史，不 force push。推送后再核对远端 SHA 和本地干净状态；实际发布 SHA 由本次发布记录和 Git 历史确认。旧 Codex 检查点引用损坏不影响已验收源码；必要时使用独立传输仓库发布，保留原引用。
 
-## 本分支的实际检查
-
-- CPU/Ray 回归：`271 passed, 11 deselected`（264.31 s）。排除 env/pipeline/SAM2/native model smoke；本次未重新跑 GPU 模型。
-- 新增等价清洗验收测试：23 项通过，覆盖规则错误、覆盖缺失、重复/额外记录、数值变化、拒绝原因变化、失败/少跑禁止计算比值、输入与来源变化、禁止覆盖运行记录。
-- 网站静态构建通过；本次修改的文档本地链接检查通过。
-- 主工作区最新产品清洗/缓存改动不属于上述回归范围。
-
-- 真实 Data-Juicer CPU pilot：5 轮共 10 次原始语料运行全部通过精确输出审计；另一次 84 行混合错误检查两端均保留 80、拒绝 4。完整记录见 [pilot 报告](benchmarks/equal-work-pilot-2026-11-02.json)，不构成生产全链加速结论。
-- 生产包源码 SHA-256 仍为 `e94d1111efd4a19aff86fd2742a8b786374acc45614be8233ee780e614b26a19`，与先前原生 GPU 验证记录一致。
+项目核心结果将以相同输入、模型、完整输出与质量规则下的有效产出和资源成本为准。CPU pilot 只证明实验接口和审计可用；完整产品任务的外部对照尚未完成。接下来按 [比较推进计划](comparison-next.md) 执行，不能把缓存冷热差异、少采样或 CPU pilot 启动差异算作框架优越性。

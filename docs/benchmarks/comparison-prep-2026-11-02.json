@@ -1,0 +1,111 @@
+{
+  "version": 1,
+  "reviewed_date": "2026-11-02",
+  "status": "passed",
+  "integrated_baseline_commit": "248b0c29ac5466e1948c6150949b7fd935d09526",
+  "included_branch_commit": "3e2aa5d780910037858c57e3a404c0381bddfdda",
+  "production_source_hash": "0b05f2ca23124447a18a0d3265f825def23d9b447be55c7f652f9030bb818dbc",
+  "existing_full_regression": {
+    "passed": 297,
+    "deselected": 11,
+    "report": "/mnt/d/EgoWorld/runs/implementation-20261102/final-regression.xml",
+    "acceptance": "/mnt/d/EgoWorld/runs/implementation-20261102/completion-audit.json",
+    "acceptance_sha256": "fe21af26d24710d1975042dbe6f11076b529abf9c52f7e394613494c62aca8ff"
+  },
+  "this_turn_targeted_checks": {
+    "passed": 31,
+    "new_stage_parity_checks": 8,
+    "log": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/setup/egoworld-merge-prep-tests-v2.log",
+    "log_sha256": "8e47fbdb3f81736adfbb0df2621df4953cf20f2e49cf63a9518b32e6a524fc20"
+  },
+  "scope": "real Data-Juicer DefaultExecutor calls the same production Dex external runner and Writer; single-stage interface check, not a speed or quality comparison",
+  "datajuicer_revision": "09178e1e0ac76cfbfe11232d66244e1ccc5add6f",
+  "trials": [
+    {
+      "handedness": "left",
+      "raw_report": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/dex-left-v3/report.json",
+      "raw_report_sha256": "3ada6869e61b01ca800c03c4c78a41aecb9f1bd16ea51198a175760bb9450f48",
+      "audit": {
+        "comparison": "all logical fields exact, row order ignored; arrays exact",
+        "passed": true,
+        "rows": {
+          "mapping": 6
+        }
+      },
+      "environment_stable": true,
+      "inputs_unchanged": true,
+      "request_sha256": "855be74f5569d22e38e8d8893d73618d2eaaa11720523aee29ce9ae3bb6a59fe",
+      "input_identity_sha256": "d3d594639f95544e58c8da8a737db277f36ea2aa99542f1d26ea6e7af6d809b5",
+      "environment_before_sha256": "09f2c46bec13892cbd971cde2bd3b85e55b65058daffa6f9871b995c4123e5db",
+      "outputs": [
+        {
+          "backend": "native_stage",
+          "receipt": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/dex-left-v3/native_stage/receipt.json",
+          "receipt_sha256": "ed341013c1c0beb94d4cc67a2aac3e34e7a0513c1c4aa7d5e183aac071ac217b",
+          "rows": 6
+        },
+        {
+          "backend": "datajuicer",
+          "receipt": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/dex-left-v3/datajuicer/receipt.json",
+          "receipt_sha256": "a7a927db3d3148da98870fd38ec02936ef59c172cd93f2d996f827c6534a9550",
+          "rows": 6
+        }
+      ]
+    },
+    {
+      "handedness": "right",
+      "raw_report": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/dex-right-v1/report.json",
+      "raw_report_sha256": "d77f7df3f54c01f0a1f1abf710ba86a4639bb73689a1aa3e07ff74a06150c26a",
+      "audit": {
+        "comparison": "all logical fields exact, row order ignored; arrays exact",
+        "passed": true,
+        "rows": {
+          "mapping": 6
+        }
+      },
+      "environment_stable": true,
+      "inputs_unchanged": true,
+      "request_sha256": "e4176cbdb5d490dfa2d60bbb0be09bb90ef23fc2d0f6a700760d1609f62d7605",
+      "input_identity_sha256": "9c26bb761e7eb270c0b56ad7d67902befb5c3a1524c9677ceede88198f3081c4",
+      "environment_before_sha256": "09f2c46bec13892cbd971cde2bd3b85e55b65058daffa6f9871b995c4123e5db",
+      "outputs": [
+        {
+          "backend": "native_stage",
+          "receipt": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/dex-right-v1/native_stage/receipt.json",
+          "receipt_sha256": "03107b4abcb94ac99aebd29bbabd050a7416543c9b59ecb1c4c3809ecd19c892",
+          "rows": 6
+        },
+        {
+          "backend": "datajuicer",
+          "receipt": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/dex-right-v1/datajuicer/receipt.json",
+          "receipt_sha256": "3951bf76525f483b2cfef1626ef00c69cff43b26307e63bb118f692d7e280a25",
+          "rows": 6
+        }
+      ]
+    }
+  ],
+  "preparation_failures_retained": [
+    {
+      "directory": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/dex-left-v1",
+      "reason": "Preparation script used Path where load_config expects str; corrected before acceptance."
+    },
+    {
+      "directory": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/dex-left-v2",
+      "reason": "Isolated CPU-pilot interpreter lacked cv2. OpenCV headless 4.11.0.86 installed before measured parity checks; model environments unchanged."
+    },
+    {
+      "log": "/mnt/d/EgoWorld/runs/comparison-prep-20261102/setup/egoworld-stage-parity-right.log",
+      "reason": "Admission rejected a request with a retired input cache. Saved a separate full-stage request without that frame-cache reference; both paths use the same copy. Dex consumes numeric hand rows."
+    }
+  ],
+  "limits": [
+    "One short video fixture; repeats and left/right variants are not independent videos.",
+    "Native side is ModelActor, not the full production recipe executor.",
+    "GPU models, multi-process batching, fixed resource admission and full dependency chains remain unverified with Data-Juicer.",
+    "Implicit assets, external source closure and GPU identities must be frozen for formal B/C trials.",
+    "No speed ratio, annotation accuracy or general superiority claim."
+  ],
+  "entrypoint": "egoworld/scripts/verify_stage_datajuicer.py",
+  "entrypoint_sha256": "f08ec2c9dc6a4f8f4ac46547c4d07622189499512f27648a230bcd979d5c1bb8",
+  "experiment_module_sha256": "c48ae450e6ecb6b4f377788fc328f80802594ff14f41322b980f826a2a1474b6"
+}

@@ -1,46 +1,37 @@
 # Implementation and evidence ledger
 
-Reviewed **2026-11-02** for integration branch `codex/stage-replay-gpu-probe`. The branch includes main's English documentation and website commit `529a175`, plus the product/adapter snapshot imported in `94961f2` and replay, probe, cache, phase-execution and scheduling work through `8efd11f`. This describes the integration branch, not a claim that these changes have been published on main. Another task still has uncommitted product cleaning/cache changes in the primary worktree.
+Reviewed **2026-11-02** for the combined implementation through `248b0c2`, including the replay/GPU-probe branch through `3e2aa5d`. The previously separate cleaning/cache and execution changes are integrated and committed. The historical readiness snapshot does not describe an outstanding uncommitted merge.
 
-## Base capabilities
+The central target is more complete and efficient embodied-data cleaning and processing than Data-Juicer. Core results must compare identical inputs, model behavior, output requirements, and cleaning rules. An advantage has not yet been established.
 
-| Capability | State on this integration branch |
-| --- | --- |
-| Five annotation stages | SAM2/DINO, HaMeR, FoundationPose, DexRetarget, and Fast3R adapters and configuration |
-| Configuration-based CLI | Preflight, processing, smoke, schema, plan, inspection, and offline reports |
-| Execution and recovery | Bounded scheduling, reusable runners, stage commits, validation, and dependency-aware recovery |
-| Structured outputs | Parquet/NPZ, source-frame identity, coordinate/unit metadata, QC, and run events |
-| CPU and Ray validation | Regression records exist; test doubles do not establish CUDA quality |
-
-Model and asset prerequisites still apply. An adapter does not certify every input, device, or scene.
-
-## Additional integrated work and boundaries
-
-| Area | Observed state | Boundary |
+| Capability | Integrated behavior | Boundary |
 | --- | --- | --- |
-| Output recipes | Integrated prototype: 13 types, dependency completion, field selection | Fixed registry; no arbitrary DAG or plugin system |
-| Cross-run stage cache | Integrated prototype verifies identities and output contracts | Derived world/export work and input preparation are not uniformly cached |
-| Calibrated world exports | Integrated cameras, points, objects, and hand interface | Metric evidence required; hands need hand correspondences |
-| Adapter/reproduction fixes | Imported hand-coordinate and robot-limit corrections | Review and validate newer product changes separately |
-| Replay, probes, input reuse, and scheduling experiments | Integrated; real single-GPU phase and scheduling records | Local small-workload evidence, not target-server or Data-Juicer superiority |
-| Equal-work comparison pilot | Shared hand-contract rule, streaming reference, real Data-Juicer executor, exact-output audit | CPU artifact cleaning only; production recipe/model comparison pending |
+| Five annotation stages | SAM2/DINO, HaMeR, FoundationPose, DexRetarget, Fast3R | Weights, compatible runtimes and task-specific inputs required |
+| Output recipes | 13 selectable types, dependency completion, field selection | Fixed registry, not an arbitrary plugin/DAG framework |
+| Video screening | Decode/metadata, exact duplicates, blank input, brightness/blur/motion statistics and optional thresholds | No semantic near-duplicate detector or learned quality guarantee |
+| Branch admission | Hand/pose/retarget gates before model load, explicit rejection reasons | Branch-specific usefulness; a missing hand need not discard useful scene data |
+| Verified reuse | Stage identities, input preparation reuse, derived world/export caches, inspect/GC and opt-in asset registration | Strict byte checking by default; trusted registry has an explicit trust boundary |
+| Execution and recovery | Bounded admission, persistent runners, input reuse, optional CPU/GPU phase splitting, cost scheduling, checked commits | Input/spool bounds are not a whole-machine RAM cap |
+| Metric world exports | Calibrated cameras, points and objects; hand calibration interface | Metric evidence required; no automatic metric hands or cross-clip global map |
+| Data-Juicer comparison | Real CPU artifact-cleaning pilot and an optional common-runner stage Mapper | Full model/recipe performance and independent quality comparison remain pending |
 
-The development catalog contains `masks`, `boxes`, `tracks`, `hand_joints`, `hand_mano`, `object_poses`, `robot_joints`, `camera_poses`, `scene_points`, `world_camera`, `world_scene`, `world_object`, and `world_hand`. Membership is not unconditional availability: inputs and assets determine which outputs are possible.
+The catalog contains `masks`, `boxes`, `tracks`, `hand_joints`, `hand_mano`, `object_poses`, `robot_joints`, `camera_poses`, `scene_points`, `world_camera`, `world_scene`, `world_object`, and `world_hand`. Catalog membership does not imply that an arbitrary input can produce every type.
 
-## Evidence reported in development
+## Acceptance evidence
 
-Reviewed development records describe a short RGB chain—SAM2/DINO → HaMeR → Dex, plus Fast3R—running and resuming on an 8 GB RTX 4060 Laptop, and a separate FoundationPose RGB-D/mesh sample. Selected hand examples were compared with the upstream HaMeR API, and robot limits/FK were checked after adapter fixes. These are short-sample engineering checks, not an annotation-quality benchmark.
+The integrated regression recorded **297 passed, 11 deselected**, including real Ray and the CPU-pilot acceptance gates. Environment/model smoke markers are excluded from that count; native runs are recorded separately. Production Python source SHA-256 is `0b05f2ca23124447a18a0d3265f825def23d9b447be55c7f652f9030bb818dbc`.
 
-A calibrated RGB-D prototype exported sampled cameras, object poses, and points under an explicit anchor. It did not establish automatic metric hands, all-frame cameras, or cross-clip global mapping. Raw reproduction artifacts remain in the development environment and are not bundled with this documentation release.
+- A real SAM2/DINO → HaMeR → Dex sample produced 12 hand rows (left and right) and 6 right-hand robot rows. All compared numerical fields matched the earlier reproduction sample exactly. A separate CPU-only remaining-Dex run produced 6 left-hand robot rows; left/right strict URDF limits and Pinocchio FK passed.
+- A real RGB-D/mesh calibrated sample produced 3 metric cameras, 3 object poses and 5,459 filtered world points. Its held-out inlier RMSE was about 1.71 cm at a 3 cm gate; this is not full-map or trajectory ground truth.
+- A combined SAM/HaMeR/Fast3R/Dex run recomputed all model stages and observed one actual shared-frame cache hit. Full result-cache hits, branch rejection, mixed bad-input screening and derived-world reuse were checked separately.
+- Final-source cache runs validated committed files and contracts; temporary input/spool arrays and live model workers were absent at completion.
 
-The [throughput validation record](../throughput-validation.md) pins the earlier native-model and scheduling experiments. The [equal-work protocol](../equal-work-benchmark.md) defines the external comparison and its current limits. No new GPU inference is required by the documentation merge or CPU artifact-cleaning pilot; source revisions must remain distinct.
+These are short-sample engineering checks on an 8 GB RTX 4060 Laptop, not an annotation-quality or large-scale throughput benchmark. Unseeded Fast3R view embeddings can change a reconstruction; point-count differences are not optimization benefits. See the [implementation ledger](../efficiency-implementation-20261102.md), [integration acceptance](../integration-readiness.md), and [comparison next steps](../comparison-next.md).
 
-## Claims not established
+## Comparison evidence and remaining claims
 
-- Same-input, same-quality speed superiority over Data-Juicer or another framework.
-- Server throughput, multi-GPU scaling, or universal VRAM requirements.
-- Reliable automatic handedness, robust long-video motion, or all-scene pose accuracy.
-- A unified metric world for every model, every frame, and multiple clips.
-- Improved robot policies or downstream learning outcomes.
+The [CPU pilot](../equal-work-benchmark.md) used real Data-Juicer DefaultExecutor and an experimental streaming reference. Five paired repeats of 80 native hand rows matched exactly; a separate four-fault fixture was rejected equally. It excludes video decoding, model inference, and production recipes. Its import-heavy fresh-process timings cannot be reported as an EgoWorld speedup.
 
-The [research plan](research-plan.md) defines the required evidence. Update this ledger when integration and measurements are reproducible from a published revision.
+Real Data-Juicer left/right Dex stage-interface checks now pass: six robot rows per side, with all logical fields exact and stable inputs/environments. The new preparation gates and existing CPU-pilot tests pass 31 targeted checks. See the [machine-readable acceptance](../benchmarks/comparison-prep-2026-11-02.json). This is a separate engineering gate. The [next-work plan](../comparison-next.md) keeps it distinct from full job timing, useful-output throughput and independent quality review.
+
+Not established: same-quality performance superiority over Data-Juicer, server/multi-GPU scaling, robust long-video annotation, automatic handedness, a metric world for every model/frame/clip, or downstream policy gains. The [research plan](research-plan.md) defines the evidence required.

@@ -18,8 +18,8 @@
 | 层次 | 固定工作 | 实现与结论边界 |
 | --- | --- | --- |
 | A：标注后的 CPU 清洗 | 相同已生成手部标注、契约、逐条拒绝原因、完整保留字段 | 本次实现真实 Data-Juicer DefaultExecutor + 自定义 Mapper，与流式实验参考执行器对照；不包含视频解码、推理或产品 recipe 调度 |
-| B：共同模型处理 | 相同 SAM2/DINO、HaMeR、FoundationPose、Fast3R 权重与 runner，帧、crop、精度、随机种子、输出一致 | 待实现 Data-Juicer 模型适配器；复用现有 runner 和 Writer，不能把框架开销与模型差异混在一起 |
-| C：完整产品任务 | 输入视频 → 过滤/分支选择 → 模型 → QC/导出 → 最终提交 | 待另一任务的清洗/缓存代码集成后，接入实际 recipe 执行器；包括启动、身份检查、数据搬运、导出和恢复成本 |
+| B：共同模型处理 | 相同 SAM2/DINO、HaMeR、FoundationPose、Fast3R/Dex 权重/资产与 runner，帧、crop、精度、随机种子、输出一致 | 已有可选生产阶段 Mapper 及真实执行器验收入口；逐 GPU 模型、批处理和完整依赖链仍待验证，不把框架开销与模型差异混在一起 |
+| C：完整产品任务 | 输入视频 → 过滤/分支选择 → 模型 → QC/导出 → 最终提交 | 清洗/缓存和执行代码已集成；待接入 Data-Juicer 对应产品任务。包括启动、身份检查、数据搬运、导出和恢复成本 |
 | D：各自原生能力 | 各自推荐模型/算子与输出 | 独立能力和质量/成本研究；例如 HaWoR/MegaSaM/MoGe 与 HaMeR/Fast3R 不等价，不能纳入同模型效率比值 |
 
 Data-Juicer 本次固定源码为 `09178e1e0ac76cfbfe11232d66244e1ccc5add6f`。使用其正式 [自定义算子接口](https://github.com/datajuicer/data-juicer/blob/09178e1e0ac76cfbfe11232d66244e1ccc5add6f/docs/DeveloperGuide.md) 和 [DefaultExecutor](https://github.com/datajuicer/data-juicer/blob/09178e1e0ac76cfbfe11232d66244e1ccc5add6f/data_juicer/core/executor/default_executor.py)，并保留原始导出。此前源码调研的 revision 不同，应分别引用，不能合并成一组固定版本结果。
@@ -94,6 +94,8 @@ python -m venv .venv/datajuicer-bench
 **这不是生产 EgoWorld 与 Data-Juicer 的完整处理对照。** 机器为 Ryzen 9 7945HX / WSL2，解释器与工作区位于 `/mnt/c` 的 9p 挂载盘；小语料的 fresh-process 结果深受导入、框架初始化和文件系统成本影响，不代表稳态清洗速度。此处只验证接口、审计与记录流程，不能据此声称完整具身处理加速或提高标注质量。更大语料、持久进程和 Linux 本地盘需要独立成组，完整模型与产品流程仍待 B/C 层接入。
 
 ## B/C 层：下一步的主要实验
+
+集成后的可执行阶段接入检查、具体交付与结果表要求见 [比较推进计划](comparison-next.md)。它补充本协议，不将小样例阶段验证当作生产整链或性能结论。
 
 **固定数据和语义。** 建立独立来源的 10–60 秒 RGB 视频集，分层覆盖单手、双手、遮挡、快速运动、多物体、无手但有场景价值、坏输入；另设 RGB-D/mesh 组。冻结来源/许可、内容哈希、帧范围/FPS、分辨率、prompts、手侧复核、深度单位、mesh、请求输出、模型权重与预处理版本。训练和阈值选择用开发集；正式报告用固定留出集。短 smoke 和重复同一片段只作工程验证。
 

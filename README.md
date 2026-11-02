@@ -6,6 +6,8 @@
 
 An offline annotation toolkit for egocentric video, built around hands, objects, and scenes.
 
+**Core evaluation:** more complete and efficient embodied-data cleaning than Data-Juicer, measured with identical inputs, models, outputs, and quality requirements. This is the project's target, with [comparison work still in progress](docs/comparison-next.md).
+
 [Overview](#from-video-to-usable-data) · [Quick start](#quick-start) · [Insights](docs/en/insights.md) · [Research plan](docs/en/research-plan.md) · [Documentation](docs/en/README.md)
 
 </div>
