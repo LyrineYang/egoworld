@@ -1,0 +1,273 @@
+{
+  "captured_utc": "2026-11-02T09:10:08.452490+00:00",
+  "main_head": "529a175ca35731f3c40a59622372ebb178251990",
+  "imported_snapshot": "94961f2",
+  "items": [
+    {
+      "path": "docs/data-recipes.md",
+      "main_worktree_sha256": "04e6876b56f37b3a668a84401d51d830ca05f3ec9179e784a814cc6e8f6041c9",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "docs/datajuicer-efficiency-research-20261101.md",
+      "main_worktree_sha256": "7d07ad084ad51f8304ee388345cb8e46f09fbb7bcf1a26af1ab4eff4d8ae5ed8",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "docs/outputs.md",
+      "main_worktree_sha256": "b6f336cfc970026da0da2345ceb6ee62f51e0c340e7a958ecd2d0ede81a55410",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "docs/requirements.md",
+      "main_worktree_sha256": "19385032e214e708791863444ba41fc4251c07e368652e318ec06275c330f245",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "docs/testing.md",
+      "main_worktree_sha256": "a3a3420cbaa42ccd080b852259e4d8ff1e4854b146202cdfc42f5436f01c1c0e",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/env/README.md",
+      "main_worktree_sha256": "b6454fbbcd34273533f6b2922c056d93980e8419e333398c782b22db025fbedc",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/env/reproduction-rgb-constraints.txt",
+      "main_worktree_sha256": "a96a47f38a195bb926f2f70724d95c6544201333b236e78921a1d8200f18eb94",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/recipes/hand-joints.yaml",
+      "main_worktree_sha256": "cf1335c77f4e0eab23593459a4937d4207ce37333922d28270b5e5cc7835e49b",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/recipes/metric-world.yaml",
+      "main_worktree_sha256": "f2ba5432c2a24e4bf44a6c094ac47de92ac4b104768ec374296d348d866082ab",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/recipes/robot-hand.yaml",
+      "main_worktree_sha256": "9b206a8a1f69fe49cb2c26aee15a53f0acaa19742282b5570d7f1a1e82aec700",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/scripts/fetch_reproduction_sample.py",
+      "main_worktree_sha256": "3fc458ccfc9735439a2dcf1421b96ef824fbd86c7720f7c7d281ce97d0ba0aa5",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/scripts/research_cache_formats.py",
+      "main_worktree_sha256": "012e35b034ded495a02184c3c80f00dbefe4b26a8daa9ecb14b1a7a2e5e528b3",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/scripts/research_input_costs.py",
+      "main_worktree_sha256": "989fe09fdba9267c7510ba0e33d2e3c60252f91deee3be51f2bad030e6d61ee0",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/scripts/verify_dex_output.py",
+      "main_worktree_sha256": "ca367fd6430e907143d875f77a4bffa74bbd7ffe3348c8a01d93424bd868f654",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/scripts/verify_hamer_output.py",
+      "main_worktree_sha256": "a773ed30d358fe928d3099a2e57eda58a99ab2820d8ab8f062b708db6eed09c3",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/src/egoworld/cli.py",
+      "main_worktree_sha256": "b81872e5861b18e871383e5c3e62e81c1b8f287bc0b85a051f659bc498b9bbb6",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/config.py",
+      "main_worktree_sha256": "b5d4a66ef694b516aaaa06c2f82fd57d963b53f16142ab1ef17674a3e7bf4f53",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/hand_coordinates.py",
+      "main_worktree_sha256": "d77fd5a535ca96a2a02d122bf51a001986158d7743b55e2a0c893f42f26e9348",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/src/egoworld/manifests/build_manifest.py",
+      "main_worktree_sha256": "b2391289c0cbc333c9f324c9c9aa31b958be0c1c041228b89c8b6a020f8cb423",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/operators/common.py",
+      "main_worktree_sha256": "f79de761d1511ed1a1a71e04fc7563847146ca7db0036798feb6dd6b4accb205",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/operators/dex_retarget_op.py",
+      "main_worktree_sha256": "33ec5088cefc50c0bd1ce6e2a6c9e1c446a9fb7bfc814028f29b81b44d48c3ce",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/src/egoworld/operators/fast3r_op.py",
+      "main_worktree_sha256": "06616e3468cb8a54dae75d4b12200077e148c6d5c4db056a928303d709474be2",
+      "classification": "same_as_imported_snapshot"
+    },
+    {
+      "path": "egoworld/src/egoworld/operators/frame_sampling.py",
+      "main_worktree_sha256": "39827fbc86be9868f9976ed4d0fe69712777e42966b6dc4629bab36e2959f879",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/operators/hamer_op.py",
+      "main_worktree_sha256": "ebc92f11c6b9ae7f947f601351f329be1b81715a5013e21a35f3493e1d7fe811",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/pipeline/backend.py",
+      "main_worktree_sha256": "e9dc408ba25aa13656527fa651df87a82f630e1dad6bcf5667c9295df57ea99b",
+      "classification": "same_as_imported_snapshot"
+    },
+    {
+      "path": "egoworld/src/egoworld/pipeline/stages.py",
+      "main_worktree_sha256": "e93494a40f15a4cd7c4d040bab113e7d6ab1b26b11e04c111e2ff2a499490106",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/preflight.py",
+      "main_worktree_sha256": "656f4532fa03a7d63bec50169480185f6173708d939e0d092c62871ee56d6517",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/__init__.py",
+      "main_worktree_sha256": "1528c97d9775cc879c28c7c1cc179eb774ededbed3440033f9ba37d1f6aa3a86",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/benchmark.py",
+      "main_worktree_sha256": "e92b8bf800eefcb7018613b21cd4aded69f7e2f244209f118ee1dee5839a7b2c",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/cache.py",
+      "main_worktree_sha256": "99a08c320a136a87a78a35af4843ea4daf9a7d304ed75a52912ee3c0c4e1b37e",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/cleaning.py",
+      "main_worktree_sha256": "abda33f4f28273f8eaadd6c9d756f965b4c440840966f4121eec44bf22630580",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/cli.py",
+      "main_worktree_sha256": "88d4683fa6066aab241d4042dc7562432a7fa93c357831e43b7ce0a917e2fa21",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/derived.py",
+      "main_worktree_sha256": "1657da1f1633117bbbf4dc7de26249cb5d599cba580041e434506af581263fa1",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/gates.py",
+      "main_worktree_sha256": "ba2f09e178974c23c1138580dfb6ee6ecb59b8a79c0348ca326c39266b74c4a9",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/geometry.py",
+      "main_worktree_sha256": "532ee2b0d4c968e49e795d418c0224b2220da357df1910b7fff952a6e7164b6b",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/identity.py",
+      "main_worktree_sha256": "9375db7604cc664e9c6884803359cbd52f53a84cf919c6cb55a373e8d3e00d8d",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/quality.py",
+      "main_worktree_sha256": "2aa509be7ac93b4b9414563efe337e0a8caa646f7f143014d81297e67ff4ec96",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/recipes.py",
+      "main_worktree_sha256": "2b9f7264aaebd754c366faeda30ad9f07834b41e5e12d4a116254f8238dfa6d9",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/registry.py",
+      "main_worktree_sha256": "55f1c10331074db8d46918f06d1b9eac2a4e0e67e01292187b63fa3d5618d65a",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/store.py",
+      "main_worktree_sha256": "1d882122ef8009ef9f13a80d67dca05ba7697306b2b8094c880d217798e4064e",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/product/world.py",
+      "main_worktree_sha256": "0cbabbfadae3299329647786bdc483b3bc9e180a28a86bc09d58fc1b6f576ef7",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/utils/hashing.py",
+      "main_worktree_sha256": "8a5c3e3b69b146470b8ce3298a1e5dc1e8e490060f3f6857cbe4bd5919626c3a",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/src/egoworld/utils/provenance.py",
+      "main_worktree_sha256": "a9a2ead6b9ffce9e0afaa02026fea1cb6f195a667bd2287210b5709f329178a3",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/tests/test_cleaning.py",
+      "main_worktree_sha256": "b172d18ccb6b8fdd3226d964e93d265597d5e1e15f088b90221b7edb3206ebff",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/tests/test_hand_coordinates.py",
+      "main_worktree_sha256": "90400bea3bbc38e106a1f6b684ec4294f711806c5a9121652b4a60c5bc375371",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/tests/test_model_adapters.py",
+      "main_worktree_sha256": "20aba1f1cc6a731df5fd2a6c601869517dde5bdfd2a04f04b1d0d0afdcdccd12",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/tests/test_product_efficiency.py",
+      "main_worktree_sha256": "1a2bd50197ce4ef1f2bdf786ffcc51efaf3ae1f155fab6efc5ca02481703e44f",
+      "classification": "new_or_changed_since_import"
+    },
+    {
+      "path": "egoworld/tests/test_product_geometry.py",
+      "main_worktree_sha256": "2ba5d93f2863a846edca4bd922d5d0ceb45a917fa923798fc744468d6ca4d0c8",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/tests/test_product_recipes.py",
+      "main_worktree_sha256": "da1e0a2dee79565dddc6aa390b95d41a5364fcae6fe57801347722dcf66474c2",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/tests/test_ray_integration.py",
+      "main_worktree_sha256": "0f3a1128d9deb9f20b20a501a835d21c4dc7fc2cce5bd24abc8cac8c9c530f5f",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/tests/test_server_startup.py",
+      "main_worktree_sha256": "5208977beb7c519d6e02f8604682a7e07fe7f4e536d2d0d66146f06c5b1896c8",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "egoworld/tests/test_stage_contracts.py",
+      "main_worktree_sha256": "58119241010bb3ba3ee5927a4d311389deb023e3941645d5d56334ba6519af8e",
+      "classification": "identical_to_integration_branch"
+    },
+    {
+      "path": "pyproject.toml",
+      "main_worktree_sha256": "955fc46213dd20603a20fc1ce7eea022620a2269f02306453feff5938730d3a0",
+      "classification": "new_or_changed_since_import"
+    }
+  ],
+  "note": "Read-only observation of an active worktree. No stash, commit, reset, checkout or overwrite was performed there. Recheck before advancing main."
+}

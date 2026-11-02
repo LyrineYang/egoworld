@@ -1,10 +1,10 @@
 # Implementation and evidence ledger
 
-Reviewed **2026-11-02**. This presentation update is based on public code revision `e0638a2`, the current development workspace, and the project discussions “同步并审查 egoworld 项目” and “评估调度设计与 GPU 预检”. It changes documentation and website assets; it does not integrate outstanding model, product, or scheduler changes.
+Reviewed **2026-11-02** for integration branch `codex/stage-replay-gpu-probe`. The branch includes main's English documentation and website commit `529a175`, plus the product/adapter snapshot imported in `94961f2` and replay, probe, cache, phase-execution and scheduling work through `8efd11f`. This describes the integration branch, not a claim that these changes have been published on main. Another task still has uncommitted product cleaning/cache changes in the primary worktree.
 
-## What a public clone contains
+## Base capabilities
 
-| Capability | State on the public baseline |
+| Capability | State on this integration branch |
 | --- | --- |
 | Five annotation stages | SAM2/DINO, HaMeR, FoundationPose, DexRetarget, and Fast3R adapters and configuration |
 | Configuration-based CLI | Preflight, processing, smoke, schema, plan, inspection, and offline reports |
@@ -14,15 +14,16 @@ Reviewed **2026-11-02**. This presentation update is based on public code revisi
 
 Model and asset prerequisites still apply. An adapter does not certify every input, device, or scene.
 
-## Development work awaiting integration
+## Additional integrated work and boundaries
 
 | Area | Observed state | Boundary |
 | --- | --- | --- |
-| Output recipes | Local prototype: 13 types, dependency completion, field selection | Fixed registry; no arbitrary DAG or plugin system |
-| Cross-run stage cache | Local prototype verifies identities and output contracts | Derived world/export work and input preparation are not uniformly cached |
-| Calibrated world exports | Local cameras, points, objects, and hand interface | Metric evidence required; hands need hand correspondences |
-| Adapter/reproduction fixes | Local hand-coordinate and robot-limit corrections | Development results cannot be attributed to unchanged public code |
-| Replay, probes, input reuse, and scheduling experiments | Separate `codex/stage-replay-gpu-probe` branch | Requires integration and validation with product/adapter changes |
+| Output recipes | Integrated prototype: 13 types, dependency completion, field selection | Fixed registry; no arbitrary DAG or plugin system |
+| Cross-run stage cache | Integrated prototype verifies identities and output contracts | Derived world/export work and input preparation are not uniformly cached |
+| Calibrated world exports | Integrated cameras, points, objects, and hand interface | Metric evidence required; hands need hand correspondences |
+| Adapter/reproduction fixes | Imported hand-coordinate and robot-limit corrections | Review and validate newer product changes separately |
+| Replay, probes, input reuse, and scheduling experiments | Integrated; real single-GPU phase and scheduling records | Local small-workload evidence, not target-server or Data-Juicer superiority |
+| Equal-work comparison pilot | Shared hand-contract rule, streaming reference, real Data-Juicer executor, exact-output audit | CPU artifact cleaning only; production recipe/model comparison pending |
 
 The development catalog contains `masks`, `boxes`, `tracks`, `hand_joints`, `hand_mano`, `object_poses`, `robot_joints`, `camera_poses`, `scene_points`, `world_camera`, `world_scene`, `world_object`, and `world_hand`. Membership is not unconditional availability: inputs and assets determine which outputs are possible.
 
@@ -32,7 +33,7 @@ Reviewed development records describe a short RGB chain—SAM2/DINO → HaMeR �
 
 A calibrated RGB-D prototype exported sampled cameras, object poses, and points under an explicit anchor. It did not establish automatic metric hands, all-frame cameras, or cross-clip global mapping. Raw reproduction artifacts remain in the development environment and are not bundled with this documentation release.
 
-No new GPU inference was performed for this homepage update. Historical development test counts are not tests of this documentation-only public revision. Consult the applicable revision and its [test records](../testing.md) before reproducing a result.
+The [throughput validation record](../throughput-validation.md) pins the earlier native-model and scheduling experiments. The [equal-work protocol](../equal-work-benchmark.md) defines the external comparison and its current limits. No new GPU inference is required by the documentation merge or CPU artifact-cleaning pilot; source revisions must remain distinct.
 
 ## Claims not established
 

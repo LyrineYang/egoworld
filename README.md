@@ -117,7 +117,7 @@ The core research goal is **more complete and efficient cleaning and processing 
 | Quality & geometry | Which outputs are usable, and which require calibration or review? |
 | Reproducible evaluation | How do execution strategies compare with identical models, inputs, and quality requirements? |
 
-CPU and Ray regression records and short real-model runs on an 8 GB RTX 4060 Laptop are available for this branch, including a separate RGB-D/mesh example. Optional [phase execution and cost calibration](docs/throughput-execution.md) have [local throughput measurements](docs/throughput-validation.md); these do not establish an advantage over another framework. Large-scale throughput, multi-GPU scaling, automatic handedness, and downstream learning gains are not established. See the [evidence ledger](docs/en/status.md).
+CPU and Ray regression records and short real-model runs on an 8 GB RTX 4060 Laptop are available for this branch, including a separate RGB-D/mesh example. Optional [phase execution and cost calibration](docs/throughput-execution.md) have [local throughput measurements](docs/throughput-validation.md); these do not establish an advantage over another framework. Large-scale throughput, multi-GPU scaling, automatic handedness, and downstream learning gains are not established. See the [evidence ledger](docs/en/status.md) and [equal-input/output experiment protocol](docs/equal-work-benchmark.md).
 
 ## Explore further
 
