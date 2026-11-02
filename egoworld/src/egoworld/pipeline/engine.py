@@ -50,6 +50,11 @@ class Engine:
             receipt = load_stage(directory, stage, self.fingerprint, self.config.execution.verify_hashes_on_resume)
             if receipt:
                 ctx["states"][stage] = "Done"; ctx["receipts"][stage] = receipt
+        if all(ctx["states"][s] == "Done" or s == "dex_retarget" for s in self.graph):
+            # Retargeting and finalization consume committed numeric artifacts;
+            # neither needs an extracted/re-encoded video or decoder buffers.
+            ctx["prepare"] = "Done"
+            ctx["prepared"] = {"video_path": clip["video_path"], "frames": clip["frame_end"] - clip["frame_start"], "prepared_bytes": 0}
         # Invalidate durable markers before any replacement work can be submitted.
         # Otherwise a second interruption could accept descendants of an old result.
         if len(ctx["receipts"]) != len(self.graph):

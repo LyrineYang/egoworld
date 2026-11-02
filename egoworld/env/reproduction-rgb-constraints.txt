@@ -1,0 +1,12 @@
+# Tested on Python 3.12 / Linux with Torch's cu124 wheels.
+# Compatibility constraints for the local SAM2/DINO + Fast3R environment,
+# not a complete lock or constraints for the isolated FoundationPose environment.
+numpy==1.26.4
+pyarrow==19.0.1
+opencv-python==4.11.0.86
+torch==2.5.1
+torchvision==0.20.1
+transformers==4.44.2
+timm==1.0.12
+supervision==0.25.1
+pycocotools==2.0.11

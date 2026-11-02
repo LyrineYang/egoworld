@@ -31,13 +31,34 @@ def provenance(config, videos, clips):
                     if file.is_file() and file.suffix in (".safetensors", ".bin", ".json"):
                         assets[str(file.resolve())] = {"sha256": sha256_file(str(file))}
         visit(operator["params"])
+        if stage == "hamer":
+            # load_hamer derives these paths instead of receiving them as
+            # explicit operator parameters. They still change model behavior.
+            params = operator["params"]
+            checkpoint = Path(params["checkpoint"])
+            root = Path(params.get("working_dir", Path.cwd()))
+            implicit = {"model_config": checkpoint.parent.parent / "model_config.yaml",
+                        "mano_right": root / "_DATA/data/mano/MANO_RIGHT.pkl",
+                        "mano_mean_params": root / "_DATA/data/mano_mean_params.npz"}
+            for name, file in implicit.items():
+                assets[f"hamer.implicit.{name}"] = {"path": str(file.resolve()),
+                    "sha256": sha256_file(str(file)) if file.is_file() else None}
+        if stage == "foundationpose":
+            # Upstream predictor constructors derive these defaults internally.
+            # Git source identity does not cover ignored downloaded weights.
+            root = Path(operator["params"].get("repo_path", "."))
+            for version in ("2023-10-28-18-33-37", "2024-01-11-20-02-45"):
+                for name in ("model_best.pth", "config.yml"):
+                    file = root / "weights" / version / name
+                    assets[f"foundationpose.implicit.{version}.{name}"] = {
+                        "path": str(file.resolve()), "sha256": sha256_file(str(file)) if file.is_file() else None}
     try:
         code_hash = subprocess.run(["git", "rev-parse", "HEAD"], cwd=package, check=True, capture_output=True, text=True).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         code_hash = "unavailable"
     identity = {"source_tree_hash": digest.hexdigest(), "git_commit": code_hash, "local_assets": assets,
                 "input_manifests": {"videos": sha256_file(videos), "clips": sha256_file(clips)}}
-    behavior = {"operators": asdict(config.operators), "coordinates": asdict(config.coordinates),
+    behavior = {"operators": asdict(config.operators), "branch_cleaning": config.extra.get("branch_cleaning"), "coordinates": asdict(config.coordinates),
                 "metrics": asdict(config.metrics), "dataset_hash": config.dataset_hash,
                 "model_versions": config.model_versions, "schema": OUTPUT_SCHEMA_VERSION, **identity}
     identity["fingerprint"] = hashlib.sha256(json.dumps(behavior, sort_keys=True).encode()).hexdigest()

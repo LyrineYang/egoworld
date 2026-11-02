@@ -14,10 +14,11 @@ class RayBackend:
         groups = config["execution"].get("gpu_stage_groups") or [list(GPU_STAGES)] * config["num_gpus"]
         definitions = [("prepare", PrepareActor, {"num_cpus": 1}, None)] * config["execution"]["cpu_workers"]
         definitions += [("write", WriterActor, {"num_cpus": .5}, None)] * config["execution"]["write_workers"]
-        enabled_gpu = any(config["operators"][s]["enabled"] for s in GPU_STAGES)
+        compute_stages = set(config.get("extra", {}).get("required_compute_stages", config["operators"]))
+        enabled_gpu = any(config["operators"][s]["enabled"] and s in compute_stages for s in GPU_STAGES)
         if enabled_gpu:
             definitions += [("gpu", ModelActor, {"num_cpus": 1, "num_gpus": 1}, group) for group in groups]
-        if config["operators"]["dex_retarget"]["enabled"]:
+        if config["operators"]["dex_retarget"]["enabled"] and "dex_retarget" in compute_stages:
             definitions += [("cpu", ModelActor, {"num_cpus": 1}, ["dex_retarget"])] * config["execution"]["cpu_operator_workers"]
         required_cpus = sum(resources["num_cpus"] for _, _, resources, _ in definitions)
         if ray.cluster_resources().get("CPU", 0) < required_cpus:
@@ -28,10 +29,18 @@ class RayBackend:
 
     def _actor(self, cls, resources):
         threads = str(self.config["execution"].get("worker_threads", 1))
+        environment = {key: threads for key in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")}
+        if cls is ModelActor:
+            # Ray otherwise SIGKILLs the direct child guard before it can reap
+            # the runner's separate process group. The guard owns that cleanup.
+            environment["RAY_kill_child_processes_on_worker_exit"] = "false"
         return self.ray.remote(cls).options(**resources, max_restarts=0, max_task_retries=0,
-            runtime_env={"env_vars": {key: threads for key in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS")}}).remote(self.config)
+            runtime_env={"env_vars": environment}).remote(self.config)
 
     def available(self, kind, stage=None):
+        required = self.config.get("extra", {}).get("required_compute_stages")
+        if kind == "compute" and stage is not None and required is not None and stage not in required:
+            raise ValueError("A cached dependency changed after admission; rerun with the verified stage cache")
         pool = "write" if kind in ("write", "finalize") else ("gpu" if stage in GPU_STAGES else "cpu") if kind == "compute" else kind
         return [i for i, slot in enumerate(self.slots) if slot["kind"] == pool and not slot["busy"]
                 and (stage is None or stage in slot["stages"])]

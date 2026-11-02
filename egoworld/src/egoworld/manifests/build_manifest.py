@@ -152,6 +152,7 @@ def build_manifests(
     video_paths: Iterable[str],
     split: str = "train",
     scenedetect: SceneDetectConfig | None = None,
+    metadata: Dict[str, Dict] | None = None,
 ) -> Tuple[List[Dict[str, object]], List[Dict[str, object]]]:
     scenedetect = scenedetect or SceneDetectConfig()
     if scenedetect.max_clip_duration_s <= 0 or scenedetect.overlap_s < 0:
@@ -160,7 +161,7 @@ def build_manifests(
     clip_manifest: List[Dict[str, object]] = []
 
     for path in video_paths:
-        meta = parse_video_meta(path, split=split)
+        meta = VideoMeta(**metadata[str(Path(path).resolve())]) if metadata and str(Path(path).resolve()) in metadata else parse_video_meta(path, split=split)
         video_manifest.append(meta.__dict__)
         clips, used_fallback = detect_scenes(path, meta.duration_s, scenedetect)
         overlap = scenedetect.overlap_s

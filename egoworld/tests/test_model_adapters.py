@@ -50,7 +50,8 @@ def test_hamer_batches_and_preserves_handedness_and_mano(monkeypatch):
     operator = target.HamerOperator(checkpoint="not-read", frame_stride=1)
     monkeypatch.setattr(operator, "_load", lambda: None)
     operator.model_cfg = SimpleNamespace(EXTRA=SimpleNamespace(FOCAL_LENGTH=5000), MODEL=SimpleNamespace(IMAGE_SIZE=256))
-    operator.model = lambda data: {"pred_keypoints_3d": np.tile(np.arange(63).reshape(21, 3), (2, 1, 1)).astype(float),
+    raw_joints = np.arange(63).reshape(21, 3).astype(float) + [.05, 0, 0]
+    operator.model = lambda data: {"pred_keypoints_3d": np.tile(raw_joints, (2, 1, 1)),
         "pred_cam": np.ones((2, 3)), "pred_mano_params": {"global_orient": np.tile(np.eye(3), (2, 1, 1)),
         "hand_pose": np.tile(np.eye(3), (2, 15, 1, 1)), "betas": np.zeros((2, 10))}}
     packet = operator.run(CLIP, "unused", {})
@@ -58,8 +59,24 @@ def test_hamer_batches_and_preserves_handedness_and_mano(monkeypatch):
     assert [r["handedness"] for r in saved] == ["left", "right"]
     assert saved[0]["joints_3d"][3] == -saved[1]["joints_3d"][3]
     assert saved[0]["scale_status"] == "model_prior" and len(saved[0]["mano_pose"]) == 135
+    # Independently calculated full-image cameras: f=625, bs=8,
+    # center offset=(-12,-12), original crop tx/ty=(1,1).
+    for row, sign, camera in zip(saved, [-1, 1], [[-4, -2, 156.25], [-2, -2, 156.25]]):
+        local = np.asarray(row["joints_3d"]).reshape(21, 3)
+        np.testing.assert_allclose(local[0], 0)
+        np.testing.assert_allclose(local + row["camera_translation"],
+                                   raw_joints * [sign, 1, 1] + camera, atol=1e-7)
     detections[0]["label"] = "hand"
     with pytest.raises(ValueError, match="refusing to guess"): operator.run(CLIP, "unused", {})
+    # Two valid hands plus a false hand-like sleeve must not reach inference
+    # when the user explicitly selected the two tracked hand identities.
+    detections[0]["label"] = "left hand"
+    detections.append(dict(detections[0], object_id=3, label="hand"))
+    operator.params["object_ids"] = [1, 2]
+    assert len(operator.run(CLIP, "unused", {})["tables"]["hand_pose"]) == 2
+    operator.params["object_ids"] = [99]
+    with pytest.raises(ValueError, match="No nonempty"):
+        operator.run(CLIP, "unused", {})
 
 
 def test_dex_sequences_reset_per_identity_and_apply_axes(monkeypatch):
@@ -74,8 +91,9 @@ def test_dex_sequences_reset_per_identity_and_apply_axes(monkeypatch):
         def retarget(reference):
             calls.append(reference.copy()); state.append(1); return [.1 * len(state)]
         built.append(state)
-        return SimpleNamespace(joint_names=["joint"], retarget=retarget,
-                               optimizer=SimpleNamespace(target_link_human_indices=np.array([[0], [1]]), retargeting_type="VECTOR"))
+        return SimpleNamespace(joint_names=["joint"], retarget=retarget, has_joint_limits=True,
+                               optimizer=SimpleNamespace(robot=SimpleNamespace(dof_joint_names=["joint"], joint_limits=np.array([[-1., 1.]])),
+                               target_link_human_indices=np.array([[0], [1]]), retargeting_type="VECTOR"))
     operator = target.DexRetargetOperator(config="not-read", robot_id="test", handedness="right", joint_units="radians",
         human_to_robot_rotation=[0, -1, 0, 1, 0, 0, 0, 0, 1])
     monkeypatch.setattr(operator, "_build", build)
@@ -84,6 +102,46 @@ def test_dex_sequences_reset_per_identity_and_apply_axes(monkeypatch):
     assert len(built) == 2
     np.testing.assert_allclose(calls[0], [[0, 1, 0]])
     assert [row["joint_positions"][0] for row in output] == [.1, .2, .1]
+
+
+@pytest.mark.parametrize("enabled", [True, False])
+def test_dex_build_does_not_expand_configured_joint_limits(monkeypatch, enabled):
+    from egoworld.operators.dex_retarget_op import DexRetargetOperator
+    calls = []
+    limits = np.array([[-.47, .47]])
+    sequence = SimpleNamespace(has_joint_limits=enabled, joint_limits=limits,
+        optimizer=SimpleNamespace(set_joint_limit=lambda bounds, epsilon: calls.append((bounds.copy(), epsilon))))
+    module(monkeypatch, "dex_retargeting.retargeting_config", RetargetingConfig=SimpleNamespace(
+        load_from_file=lambda _: SimpleNamespace(build=lambda: sequence)))
+    assert DexRetargetOperator(config="fixture")._build() is sequence
+    assert len(calls) == int(enabled)
+    if enabled:
+        np.testing.assert_array_equal(calls[0][0], limits)
+        assert calls[0][1] == 0.0
+
+
+@pytest.mark.parametrize("side", ["left", "right"])
+@pytest.mark.parametrize("overshoot", [2e-8, 1e-3])
+def test_dex_corrects_roundoff_but_rejects_real_limit_violation(monkeypatch, side, overshoot):
+    from egoworld.operators import dex_retarget_op as target
+    hand = {"frame_index": 10, "timestamp_s": 1., "object_id": 1, "handedness": side,
+            "joints_3d": np.zeros(63).tolist(), "scale_status": "model_prior"}
+    monkeypatch.setattr(target, "rows", lambda *args: [hand])
+    # Deliberately reverse the robot's named order: limits must follow names.
+    robot = SimpleNamespace(dof_joint_names=["b", "a"], joint_limits=np.array([[-1., 1.], [-.47, .47]]))
+    sequence = SimpleNamespace(has_joint_limits=True, joint_names=["a", "b"],
+        retarget=lambda _: [.47 + overshoot, 0.], optimizer=SimpleNamespace(robot=robot,
+        target_link_human_indices=np.array([[0], [1]]), retargeting_type="VECTOR"))
+    operator = target.DexRetargetOperator(config="fixture", robot_id="fixture", handedness=side,
+        joint_units="radians", human_to_robot_rotation=np.eye(3).ravel().tolist())
+    monkeypatch.setattr(operator, "_build", lambda: sequence)
+    if overshoot > 1e-6:
+        with pytest.raises(ValueError, match="strict URDF"):
+            operator.run(CLIP, "unused", {})
+    else:
+        packet = operator.run(CLIP, "unused", {})
+        assert packet["tables"]["mapping"][0]["joint_positions"] == [.47, 0.]
+        assert packet["stats"]["joint_limit_adjustments"] == 1
 
 
 def test_foundationpose_uses_metric_depth_register_then_track(monkeypatch, tmp_path):

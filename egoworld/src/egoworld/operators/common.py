@@ -13,10 +13,27 @@ def array(value):
     return np.asarray(value)
 
 
-def rows(receipts, stage, artifact, columns=None):
+def iter_rows(receipts, stage, artifact, columns=None):
     import pyarrow.parquet as pq
+    from contextlib import nullcontext
+    try:
+        from egoworld.utils.timing import phase
+    except ModuleNotFoundError:
+        phase = lambda name: nullcontext()
     receipt = receipts[stage]
-    return pq.ParquetFile(Path(receipt["directory"]) / f"{artifact}.parquet").read(columns=columns).to_pylist()
+    iterator = iter(pq.ParquetFile(Path(receipt["directory"]) / f"{artifact}.parquet").iter_batches(batch_size=512, columns=columns))
+    while True:
+        with phase("upstream_read"):
+            try:
+                data = next(iterator).to_pylist()
+            except StopIteration:
+                return
+        yield from data
+
+
+def rows(receipts, stage, artifact, columns=None):
+    """Compatibility helper; production adapters consume iter_rows instead."""
+    return list(iter_rows(receipts, stage, artifact, columns))
 
 
 def rgbd_assets(path):
@@ -39,13 +56,14 @@ def frame_reader(path):
 
 
 def read_frame(cap, index):
-    import cv2
-    if int(cap.get(cv2.CAP_PROP_POS_FRAMES)) != index:
-        cap.set(cv2.CAP_PROP_POS_FRAMES, index)
-    ok, frame = cap.read()
-    if not ok:
-        raise ValueError(f"Cannot decode frame {index}")
-    return frame
+    if hasattr(cap, "read_index"):
+        return cap.read_index(index)
+    from egoworld.operators.frame_sampling import read_index
+    try:
+        from egoworld.utils.timing import phase
+    except ModuleNotFoundError:
+        phase = None
+    return read_index(cap, int(index), phase_factory=phase)
 
 
 def frame_fields(clip, local_index):

@@ -1,0 +1,9 @@
+# Replace asset/mesh configuration in the base config with calibrated inputs.
+version: 1
+config: ../configs/full.json
+inputs: [../../data/samples/mustard/mustard-3frames.mp4]
+outputs: [boxes, object_poses]
+output_dir: /mnt/d/EgoWorld/runs/data
+cache: {root: /mnt/d/EgoWorld/cache/stages}
+cleaning: {decode: full, deduplicate: true}
+branch_cleaning: {min_depth_fraction: 0.2}

@@ -4,7 +4,7 @@ from egoworld.utils.performance import timed_load
 from pathlib import Path
 import sys
 import numpy as np
-from egoworld.operators.common import frame_reader, read_frame, rows, decode_rle, rgbd_assets
+from egoworld.operators.common import frame_reader, read_frame, iter_rows as rows, decode_rle, rgbd_assets
 
 
 class FoundationPoseOperator:

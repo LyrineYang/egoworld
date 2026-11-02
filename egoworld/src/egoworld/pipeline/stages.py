@@ -84,6 +84,10 @@ class ModelActor:
             pass
 
     def process(self, job, prepared, inputs):
+        from egoworld.product.gates import branch_admission
+        filtered, inputs = branch_admission(self.config, job, prepared, inputs)
+        if filtered is not None:
+            return filtered
         previous = Path.cwd()
         working_dir = self.config["operators"][job["stage"]]["params"].get("working_dir")
         try:

@@ -82,6 +82,28 @@ def test_provenance_changes_with_local_assets_and_manifests(tmp_path):
     assert provenance(config, str(videos), str(clips))["fingerprint"] != before
 
 
+@pytest.mark.parametrize("relative", ["_DATA/hamer_ckpts/model_config.yaml",
+    "_DATA/data/mano/MANO_RIGHT.pkl", "_DATA/data/mano_mean_params.npz"])
+def test_hamer_implicit_asset_change_rejects_old_run_identity(tmp_path, relative):
+    from egoworld.utils.provenance import provenance
+    config = PipelineConfig()
+    config.operators.hamer.enabled = True
+    config.operators.hamer.params.update(checkpoint=str(tmp_path / "_DATA/hamer_ckpts/checkpoints/hamer.ckpt"),
+                                         working_dir=str(tmp_path))
+    config = config.resolved()
+    videos, clips = tmp_path / "videos.jsonl", tmp_path / "clips.jsonl"
+    for file in (videos, clips): file.write_text("{}\n")
+    def identity(): return provenance(config, str(videos), str(clips))["fingerprint"]
+    missing = identity()
+    asset = tmp_path / relative
+    asset.parent.mkdir(parents=True, exist_ok=True)
+    asset.write_text("first asset")
+    present = identity()
+    assert present != missing
+    asset.write_text("different asset")
+    assert identity() != present
+
+
 @pytest.mark.parametrize("bf16_supported", [False, True])
 def test_doctor_only_imports_selected_models(monkeypatch, tmp_path, bf16_supported):
     from egoworld import preflight

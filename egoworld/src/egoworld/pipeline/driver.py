@@ -196,7 +196,8 @@ def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id
             if backend_factory is None:
                 import ray
                 ray.init(ignore_reinit_error=True)
-                required = config.num_gpus if set(enabled_stages(config)) & GPU_STAGES else 0
+                compute_stages = set(config.extra.get("required_compute_stages", enabled_stages(config)))
+                required = config.num_gpus if compute_stages & GPU_STAGES else 0
                 if ray.cluster_resources().get("GPU", 0) < required:
                     raise RuntimeError(f"Requested {required} GPU(s), but Ray sees fewer; run doctor --gpu")
                 backend = RayBackend(asdict(config))

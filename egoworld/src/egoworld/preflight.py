@@ -69,7 +69,9 @@ def asset_report(config, *, videos=None, clips=None, stages=None) -> dict:
             checkpoint = Path(params["checkpoint"])
             file("HaMeR checkpoint", checkpoint)
             file("HaMeR model config", checkpoint.parent.parent / "model_config.yaml")
-            file("MANO right hand", Path(params.get("working_dir", Path.cwd())) / "_DATA/data/mano/MANO_RIGHT.pkl")
+            root = Path(params.get("working_dir", Path.cwd()))
+            file("MANO right hand", root / "_DATA/data/mano/MANO_RIGHT.pkl")
+            file("MANO mean parameters", root / "_DATA/data/mano_mean_params.npz")
         elif stage == "foundationpose":
             check("FoundationPose configured objects", bool(params["objects"]), "at least one label/mesh is required")
             repo = Path(params.get("repo_path", ""))
@@ -188,8 +190,8 @@ def runtime_report(config_path: str, *, gpu: bool = False, stages: list[str] | N
                       "Official attention uses BF16 internally, even with dtype=fp16; older cards such as T4 require a separately verified upstream adaptation")
         native_modules = {
             "sam2": ["sam2.build_sam", "groundingdino.util.inference", "decord"],
-            "hamer": ["hamer.models", "hamer.datasets.vitdet_dataset"],
-            "foundationpose": ["estimater", "nvdiffrast.torch", "trimesh"],
+            "hamer": ["hamer.models", "hamer.datasets.vitdet_dataset", "chumpy"],
+            "foundationpose": ["estimater", "nvdiffrast.torch", "trimesh", "pycocotools.mask"],
             "dex_retarget": ["dex_retargeting.retargeting_config"],
             "fast3r": ["fast3r.models.fast3r", "fast3r.dust3r.inference_multiview", "fast3r.dust3r.cloud_opt.init_im_poses"],
         }

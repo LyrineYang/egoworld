@@ -104,6 +104,8 @@ def launch(args):
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="egoworld pipeline")
     sub = parser.add_subparsers(dest="command")
+    from egoworld.product.cli import add_parser
+    add_parser(sub)
 
     manifest = sub.add_parser("make-manifest", help="Build manifests")
     manifest.add_argument("--config", required=True)

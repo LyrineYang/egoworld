@@ -1,0 +1,9 @@
+version: 1
+config: ../configs/rgb.json
+inputs: [../../data/samples/epic-dough-3s.mp4]
+outputs: [camera_poses, scene_points]
+output_dir: /mnt/d/EgoWorld/runs/data
+cache: {root: /mnt/d/EgoWorld/cache/stages}
+cleaning: {decode: full, deduplicate: true}
+operators:
+  fast3r: {max_views: 8, max_points: 100000}

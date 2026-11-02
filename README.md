@@ -18,6 +18,8 @@ EgoWorld connects perception models into a configurable workflow for preparing r
 
 **The aim is simple:** make expensive predictions easier to reuse, inspect, and interpret.
 
+Local development: [output recipes](docs/data-recipes.md) and [CPU quality screening, cache controls, and efficiency checks](docs/cleaning-and-cache.md).
+
 | Choose the work | Keep completed work | Understand the result |
 | --- | --- | --- |
 | Enable the annotation branches your dataset needs. | Resume valid stages after an interrupted run. | Inspect structured outputs, quality checks, and an offline run report. |

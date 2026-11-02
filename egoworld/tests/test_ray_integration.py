@@ -176,9 +176,11 @@ Path(sys.argv[sys.argv.index('--response')+1]).write_text(json.dumps(reply))
 
 
 @pytest.mark.ray_integration
-@pytest.mark.parametrize("stop", ["close", "kill"])
+@pytest.mark.parametrize("stop", ["close", "kill", "sigkill"])
 def test_external_process_group_stops_when_actor_exits(tmp_path, stop):
     if os.getenv("EGOWORLD_RAY_TEST") != "1": pytest.skip("Set EGOWORLD_RAY_TEST=1")
+    if stop == "sigkill" and not sys.platform.startswith("linux"):
+        pytest.skip("Direct actor SIGKILL test reads Linux /proc")
     ray = pytest.importorskip("ray")
     import signal
     from dataclasses import asdict
@@ -202,7 +204,12 @@ def test_external_process_group_stops_when_actor_exits(tmp_path, stop):
             while not heartbeat.is_file() and time.monotonic() < deadline: time.sleep(.05)
             assert heartbeat.is_file(), "External runner never started"
             if stop == "close": backend.close()
-            else: ray.kill(slot["actor"], no_restart=True)
+            elif stop == "kill": ray.kill(slot["actor"], no_restart=True)
+            else:
+                def parent(pid):
+                    status = Path(f"/proc/{pid}/status").read_text().splitlines()
+                    return int(next(line.split()[1] for line in status if line.startswith("PPid:")))
+                os.kill(parent(parent(int(pid_file.read_text()))), signal.SIGKILL)
             # A stable heartbeat alone could be a zombie; additionally require
             # disappearance or a zombie state, never a live inference process.
             pid = int(pid_file.read_text())

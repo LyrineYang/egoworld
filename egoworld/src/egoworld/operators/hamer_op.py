@@ -2,7 +2,7 @@
 from __future__ import annotations
 from egoworld.utils.performance import timed_load
 import numpy as np
-from egoworld.operators.common import array, frame_reader, read_frame, rows, frame_fields
+from egoworld.operators.common import array, frame_reader, read_frame, iter_rows as rows, frame_fields
 
 
 class HamerOperator:
@@ -23,15 +23,23 @@ class HamerOperator:
         import torch
         from hamer.datasets.vitdet_dataset import ViTDetDataset
         from hamer.utils import recursive_to
-        self._load()
         stride = int(self.params.get("frame_stride", 5))
         batch_size = int(self.params.get("batch_size", 8))
         if stride < 1 or batch_size < 1:
             raise ValueError("HaMeR stride and batch size must be positive")
+        selected_ids = self.params.get("object_ids")
+        if selected_ids is not None:
+            if (not isinstance(selected_ids, list) or not selected_ids or
+                    any(not isinstance(i, int) or isinstance(i, bool) or i < 1 for i in selected_ids)):
+                raise ValueError("HaMeR object_ids must be a nonempty list of positive tracked IDs")
+            selected_ids = set(selected_ids)
         by_frame = {}
         for row in rows(inputs, "sam2", "instances", ["frame_index", "object_id", "label", "area_px", "bbox_xyxy"]):
-            if row["area_px"] and any(word in row["label"].lower() for word in ("hand", "glove")) and (row["frame_index"] - clip["frame_start"]) % stride == 0:
+            if (selected_ids is None or row["object_id"] in selected_ids) and row["area_px"] and any(word in row["label"].lower() for word in ("hand", "glove")) and (row["frame_index"] - clip["frame_start"]) % stride == 0:
                 by_frame.setdefault(row["frame_index"], []).append(row)
+        if selected_ids is not None and not by_frame:
+            raise ValueError("No nonempty hand instances match object_ids")
+        self._load()
         cap = frame_reader(video_path)
         output = []
         try:
@@ -61,12 +69,18 @@ class HamerOperator:
                     for j in range(len(joints)):
                         detection, side = detections[offset + j], sides[offset + j]
                         sign = 1 if side == "right" else -1
-                        xyz = joints[j].copy(); xyz[:, 0] *= sign; xyz -= xyz[0]
+                        xyz = joints[j].copy(); xyz[:, 0] *= sign
+                        wrist = xyz[0].copy()
+                        xyz -= wrist
                         focal = float(self.params.get("focal_length_px") or self.model_cfg.EXTRA.FOCAL_LENGTH / self.model_cfg.MODEL.IMAGE_SIZE * image_sizes[j].max())
                         scale, tx, ty = camera[j]; tx *= sign
                         z = 2 * focal / (float(sizes[j]) * float(scale) + 1e-9)
-                        translation = [tx + 2 * (centers[j, 0] - image_sizes[j, 0] / 2) / (sizes[j] * scale + 1e-9),
-                                       ty + 2 * (centers[j, 1] - image_sizes[j, 1] / 2) / (sizes[j] * scale + 1e-9), z]
+                        # The upstream camera translation applies to MANO's
+                        # origin. Our joints are wrist-relative, so preserve
+                        # camera-space points by including the mirrored wrist.
+                        translation = np.asarray([
+                            tx + 2 * (centers[j, 0] - image_sizes[j, 0] / 2) / (sizes[j] * scale + 1e-9),
+                            ty + 2 * (centers[j, 1] - image_sizes[j, 1] / 2) / (sizes[j] * scale + 1e-9), z]) + wrist
                         output.append({**frame_fields(clip, index - clip["frame_start"]),
                             "object_id": detection["object_id"], "handedness": side,
                             "joints_3d": xyz.reshape(-1).tolist(),
