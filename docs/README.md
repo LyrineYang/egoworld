@@ -1,5 +1,7 @@
 # 文档入口
 
+英文展示与研究入口：[English documentation](en/README.md)、[Insights](en/insights.md)、[Research plan](en/research-plan.md)、[实施状态](en/status.md)。后续项目网站见 [视觉方案](website-design.md) 与 [本地网页原型](../website/README.md)。
+
 了解项目价值与展示材料，先看 [README](../README.md)、[工程贡献与研究 insight](overview.md#7-项目定位工程贡献与研究-insight) 和 [架构概览](assets/architecture.svg)。
 
 接手开发或迁移执行环境时，先读 [开发交接](handoff.md)：用户约束、实现基线、证据边界与下一步。

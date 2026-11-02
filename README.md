@@ -2,112 +2,95 @@
 
 # EgoWorld
 
-**Turn egocentric video into structured hand, object, and scene data.**
+**Structured data from human experience.**
 
-Choose annotations. Recover interrupted work. Inspect the resulting data.
+An offline annotation toolkit for egocentric video, built around hands, objects, and scenes.
 
-[![Pipeline checks](https://github.com/LyrineYang/egoworld/actions/workflows/tests.yml/badge.svg)](https://github.com/LyrineYang/egoworld/actions/workflows/tests.yml)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-3776AB?logo=python&logoColor=white)](pyproject.toml)
-
-[Why EgoWorld](#why-egoworld) · [Capabilities](#capabilities) · [Quick start](#quick-start) · [Validation](#validation) · [中文项目解读](docs/overview.md#7-项目定位工程贡献与研究-insight)
+[Overview](#from-video-to-usable-data) · [Quick start](#quick-start) · [Insights](docs/en/insights.md) · [Research plan](docs/en/research-plan.md) · [Documentation](docs/en/README.md)
 
 </div>
 
-EgoWorld is a configurable **offline annotation pipeline** for egocentric video. It connects segmentation, hand pose, object pose, robot hand retargeting, and scene geometry with source timestamps, explicit output contracts, and recovery at each stage.
+![EgoWorld — From human experience to structured data. An abstract hand, object, and scene share an observation field.](docs/assets/hero.svg)
 
-Designed for researchers preparing hand–object–scene data on a single NVIDIA server. Start with RGB segmentation; add branches when the required model and data assets are available.
+## From video to usable data
 
-![Illustrated EgoWorld workflow: video becomes colored masks and tracks, a 3D hand skeleton, robot joints, an object pose with axes, and a scene point cloud](docs/assets/architecture.svg)
+EgoWorld connects perception models into a configurable workflow for preparing research datasets. Extract masks and tracks, reconstruct hands, estimate object poses, retarget robot joints, and recover scene geometry—with explicit source frames, output contracts, and stage-level recovery.
 
-*Pictures show the outputs; model names are secondary labels. Illustrations, not real predictions. Object pose requires aligned RGB-D, intrinsics and a metric mesh; retargeting requires robot assets. Coordinate frames and scales remain separate.*
+**The aim is simple:** make expensive predictions easier to reuse, inspect, and interpret.
 
-## Why EgoWorld
-
-The engineering contribution is the path from model predictions to a recoverable, inspectable dataset. The perception models remain upstream components.
-
-| Practical problem | EgoWorld's design | What this enables |
+| Choose the work | Keep completed work | Understand the result |
 | --- | --- | --- |
-| A dataset needs different annotations on limited hardware | Configurable branches, isolated model environments, model reuse, bounded scheduling | Select supported outputs and control in-flight work within one workflow |
-| One expensive stage fails after others finish | Per-stage commits, schema/hash validation, dependency-aware invalidation | Reuse valid stages and rebuild affected descendants; preserve independent branches |
-| Models disagree about formats, frames, and scale | Shared output contracts with source frame/time and explicit coordinate, unit, and scale fields | Join annotations by source frame and interpret their geometry correctly |
+| Enable the annotation branches your dataset needs. | Resume valid stages after an interrupted run. | Inspect structured outputs, quality checks, and an offline run report. |
 
-**Research focus: scheduling under model-switch and resource costs.** The current scheduler combines completion events, model reuse, waiting protection, and bounded admission. The next question is whether measured switching costs, stage durations, and intermediate-data pressure can improve useful throughput over these fixed heuristics while preserving output quality and recovery. This is proposed research; target-hardware gains have not been established. See the [comparison and validation method](docs/design.md#11-调度作为突破点研究问题与验证方法).
+> **Research software · actively developed.** The public baseline contains five annotation stages. Output recipes, cross-run caches, and calibrated world exports have development prototypes; their integration status is documented in the [status ledger](docs/en/status.md). Throughput gains and downstream learning improvements remain research questions.
 
-**Design insight: time alignment and geometry alignment are different problems.** Source frame indices let you associate observations across stages. A shared metric world frame still requires calibration and scale alignment. EgoWorld records the existing conventions so downstream work can make that distinction. See the [engineering rationale and research opportunities](docs/overview.md#7-项目定位工程贡献与研究-insight).
+## One workflow, several views
 
-The [development handoff](docs/handoff.md#文件结构与阅读地图) maps the existing files to their contents, including gap resolution, alignment steps, scheduling research, and validation.
+![Pipeline: video feeds segmentation and scene geometry; segmentation feeds human hands and object pose; human hands feed robot joints. Every enabled stage writes checked outputs.](docs/assets/pipeline-simple.svg)
 
-<details>
-<summary><strong>Explore the annotation outputs — illustrated model-by-model overview</strong></summary>
+*Processing diagram, not an inference result. Object pose requires aligned RGB-D, intrinsics, and a metric mesh. Robot retargeting requires robot assets. Baseline outputs retain separate coordinate frames and scales.*
 
-![Schematic annotation examples: instance masks and tracks, a 21-joint human hand, robot joint states, object pose, and scene geometry](docs/assets/pipeline.svg)
+| Output | Component | What it provides |
+| --- | --- | --- |
+| **Masks & tracks** | SAM2.1 + GroundingDINO | Instance masks, labels, boxes, and clip-local 2D trajectories |
+| **Human hands** | HaMeR | Handedness, 21 joints, rotations, and MANO shape parameters |
+| **Object poses** | FoundationPose | Object-to-camera position and orientation from RGB-D and mesh assets |
+| **Robot joints** | DexRetarget | Named joint values with robot identity and units |
+| **Scene geometry** | Fast3R | Sampled-view cameras, intrinsics, and a point cloud; relative scale by default |
 
-Illustrations, not real-model predictions. File names, required inputs, and coordinate meanings are explained below and in the [output reference](docs/outputs.md).
+Explore the [illustrated output guide](docs/assets/architecture.svg) or the [architecture and coordinate contracts](docs/en/architecture.md). Models require their own weights and runtime environments.
 
-</details>
+## Ideas driving the project
 
-## Capabilities
+**01 / Start with the data you need.** Researchers usually want hand joints or object trajectories, not a particular execution graph. The developing recipe layer translates requested outputs into shared model work.
 
-| Annotation | Model / component | What you get | Required input |
-| --- | --- | --- | --- |
-| **Segmentation & tracking** | SAM2.1 + GroundingDINO | Hand/object masks, labels, clip-local IDs, 2D boxes and center trajectories | RGB video, text prompts |
-| **3D hand pose** | HaMeR | Handedness, 21 joints, wrist and finger joint rotations, hand shape | RGB and detected hand boxes; HaMeR/MANO assets |
-| **6D object pose** | FoundationPose | Object position and orientation relative to the camera | Aligned RGB-D, camera intrinsics, metric object mesh |
-| **Robotic hand retargeting** | DexRetarget | Named robot joint angles or displacements | 3D hand joints, robot configuration and URDF |
-| **Scene geometry** | Fast3R | Sampled-view camera poses, intrinsics, point cloud | Multiple RGB frames; relative scale by default |
+**02 / Reuse must be earned.** A cache hit is useful only when inputs, model assets, parameters, and upstream results still match. Verification cost and the scope of invalidation are part of the performance problem.
 
-Each enabled model requires its weights and runtime dependencies. FoundationPose and retargeting are optional when their inputs or robot assets are unavailable. Outputs retain their own reference frames; they are not fused into a shared world coordinate system. See the [output reference](docs/outputs.md) for exact meanings and units.
+**03 / A timestamp is not a world frame.** Associating predictions by source frame does not make their coordinates metrically compatible. Scale, calibration, and transform direction must remain explicit.
+
+**04 / Measure useful work.** Optimize accepted output per second while tracking quality, memory, queueing, and recovery. A faster run that silently drops frames answers a different question.
+
+[Read the insights →](docs/en/insights.md) · [Explore the research agenda →](docs/en/research-plan.md)
 
 ## Quick start
 
-Use a Linux NVIDIA server with Conda. Run the commands below from the repository root. The [setup guide](docs/server.md) covers CUDA dependencies, model assets, and configuration.
-
-**1. Install and choose a configuration.**
+Use Linux, an NVIDIA GPU, and Conda for real-model inference. Begin with segmentation and a short video; other branches require separate environments and assets. Hardware fit depends on the model and workload.
 
 ```bash
+git clone https://github.com/LyrineYang/egoworld.git
+cd egoworld
 bash egoworld/scripts/setup_env.sh --weights
 conda activate egoworld-base
 mkdir -p config.local
 cp egoworld/configs/example.json config.local/job.json
 ```
 
-The starter configuration enables SAM2.1 + GroundingDINO. Edit `job.json` to set model paths, target prompts, and output locations. The installer downloads the segmentation weights; additional stages require their own [model environments and assets](egoworld/env/README.md).
-
-| Configuration | Use case |
-| --- | --- |
-| [example.json](egoworld/configs/example.json) | Start with segmentation and 2D tracking |
-| [rgb.json](egoworld/configs/rgb.json) | Add hand pose, robotic hand retargeting, and scene geometry |
-| [full.json](egoworld/configs/full.json) | Also estimate object pose from existing RGB-D and mesh assets |
-| [server.json](egoworld/configs/server.json) | Shared GPU pool for 2–16 GPU servers; four-GPU starting configuration |
-
-**2. Check the setup and run a short sample.**
+Edit `config.local/job.json` for model paths, prompts, and output directory, then check and run:
 
 ```bash
 egoworld launch --config config.local/job.json --input-dir /absolute/videos --check-only
 egoworld doctor --config config.local/job.json --gpu --assets
 egoworld smoke --config config.local/job.json --input-video /absolute/videos/sample.mp4
+egoworld launch --config config.local/job.json --input-dir /absolute/videos --run-id first_run
 ```
 
-The smoke test runs the enabled stages and checks that a second run reuses completed outputs. For a 16 GB GPU, see the [conservative smoke profile and hardware requirements](docs/server.md#7-16gb-单卡-smoke).
-
-**3. Process a directory and inspect the results.**
+Repeat the same launch command to resume an unchanged run. Inspect using the configured output root:
 
 ```bash
-egoworld launch --config config.local/job.json --input-dir /absolute/videos --run-id dataset_001
-egoworld inspect --run-dir /absolute/output/run_id=dataset_001
-egoworld report --run-dir /absolute/output/run_id=dataset_001
+egoworld inspect --run-dir /absolute/output/run_id=first_run
+egoworld report --run-dir /absolute/output/run_id=first_run
 ```
 
-Replace `/absolute/output` with the configured `paths.output_root`. To resume, repeat the same launch command with the same configuration and run ID. Use a new run ID when code, models, inputs, or processing settings change.
+Open the generated `report.html` to explore timings, clip QC, failures, and row counts. It works offline and does not rerun models or certify annotation accuracy.
 
-Open the generated `report.html` in a browser for an **offline inspection report**: stage timing, searchable clip QC, failed or incomplete outputs, and per-stage file row counts. No GPU, model runtime, web server, or network connection is needed. It reads existing run records and checks commit metadata; it does not rerun inference or certify annotation accuracy. Reports include at most 1,000 clip details by default (`--max-clips` changes the limit), and clearly mark partial coverage. See the [inspection guide](docs/server.md#离线可视化报告) for details.
+[Full English walkthrough →](docs/en/getting-started.md) · [Detailed server guide 中文 →](docs/server.md)
 
-## Output format
+## A dataset you can inspect
 
-Annotations are written as **Parquet tables**, with scene point clouds in **NPZ**. Each clip includes quality checks and metadata; each run includes an execution summary and event log.
+Annotations use Parquet, scene points use NPZ, and runs retain manifests, quality checks, and execution records.
 
 ```text
-run_id=dataset_001/
+run_id=first_run/
 ├── run_summary.json
 ├── events.jsonl
 └── video_id=…/clip_id=…/
@@ -117,29 +100,28 @@ run_id=dataset_001/
     └── qc.json · meta.json
 ```
 
-Only enabled stages produce annotations. Use `egoworld schema` to inspect field definitions and `egoworld plan --config config.local/job.json` to view stage dependencies. A completed run confirms execution; its quality reports and sampled annotations still need review.
+Only enabled stages produce associated outputs. Use `egoworld schema` for field definitions and `egoworld plan --config config.local/job.json` for dependencies.
 
-## Documentation
+## Research, with an evidence trail
 
-The detailed guides are currently maintained in Chinese.
+The next phase focuses on **quality-preserving efficiency**: less repeated identity checking and decoding, bounded intermediate data, better model reuse, and explainable filtering. New model families are not the immediate priority.
 
-| Guide | Contents |
+| Workstream | Next question |
 | --- | --- |
-| [Server guide](docs/server.md) | Installation, configuration, processing, recovery, and troubleshooting |
-| [Output reference](docs/outputs.md) | Model-to-output mapping, coordinate frames, units, and required assets |
-| [Architecture](docs/design.md) | Scheduling, resource limits, stage commits, and throughput design |
-| [Testing](docs/testing.md) | CPU checks, Ray integration, real-model smoke tests, and verification boundaries |
-| [Requirements](docs/requirements.md) | Supported scope and its implementation and test coverage |
+| Reuse & input preparation | When do verified caches save more time than they cost? |
+| Resource-aware scheduling | Can measured load costs and memory pressure improve throughput without starving branches? |
+| Quality & geometry | Which outputs are usable, and which require calibration or review? |
+| Reproducible evaluation | How do execution strategies compare with identical models, inputs, and quality requirements? |
 
-## Validation
+CPU and Ray regression records exist for the public baseline. Later development work reports short real-model runs on an 8 GB RTX 4060 Laptop and a separate RGB-D/mesh example; those results depend on changes not all published here. Large-scale throughput, multi-GPU scaling, automatic handedness, and downstream learning gains are not established. See the [evidence ledger](docs/en/status.md).
 
-| Evidence | Current status |
+## Explore further
+
+| Project | Engineering |
 | --- | --- |
-| CPU data flow, contracts, fault recovery, CLI and offline reports | Local regression passed; see [test scope and records](docs/testing.md) |
-| Real Ray processes with model test doubles | Previously passed locally; these checks do not run CUDA inference |
-| Real-model inference and annotation quality | Target-hardware validation pending |
-| 16 GB fit, multi-GPU scaling and server throughput | Configuration templates available; target-hardware measurements pending |
+| [Insights and design rationale](docs/en/insights.md) | [Architecture and contracts](docs/en/architecture.md) |
+| [Research plan and experiments](docs/en/research-plan.md) | [Getting started](docs/en/getting-started.md) |
+| [Website direction and visual system](docs/website-design.md) | [Output reference 中文](docs/outputs.md) |
+| [Local website prototype](website/README.md) | [Test records 中文](docs/testing.md) |
 
-The current contribution is an integration and execution system. New perception algorithms, a fused metric world representation, and downstream robot-learning gains would require separate evidence.
-
-**Licensing.** A project license has not yet been specified. Integrated models and assets remain subject to their respective upstream licenses.
+**Acknowledgments.** Built on [SAM2](https://github.com/facebookresearch/sam2), [GroundingDINO](https://github.com/IDEA-Research/GroundingDINO), [HaMeR](https://github.com/geopavlakos/hamer), [FoundationPose](https://github.com/NVlabs/FoundationPose), [dex-retargeting](https://github.com/dexsuite/dex-retargeting), and [Fast3R](https://github.com/facebookresearch/fast3r). Models and assets retain upstream licenses and access requirements. A license for EgoWorld itself has not yet been selected.
