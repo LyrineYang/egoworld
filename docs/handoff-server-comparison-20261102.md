@@ -34,6 +34,10 @@
 
 可直接交接的私有运行资料还包括 `/mnt/d/EgoWorld/runs/c1-comparison-20261102/server-asset-inventory.json`（真实模型资产哈希、目录要求和上游 revision）、`source-patches/`（需随对应上游版本保存的源补丁）、`host.json`、`final-pair/source-snapshot/` 与 `final-robot-fk.json`。原生 WiLoR 的源码未改，未跟踪的 pycache 是运行缓存。正式三行机器人产物的独立 URDF/Pinocchio 验证通过，严格越界为零。
 
+代码从远端 main 干净 clone，或使用本轮显式分支 bundle：`/mnt/d/EgoWorld/runs/c1-comparison-20261102/egoworld-server-c1.bundle`。本地旧 Codex checkpoint ref 损坏会影响普通 fetch，本轮通过 D 盘独立传输仓库正常快进推送，保留了原引用；不要整拷本机 `.git` 到服务器。该问题不影响已核验源码和远端历史。
+
+生成配置保留源配方的 split/profiling 等选项。正式服务器计时组应明确诊断开销、phase/prepare/Writer 数量与预算，先测瓶颈，再调整；生成器没有声称配置已达到吞吐最优。
+
 ## 可执行服务器配置准备
 
 ```bash
