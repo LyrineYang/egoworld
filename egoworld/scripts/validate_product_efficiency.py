@@ -24,10 +24,15 @@ from egoworld.utils.hashing import register_assets
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, required=True)
+    parser.add_argument("--run-prefix", help="Fresh prefix for reruns; defaults to a unique invocation ID")
     args = parser.parse_args()
     root = args.root.resolve()
+    from egoworld.pipeline.driver import make_run_id
+    prefix = args.run_prefix or make_run_id()
+    if any(c not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for c in prefix):
+        parser.error("run-prefix supports letters, digits, underscore and hyphen")
     result = {"version": 1, "status": "running", "cases": {}, "scope": "Fixed short fixtures; functional acceptance, not general throughput or ground-truth accuracy"}
-    output = root / "acceptance.json"
+    output = root / f"acceptance-{prefix}.json"
     def save():
         output.write_text(json.dumps(result, indent=2) + "\n")
     def run(label, recipe):
@@ -35,7 +40,7 @@ def main():
         file.write_text(json.dumps(recipe, indent=2) + "\n")
         print("Running", label, flush=True)
         start = time.perf_counter()
-        value = run_recipe(file, run_id=label)
+        value = run_recipe(file, run_id=f"{prefix}_{label}")
         result["cases"][label] = {"status": value["status"], "elapsed_seconds": time.perf_counter() - start,
             "manifest": str(Path(value["run_dir"]) / "data_manifest.json"),
             "computed": value["computed"], "cache_hits": value["cache_hits"],
@@ -105,7 +110,7 @@ def main():
         assert value["status"] == "passed" and [r["kernel"] for r in value["computed"]] == ["dex_retarget"]
         assert value["required_compute_stages"] == ["dex_retarget"]
         for name, side in (("hands_split", "right"), ("left_cpu_only", "left")):
-            folder = root / f"runs/run_id={name}/model-output"
+            folder = root / "runs/run_id=hands_split/model-output" if name == "hands_split" else Path(result["cases"][name]["manifest"]).parent / "model-output"
             mapping = next(folder.glob("run_id=*/video_id=*/clip_id=*/mapping.parquet"))
             subprocess.run([str(Path(".venv/dex/bin/python").absolute()), "egoworld/scripts/verify_dex_output.py",
                 "--mapping", str(mapping), "--urdf", f"external/dex-retargeting/assets/robots/hands/allegro_hand/allegro_hand_{side}.urdf",

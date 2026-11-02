@@ -25,12 +25,9 @@ class CachedFrameReader:
                 self.cap = cv2.VideoCapture(self.path)
                 if not self.cap.isOpened():
                     raise ValueError(f"Cannot open video: {self.path}")
-            if int(self.cap.get(cv2.CAP_PROP_POS_FRAMES)) != index:
-                self.cap.set(cv2.CAP_PROP_POS_FRAMES, index)
-            ok, frame = self.cap.read()
-            if not ok:
-                raise ValueError(f"Cannot decode frame {index}")
-            return {"frame": frame}
+            from egoworld.operators.frame_sampling import read_index
+            from egoworld.utils.timing import phase
+            return {"frame": read_index(self.cap, int(index), phase_factory=phase)}
         return self.cache.get("frame", [self.decoder, int(index)], decode)["frame"]
 
     def release(self):
