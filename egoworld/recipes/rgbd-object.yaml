@@ -7,3 +7,6 @@ output_dir: /mnt/d/EgoWorld/runs/data
 cache: {root: /mnt/d/EgoWorld/cache/stages}
 cleaning: {decode: full, deduplicate: true}
 branch_cleaning: {min_depth_fraction: 0.2}
+operators:
+  sam2:
+    prompting: {prompt_text: 'bottle .'}

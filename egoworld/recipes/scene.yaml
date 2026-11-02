@@ -6,4 +6,5 @@ output_dir: /mnt/d/EgoWorld/runs/data
 cache: {root: /mnt/d/EgoWorld/cache/stages}
 cleaning: {decode: full, deduplicate: true}
 operators:
-  fast3r: {max_views: 8, max_points: 100000}
+  # Explicit small-GPU example; edit sampling/precision to match your data needs.
+  fast3r: {max_views: 2, image_size: 224, dtype: bf16, attn_implementation: pytorch_auto, max_points: 100000}

@@ -12,6 +12,8 @@ egoworld data run --recipe my.yaml
 ```
 
 `plan --screen` 和 `screen` 只运行 CPU。普通 `plan` 展示模型依赖、采样和度量前提，不解码视频。
+`scene.yaml` 显式提供 224/bf16/两视图的小显存例子，`metric-world.yaml` 是 512/bf16/三视图；这些是可编辑示例，不会覆盖用户已有配置。
+RGB-D 示例的提示标签必须与自己的 `foundationpose.objects` 网格键一致；先配置资产，不能直接把通用 full.json 的 cup 网格当作 mustard/bottle。
 `data run` 默认排除打不开、元信息无效、解码不完整、解码尺寸变化、时间基准不一致和统计采样点全部为纯色空白的视频，并按完整文件 SHA-256 去重。
 重复内容只处理第一份合格输入，报告记录 `duplicate_of`；如果第一份被质量策略拒绝，后续副本也会按同一策略判断。
 全部被拒绝时返回 `status: rejected`、CLI 非零退出，不启动模型环境检查或 Ray。

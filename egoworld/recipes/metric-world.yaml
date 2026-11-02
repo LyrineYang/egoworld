@@ -12,6 +12,8 @@ operators:
   fast3r:
     image_size: 512
     max_views: 3
+    dtype: bf16
+    attn_implementation: pytorch_auto
 calibration:
   method: rgbd
   assets_manifest: ../../config.local/mustard-rgbd-assets.json
