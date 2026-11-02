@@ -1,0 +1,13 @@
+flowchart LR
+    video["Video clips"] --> masks["Masks and tracks"]
+    masks --> hands["Human hands"]
+    hands --> robot["Robot joints"]
+    masks --> object["Object poses"]
+    rgbd["RGB-D, intrinsics, metric mesh"] -.-> object
+    robotAssets["Robot assets"] -.-> robot
+    video --> scene["Scene geometry"]
+    masks --> outputs["Checked outputs"]
+    hands --> outputs
+    robot --> outputs
+    object --> outputs
+    scene --> outputs

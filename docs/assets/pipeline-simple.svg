@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="480" viewBox="0 0 1280 480" role="img" aria-labelledby="title desc">
+  <title id="title">EgoWorld processing pipeline</title>
+  <desc id="desc">Video clips feed masks and tracks, and independently scene geometry. Masks feed human hands and object poses; hands feed robot joints. Object poses require RGB-D, intrinsics and a metric mesh. Robot joints require robot assets. All enabled stages produce checked outputs.</desc>
+  <defs><marker id="arrow" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 7 3.5 0 7" fill="#81796d"/></marker></defs>
+  <rect width="1280" height="480" rx="4" fill="#f6f3eb"/>
+  <g font-family="Arial, Helvetica, sans-serif" fill="#282820">
+    <text x="42" y="42" font-size="13" letter-spacing="2" fill="#70685c">EGOWORLD / PROCESSING GRAPH</text>
+    <g fill="none" stroke="#81796d" stroke-width="1.6" marker-end="url(#arrow)">
+      <path d="M238 158H296"/><path d="M522 158H582"/><path d="M816 158H876"/>
+      <path d="M266 158V288H296"/><path d="M552 158V288H582"/>
+    </g>
+    <g stroke="#d2cbbd" stroke-width="1">
+      <rect x="42" y="104" width="196" height="108" fill="#e8e4d8"/>
+      <rect x="296" y="104" width="226" height="108" fill="#fffdf8"/>
+      <rect x="582" y="104" width="234" height="108" fill="#fffdf8"/>
+      <rect x="876" y="104" width="362" height="108" fill="#fffdf8"/>
+      <rect x="296" y="250" width="226" height="100" fill="#e8ece2"/>
+      <rect x="582" y="250" width="234" height="100" fill="#efe1d5"/>
+    </g>
+    <g font-size="23"><text x="62" y="145">Video clips</text><text x="316" y="145">Masks &amp; tracks</text><text x="602" y="145">Human hands</text><text x="896" y="145">Robot joints</text><text x="316" y="289">Scene geometry</text><text x="602" y="289">Object poses</text></g>
+    <g font-size="15" fill="#655e52"><text x="62" y="177">RGB + prompts</text><text x="316" y="177">SAM2.1 + GroundingDINO</text><text x="602" y="177">HaMeR · 21 joints + MANO</text><text x="896" y="177">DexRetarget · robot assets required</text><text x="316" y="319">Fast3R · sampled views</text><text x="602" y="319">FoundationPose</text></g>
+    <path d="M856 286H824" stroke="#9b6650" stroke-width="1.5" stroke-dasharray="4 5" marker-end="url(#arrow)"/>
+    <text x="876" y="280" font-size="16" fill="#84523d">Aligned RGB-D + intrinsics</text><text x="876" y="305" font-size="16" fill="#84523d">+ metric object mesh</text>
+    <path d="M42 384H1238" stroke="#d2cbbd"/>
+    <text x="42" y="420" font-size="18">Every enabled stage → checked outputs</text><text x="650" y="420" font-size="16" fill="#655e52">Parquet / NPZ · source frames · QC · stage recovery</text>
+    <text x="42" y="452" font-size="13" fill="#70685c">Logical dependencies. Baseline coordinate frames and scales remain separate.</text>
+  </g>
+</svg>
