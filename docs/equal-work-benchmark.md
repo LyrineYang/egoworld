@@ -53,7 +53,7 @@ python -m venv .venv/datajuicer-bench
   --index-url https://download.pytorch.org/whl/cpu
 ```
 
-不需要安装其视频模型或模型权重来执行 A 层。实际包版本由每组运行的 `environment-*.json` 保留。优先两个路径使用同一个解释器，避免依赖/NumPy 版本造成混淆。不要升级共享模型环境。
+不需要安装其视频模型或模型权重来执行 A 层。实际包版本由每组运行的 `environment-*.json` 保留。优先两个路径使用同一个解释器，避免依赖/NumPy 版本造成混淆。不要升级共享模型环境。要复现本次包版本，在安装上述 CPU Torch 后，使用 [环境约束](../egoworld/experiments/equal_work/requirements-pilot.txt)：`python -m pip install -r egoworld/experiments/equal_work/requirements-pilot.txt`。
 
 ```bash
 .venv/datajuicer-bench/bin/python egoworld/scripts/benchmark_equal_work.py freeze \
@@ -76,6 +76,22 @@ python -m venv .venv/datajuicer-bench
 输出目录必须不存在。源文件或规则变化需要新语料/新目录，不覆盖旧报告。冻结目录同时保存实验代码和契约源码快照。`freeze --fault-fixtures` 可以额外加入四条明确标记的合成错误行，用于真实执行器的拒绝分支检查；它们计入 `synthetic_fault_rows`，不增加真实样本规模。现阶段只支持一次冻结一个 clip，不能重复复制它后宣称获得独立视频规模。冻结需要可序列化的规范 JSON；坏文件、重复身份导致冻结失败，失败不属于测量集。数值/单位等逐行拒绝可在规则中解释，但这些不覆盖输入视频层清洗。
 
 `stream_reference` 是实验中的流式参考，不是生产 EgoWorld 执行器。其与 Data-Juicer 的启动时间比不能命名为“EgoWorld 加速比”。这个接口目前证明实验可追溯与输出判定可比较，不构成核心系统优越性证据。
+
+## 2026-11-02 实际接入记录
+
+[机器可读报告](benchmarks/equal-work-pilot-2026-11-02.json) 实验文件哈希对应提交 `25a3b4d`，包含输入/源码哈希、包版本、全部逐次记录、worker 分项计时、环境与失败说明。原始目录为 `output/equal-work-20261102/`；源码快照随语料保留。生产包源码哈希仍是此前 GPU 验证的 `e94d1111…`，本次没有重跑 GPU 推理。
+
+- 原始语料来自既有真实 HaMeR 产物：1 个视频、40 个源帧（200–395）、2 个手部对象、80 行；不包含合成错误。重复运行不增加独立样本规模。
+- 5 轮交替、共 10 次运行全部成功；每次 80 行判定和 80 行完整保留输出精确匹配，运行前后包版本一致。
+- 另有 1 轮实际执行器检查：80 条原生行 + 4 条标记的合成错误，两端都保留 80、拒绝 4；其数值不混入原始语料的 5 轮统计。
+- 初次接入自动补装依赖的运行被终止，报告标为无效并保留；随后在测量外完成 Ray/CPU Torch 安装，正式 pilot 使用离线与环境稳定性门槛。
+
+| CPU artifact cleaning，fresh process | 次数 | 墙钟中位数（范围） | 进程树采样 RSS 最大值 |
+| --- | --- | --- | --- |
+| 实验流式参考 | 5 | 1.541 s（1.518–2.541） | 56.96 MiB |
+| Data-Juicer DefaultExecutor | 5 | 65.572 s（62.977–76.339） | 568.48 MiB |
+
+**这不是生产 EgoWorld 与 Data-Juicer 的完整处理对照。** 机器为 Ryzen 9 7945HX / WSL2，解释器与工作区位于 `/mnt/c` 的 9p 挂载盘；小语料的 fresh-process 结果深受导入、框架初始化和文件系统成本影响，不代表稳态清洗速度。此处只验证接口、审计与记录流程，不能据此声称完整具身处理加速或提高标注质量。更大语料、持久进程和 Linux 本地盘需要独立成组，完整模型与产品流程仍待 B/C 层接入。
 
 ## B/C 层：下一步的主要实验
 

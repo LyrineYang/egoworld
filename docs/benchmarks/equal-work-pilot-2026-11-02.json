@@ -1,0 +1,1555 @@
+{
+  "version": 1,
+  "experiment_source_revision": "25a3b4d83479f320794d53107163ed76752f303e",
+  "production_source_tree_hash": "e94d1111efd4a19aff86fd2742a8b786374acc45614be8233ee780e614b26a19",
+  "scope": "CPU hand-artifact contract cleaning, fresh process, shared rule, stream_reference versus real Data-Juicer DefaultExecutor",
+  "not_established": [
+    "Production EgoWorld speedup over Data-Juicer",
+    "Video/model inference throughput",
+    "Pose accuracy or downstream training quality",
+    "Server or multi-GPU scaling"
+  ],
+  "host": {
+    "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "cpu_model": "AMD Ryzen 9 7945HX with Radeon Graphics",
+    "memory_info": {
+      "MemTotal": "15965408 kB",
+      "SwapTotal": "4194304 kB"
+    },
+    "storage": "{\n   \"filesystems\": [\n      {\n         \"target\": \"/mnt/c\",\n         \"fstype\": \"9p\"\n      }\n   ]\n}\n",
+    "scope": "Linux/WSL CPU artifact-cleaning pilot on mounted Windows worktree; no GPU inference"
+  },
+  "environment": {
+    "python": "3.12.3 (main, Aug 31 2026, 10:18:26) [GCC 13.3.0]",
+    "packages": [
+      [
+        "GitPython",
+        "3.2.1"
+      ],
+      [
+        "Jinja2",
+        "3.1.6"
+      ],
+      [
+        "MarkupSafe",
+        "3.0.4"
+      ],
+      [
+        "PyYAML",
+        "6.0.3"
+      ],
+      [
+        "aiohappyeyeballs",
+        "2.7.1"
+      ],
+      [
+        "aiohttp",
+        "3.14.5"
+      ],
+      [
+        "aiosignal",
+        "1.4.0"
+      ],
+      [
+        "altair",
+        "6.3.0"
+      ],
+      [
+        "annotated-types",
+        "0.8.0"
+      ],
+      [
+        "anyio",
+        "4.16.0"
+      ],
+      [
+        "attrs",
+        "26.1.0"
+      ],
+      [
+        "beautifulsoup4",
+        "4.15.0"
+      ],
+      [
+        "certifi",
+        "2026.10.23"
+      ],
+      [
+        "charset-normalizer",
+        "3.5.2"
+      ],
+      [
+        "click",
+        "8.5.0"
+      ],
+      [
+        "datasets",
+        "5.1.0"
+      ],
+      [
+        "dep-logic",
+        "0.7.2"
+      ],
+      [
+        "dill",
+        "0.3.8"
+      ],
+      [
+        "docstring_parser",
+        "0.18.0"
+      ],
+      [
+        "emoji",
+        "2.2.0"
+      ],
+      [
+        "filelock",
+        "4.2.6"
+      ],
+      [
+        "frozenlist",
+        "1.8.0"
+      ],
+      [
+        "fsspec",
+        "2026.7.0"
+      ],
+      [
+        "gitdb",
+        "4.0.12"
+      ],
+      [
+        "h11",
+        "0.16.0"
+      ],
+      [
+        "hf-xet",
+        "1.8.0"
+      ],
+      [
+        "httpcore",
+        "1.0.9"
+      ],
+      [
+        "httpcore2",
+        "2.16.0"
+      ],
+      [
+        "httpx",
+        "0.28.1"
+      ],
+      [
+        "httpx2",
+        "2.16.0"
+      ],
+      [
+        "huggingface_hub",
+        "2.4.0"
+      ],
+      [
+        "idna",
+        "3.20"
+      ],
+      [
+        "itsdangerous",
+        "2.2.0"
+      ],
+      [
+        "jsonargparse",
+        "4.53.0"
+      ],
+      [
+        "jsonlines",
+        "4.0.0"
+      ],
+      [
+        "jsonschema",
+        "4.26.0"
+      ],
+      [
+        "jsonschema-specifications",
+        "2025.9.1"
+      ],
+      [
+        "loguru",
+        "0.7.3"
+      ],
+      [
+        "lz4",
+        "4.4.5"
+      ],
+      [
+        "mpmath",
+        "1.3.0"
+      ],
+      [
+        "msgpack",
+        "1.2.4"
+      ],
+      [
+        "multidict",
+        "7.2.1"
+      ],
+      [
+        "multiprocess",
+        "0.70.16"
+      ],
+      [
+        "mwparserfromhell",
+        "0.7.2"
+      ],
+      [
+        "narwhals",
+        "2.28.0"
+      ],
+      [
+        "networkx",
+        "3.7"
+      ],
+      [
+        "numpy",
+        "2.5.4"
+      ],
+      [
+        "packaging",
+        "26.3"
+      ],
+      [
+        "pandas",
+        "3.1.0"
+      ],
+      [
+        "pillow",
+        "13.0.0"
+      ],
+      [
+        "propcache",
+        "0.5.4"
+      ],
+      [
+        "protobuf",
+        "7.36.2"
+      ],
+      [
+        "psutil",
+        "7.2.2"
+      ],
+      [
+        "py-data-juicer",
+        "1.6.1"
+      ],
+      [
+        "pyarrow",
+        "26.0.0"
+      ],
+      [
+        "pydantic",
+        "2.14.2"
+      ],
+      [
+        "pydantic_core",
+        "2.50.2"
+      ],
+      [
+        "pydeck",
+        "0.9.3"
+      ],
+      [
+        "python-dateutil",
+        "4.0.0"
+      ],
+      [
+        "python-multipart",
+        "0.0.33"
+      ],
+      [
+        "ray",
+        "2.59.0"
+      ],
+      [
+        "referencing",
+        "0.37.0"
+      ],
+      [
+        "regex",
+        "2026.9.29"
+      ],
+      [
+        "requests",
+        "2.34.2"
+      ],
+      [
+        "rpds-py",
+        "2026.9.1"
+      ],
+      [
+        "setuptools",
+        "78.1.0"
+      ],
+      [
+        "smmap",
+        "5.0.3"
+      ],
+      [
+        "soupsieve",
+        "3.0.4"
+      ],
+      [
+        "starlette",
+        "1.10.0"
+      ],
+      [
+        "streamlit",
+        "1.66.1"
+      ],
+      [
+        "sympy",
+        "1.14.0"
+      ],
+      [
+        "tabulate",
+        "0.10.0"
+      ],
+      [
+        "tomli",
+        "2.5.0"
+      ],
+      [
+        "tomli_w",
+        "1.2.0"
+      ],
+      [
+        "torch",
+        "2.15.0+cpu"
+      ],
+      [
+        "tqdm",
+        "4.70.1"
+      ],
+      [
+        "truststore",
+        "0.10.5"
+      ],
+      [
+        "typeshed_client",
+        "2.14.0"
+      ],
+      [
+        "typing-inspection",
+        "0.4.4"
+      ],
+      [
+        "typing_extensions",
+        "4.16.0"
+      ],
+      [
+        "tzdata",
+        "2026.6"
+      ],
+      [
+        "urllib3",
+        "2.8.0"
+      ],
+      [
+        "uv",
+        "0.13.6"
+      ],
+      [
+        "uvicorn",
+        "0.54.0"
+      ],
+      [
+        "watchdog",
+        "6.0.0"
+      ],
+      [
+        "websockets",
+        "17.4"
+      ],
+      [
+        "wget",
+        "3.2"
+      ],
+      [
+        "xxhash",
+        "4.0.2"
+      ],
+      [
+        "yarl",
+        "1.25.1"
+      ],
+      [
+        "zstandard",
+        "0.25.0"
+      ]
+    ]
+  },
+  "native_corpus": {
+    "unique_videos": 1,
+    "rows": 80,
+    "unique_source_frames": 40,
+    "object_ids": [
+      1,
+      2
+    ],
+    "frame_min": 200,
+    "frame_max": 395,
+    "synthetic_rows": 0,
+    "repeats_do_not_add_independent_samples": true
+  },
+  "validation": {
+    "cpu_ray_passed": 271,
+    "deselected": 11,
+    "wall_seconds": 264.31,
+    "new_gate_tests": 23,
+    "website_build": "passed"
+  },
+  "records": [
+    {
+      "role": "native-artifact-cleaning-pilot",
+      "raw_report": "output/equal-work-20261102/pilot-v3/report.json",
+      "raw_report_sha256": "743a70223c6aebe9e5fd4c8b7f45fd5262a373b03def916692111819ccf5d5ea",
+      "report": {
+        "cache_state": "Unique empty work/cache directories per trial, OS caches uncontrolled, no model execution",
+        "contract": {
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "datajuicer_revision": "09178e1e0ac76cfbfe11232d66244e1ccc5add6f",
+          "inputs": {
+            "hand_pose": {
+              "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/video_id=schedule-3a19e1596686/clip_id=c000/hand_pose.parquet",
+              "sha256": "b30d37c2bb9c5c38a3dc74578361b9a86da76c9d28812cef91688b890047245d"
+            },
+            "meta": {
+              "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/video_id=schedule-3a19e1596686/clip_id=c000/meta.json",
+              "sha256": "3b95777fc739d0a95e1baa3f4cdb8853cedf798d87b8ab3738e927d5499ae8cc"
+            },
+            "provenance": {
+              "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/run_manifest.json",
+              "sha256": "2d59a2115e2fdd94e4d01342d70600796d2ed05751fc9a08cc638ea7297c1d2c"
+            },
+            "video": {
+              "path": "/home/lyrine/projects/egoworld/data/samples/visor-cut-0.mp4",
+              "sha256": "3a19e1596686eafb10ea5aa3d304abcc24d464d6f3a2ceb2a7ce544b23363e62"
+            }
+          },
+          "quality_limit": "Contract-valid does not imply accurate or useful pose",
+          "rows": 80,
+          "rule": "egoworld-hand-contract-v1",
+          "scope": "hand-artifact-contract-cleaning-only",
+          "source_identity": {
+            "experiments/equal_work/__init__.py": "20462987dac49772548a2f8f469644a313625bda535aa33d217202a6aa99d52d",
+            "experiments/equal_work/audit.py": "1b87c74328833153ffdc2c4e4bf370695f973f98960f4e5575c5285a6d068d5d",
+            "experiments/equal_work/contract.py": "adf07880d511e688f8077cfdf47074555f341c211c7873c73f32e538e7e8dcfb",
+            "experiments/equal_work/dj_operator.py": "a239553575dd117a886de25f4ea18536a41ecb9e1aa2d07f37eb130b4055a42a",
+            "experiments/equal_work/suite.py": "7e996bab577ed9d6f5de7ddd5dcfc9a1b340d8bb8265663a126494f9712540ea",
+            "experiments/equal_work/worker.py": "bdcd3e9d047f58671a5f6cf99de39a119c499959a80c158341d1086cabaee790",
+            "scripts/benchmark_equal_work.py": "8ae35f1b6b8e52e701b81e30877a6b0faa29ea2786b9127c9256891cf5660a1c",
+            "src/egoworld/contracts.py": "118b38fef6c2111e863303a4bfa711b484d035c39a98d5c2c28f5a44ab1b9755"
+          },
+          "synthetic_fault_rows": 0,
+          "timing_scope": "Fresh process through persisted normalized outputs; no model inference",
+          "version": 1
+        },
+        "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+        "controlled_environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "1",
+          "NUMEXPR_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PIP_NO_INDEX": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONHASHSEED": "0",
+          "TOKENIZERS_PARALLELISM": "false",
+          "UV_OFFLINE": "1"
+        },
+        "cpu_affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        "cpu_count": 32,
+        "created_utc": "2026-11-02T09:24:17.054420+00:00",
+        "interpreters": {
+          "datajuicer": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+          "stream_reference": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python"
+        },
+        "memory_method": "20ms sampled sum RSS of child process tree; shared pages may be double counted",
+        "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+        "repeats": 5,
+        "summary": {
+          "all_trials_valid": true,
+          "datajuicer_over_stream_reference_wall_ratio": 42.53857198914302,
+          "environment_stable": true,
+          "expected_trials": 10,
+          "interpretation": "CPU artifact-cleaning pilot; not a production EgoWorld or GPU inference comparison",
+          "observed_trials": 10,
+          "wall_seconds": {
+            "datajuicer": {
+              "max": 76.3393562429992,
+              "median": 65.5722864849995,
+              "min": 62.97655501400004,
+              "n": 5,
+              "p95_nearest_rank": 76.3393562429992
+            },
+            "stream_reference": {
+              "max": 2.540939578999314,
+              "median": 1.5414783199994417,
+              "min": 1.5182341300005646,
+              "n": 5,
+              "p95_nearest_rank": 2.540939578999314
+            }
+          }
+        },
+        "timing": "Fresh process start to successful exit, including imports, input verification, executor and final writes; excludes corpus freezing, source admission and audit",
+        "trials": [
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "stream_reference",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/000-stream_reference"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "stream_reference",
+            "directory": "000-stream_reference",
+            "load_average_before": [
+              1.2099609375,
+              2.37158203125,
+              1.908203125
+            ],
+            "process_tree_peak_rss_bytes": 59441152,
+            "repeat": 0,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:24:18.773825+00:00",
+            "status": "ok",
+            "wall_seconds": 2.540939578999314
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "datajuicer",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/000-datajuicer"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "datajuicer",
+            "directory": "000-datajuicer",
+            "load_average_before": [
+              1.2734375,
+              2.365234375,
+              1.9091796875
+            ],
+            "process_tree_peak_rss_bytes": 595111936,
+            "repeat": 0,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:24:22.577697+00:00",
+            "status": "ok",
+            "wall_seconds": 76.3393562429992
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "datajuicer",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/001-datajuicer"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "datajuicer",
+            "directory": "001-datajuicer",
+            "load_average_before": [
+              1.19677734375,
+              2.09033203125,
+              1.84716796875
+            ],
+            "process_tree_peak_rss_bytes": 596094976,
+            "repeat": 1,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:25:39.092753+00:00",
+            "status": "ok",
+            "wall_seconds": 62.97655501400004
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "stream_reference",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/001-stream_reference"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "stream_reference",
+            "directory": "001-stream_reference",
+            "load_average_before": [
+              1.14013671875,
+              1.90283203125,
+              1.79736328125
+            ],
+            "process_tree_peak_rss_bytes": 59637760,
+            "repeat": 1,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:26:42.252827+00:00",
+            "status": "ok",
+            "wall_seconds": 1.6068611059999967
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "stream_reference",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/002-stream_reference"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "stream_reference",
+            "directory": "002-stream_reference",
+            "load_average_before": [
+              1.14013671875,
+              1.90283203125,
+              1.79736328125
+            ],
+            "process_tree_peak_rss_bytes": 59547648,
+            "repeat": 2,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:26:44.037597+00:00",
+            "status": "ok",
+            "wall_seconds": 1.5414783199994417
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "datajuicer",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/002-datajuicer"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "datajuicer",
+            "directory": "002-datajuicer",
+            "load_average_before": [
+              1.20947265625,
+              1.90478515625,
+              1.798828125
+            ],
+            "process_tree_peak_rss_bytes": 595423232,
+            "repeat": 2,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:26:45.757572+00:00",
+            "status": "ok",
+            "wall_seconds": 65.5722864849995
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "datajuicer",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/003-datajuicer"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "datajuicer",
+            "directory": "003-datajuicer",
+            "load_average_before": [
+              1.29833984375,
+              1.7890625,
+              1.76513671875
+            ],
+            "process_tree_peak_rss_bytes": 595578880,
+            "repeat": 3,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:27:51.514216+00:00",
+            "status": "ok",
+            "wall_seconds": 65.95010022800125
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "stream_reference",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/003-stream_reference"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "stream_reference",
+            "directory": "003-stream_reference",
+            "load_average_before": [
+              1.11767578125,
+              1.6337890625,
+              1.7109375
+            ],
+            "process_tree_peak_rss_bytes": 59731968,
+            "repeat": 3,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:28:57.649407+00:00",
+            "status": "ok",
+            "wall_seconds": 1.5186012320009468
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "stream_reference",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/004-stream_reference"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "stream_reference",
+            "directory": "004-stream_reference",
+            "load_average_before": [
+              1.11767578125,
+              1.6337890625,
+              1.7109375
+            ],
+            "process_tree_peak_rss_bytes": 59633664,
+            "repeat": 4,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:28:59.348020+00:00",
+            "status": "ok",
+            "wall_seconds": 1.5182341300005646
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "datajuicer",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/pilot-v3/004-datajuicer"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "datajuicer",
+            "directory": "004-datajuicer",
+            "load_average_before": [
+              1.1884765625,
+              1.64013671875,
+              1.712890625
+            ],
+            "process_tree_peak_rss_bytes": 595898368,
+            "repeat": 4,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:29:01.049005+00:00",
+            "status": "ok",
+            "wall_seconds": 63.661944118000974
+          }
+        ],
+        "version": 1
+      },
+      "workers": [
+        {
+          "accepted": 80,
+          "backend": "stream_reference",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "normalize_and_write_seconds": 0.5024585030005255,
+            "setup_seconds": 1.379244481000569
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 55824384,
+          "status": "ok",
+          "worker_seconds": 1.8817245700010972
+        },
+        {
+          "accepted": 80,
+          "backend": "datajuicer",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "datajuicer_install": {
+            "archive_info": {
+              "hash": "sha256=57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec",
+              "hashes": {
+                "sha256": "57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec"
+              }
+            },
+            "url": "https://github.com/datajuicer/data-juicer/archive/09178e1e0ac76cfbfe11232d66244e1ccc5add6f.zip"
+          },
+          "datajuicer_version": "1.6.1",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "executor_seconds": 39.35895843800063,
+            "normalize_and_write_seconds": 0.054887496000446845,
+            "setup_seconds": 35.11688781799967
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 419213312,
+          "status": "ok",
+          "worker_seconds": 74.53075759400053
+        },
+        {
+          "accepted": 80,
+          "backend": "datajuicer",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "datajuicer_install": {
+            "archive_info": {
+              "hash": "sha256=57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec",
+              "hashes": {
+                "sha256": "57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec"
+              }
+            },
+            "url": "https://github.com/datajuicer/data-juicer/archive/09178e1e0ac76cfbfe11232d66244e1ccc5add6f.zip"
+          },
+          "datajuicer_version": "1.6.1",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "executor_seconds": 36.061777771999914,
+            "normalize_and_write_seconds": 0.0613173679994361,
+            "setup_seconds": 24.962638953998976
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 419901440,
+          "status": "ok",
+          "worker_seconds": 61.08576101399922
+        },
+        {
+          "accepted": 80,
+          "backend": "stream_reference",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "normalize_and_write_seconds": 0.1928852149994782,
+            "setup_seconds": 0.7699589139992895
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 58867712,
+          "status": "ok",
+          "worker_seconds": 0.9628583949997847
+        },
+        {
+          "accepted": 80,
+          "backend": "stream_reference",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "normalize_and_write_seconds": 0.19317233299989311,
+            "setup_seconds": 0.6936385300014081
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 59392000,
+          "status": "ok",
+          "worker_seconds": 0.8869087190014397
+        },
+        {
+          "accepted": 80,
+          "backend": "datajuicer",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "datajuicer_install": {
+            "archive_info": {
+              "hash": "sha256=57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec",
+              "hashes": {
+                "sha256": "57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec"
+              }
+            },
+            "url": "https://github.com/datajuicer/data-juicer/archive/09178e1e0ac76cfbfe11232d66244e1ccc5add6f.zip"
+          },
+          "datajuicer_version": "1.6.1",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "executor_seconds": 38.24809129800087,
+            "normalize_and_write_seconds": 0.05566254400036996,
+            "setup_seconds": 25.450369591000708
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 419500032,
+          "status": "ok",
+          "worker_seconds": 63.75414721400011
+        },
+        {
+          "accepted": 80,
+          "backend": "datajuicer",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "datajuicer_install": {
+            "archive_info": {
+              "hash": "sha256=57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec",
+              "hashes": {
+                "sha256": "57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec"
+              }
+            },
+            "url": "https://github.com/datajuicer/data-juicer/archive/09178e1e0ac76cfbfe11232d66244e1ccc5add6f.zip"
+          },
+          "datajuicer_version": "1.6.1",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "executor_seconds": 36.57269927499874,
+            "normalize_and_write_seconds": 0.05568226099967433,
+            "setup_seconds": 27.321796669999458
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 420159488,
+          "status": "ok",
+          "worker_seconds": 63.95029610600068
+        },
+        {
+          "accepted": 80,
+          "backend": "stream_reference",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "normalize_and_write_seconds": 0.1927394499998627,
+            "setup_seconds": 0.7207726749984431
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 60964864,
+          "status": "ok",
+          "worker_seconds": 0.9135290159993019
+        },
+        {
+          "accepted": 80,
+          "backend": "stream_reference",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "normalize_and_write_seconds": 0.19300385200040182,
+            "setup_seconds": 0.7190743269984523
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 60964864,
+          "status": "ok",
+          "worker_seconds": 0.9120938229989406
+        },
+        {
+          "accepted": 80,
+          "backend": "datajuicer",
+          "contract_sha256": "8cf8888d25ff81b1415ecc62422b2704171195056d6d372578aaf2aadd333158",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "datajuicer_install": {
+            "archive_info": {
+              "hash": "sha256=57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec",
+              "hashes": {
+                "sha256": "57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec"
+              }
+            },
+            "url": "https://github.com/datajuicer/data-juicer/archive/09178e1e0ac76cfbfe11232d66244e1ccc5add6f.zip"
+          },
+          "datajuicer_version": "1.6.1",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "executor_seconds": 36.905573516000004,
+            "normalize_and_write_seconds": 0.05651028600004793,
+            "setup_seconds": 24.838071759999366
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 420499456,
+          "status": "ok",
+          "worker_seconds": 61.80018196299898
+        }
+      ]
+    },
+    {
+      "role": "synthetic-rejection-integration-check",
+      "raw_report": "output/equal-work-20261102/fault-check-v3/report.json",
+      "raw_report_sha256": "3ff4764f6a0564e3bb63e479c1510089260e08f753b3c7d84b683143251660b2",
+      "report": {
+        "cache_state": "Unique empty work/cache directories per trial, OS caches uncontrolled, no model execution",
+        "contract": {
+          "corpus_sha256": "cb70a7a02f52d51428e997826161d6c18b9bd7f2a5fc9d3f04bb5685cb9db4f5",
+          "datajuicer_revision": "09178e1e0ac76cfbfe11232d66244e1ccc5add6f",
+          "inputs": {
+            "hand_pose": {
+              "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/video_id=schedule-3a19e1596686/clip_id=c000/hand_pose.parquet",
+              "sha256": "b30d37c2bb9c5c38a3dc74578361b9a86da76c9d28812cef91688b890047245d"
+            },
+            "meta": {
+              "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/video_id=schedule-3a19e1596686/clip_id=c000/meta.json",
+              "sha256": "3b95777fc739d0a95e1baa3f4cdb8853cedf798d87b8ab3738e927d5499ae8cc"
+            },
+            "provenance": {
+              "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/run_manifest.json",
+              "sha256": "2d59a2115e2fdd94e4d01342d70600796d2ed05751fc9a08cc638ea7297c1d2c"
+            },
+            "video": {
+              "path": "/home/lyrine/projects/egoworld/data/samples/visor-cut-0.mp4",
+              "sha256": "3a19e1596686eafb10ea5aa3d304abcc24d464d6f3a2ceb2a7ce544b23363e62"
+            }
+          },
+          "quality_limit": "Contract-valid does not imply accurate or useful pose",
+          "rows": 84,
+          "rule": "egoworld-hand-contract-v1",
+          "scope": "hand-artifact-contract-cleaning-only",
+          "source_identity": {
+            "experiments/equal_work/__init__.py": "20462987dac49772548a2f8f469644a313625bda535aa33d217202a6aa99d52d",
+            "experiments/equal_work/audit.py": "1b87c74328833153ffdc2c4e4bf370695f973f98960f4e5575c5285a6d068d5d",
+            "experiments/equal_work/contract.py": "adf07880d511e688f8077cfdf47074555f341c211c7873c73f32e538e7e8dcfb",
+            "experiments/equal_work/dj_operator.py": "a239553575dd117a886de25f4ea18536a41ecb9e1aa2d07f37eb130b4055a42a",
+            "experiments/equal_work/suite.py": "7e996bab577ed9d6f5de7ddd5dcfc9a1b340d8bb8265663a126494f9712540ea",
+            "experiments/equal_work/worker.py": "bdcd3e9d047f58671a5f6cf99de39a119c499959a80c158341d1086cabaee790",
+            "scripts/benchmark_equal_work.py": "8ae35f1b6b8e52e701b81e30877a6b0faa29ea2786b9127c9256891cf5660a1c",
+            "src/egoworld/contracts.py": "118b38fef6c2111e863303a4bfa711b484d035c39a98d5c2c28f5a44ab1b9755"
+          },
+          "synthetic_fault_rows": 4,
+          "timing_scope": "Fresh process through persisted normalized outputs; no model inference",
+          "version": 1
+        },
+        "contract_sha256": "91128aabb6c3884493006537bbd0d8f3871d524f1bcdc9cb5dc3d2864c820290",
+        "controlled_environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "HF_HUB_OFFLINE": "1",
+          "MKL_NUM_THREADS": "1",
+          "NUMEXPR_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PIP_NO_INDEX": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONHASHSEED": "0",
+          "TOKENIZERS_PARALLELISM": "false",
+          "UV_OFFLINE": "1"
+        },
+        "cpu_affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        "cpu_count": 32,
+        "created_utc": "2026-11-02T09:22:14.621806+00:00",
+        "interpreters": {
+          "datajuicer": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+          "stream_reference": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python"
+        },
+        "memory_method": "20ms sampled sum RSS of child process tree; shared pages may be double counted",
+        "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+        "repeats": 1,
+        "summary": {
+          "all_trials_valid": true,
+          "datajuicer_over_stream_reference_wall_ratio": 37.29916638176776,
+          "environment_stable": true,
+          "expected_trials": 2,
+          "interpretation": "CPU artifact-cleaning pilot; not a production EgoWorld or GPU inference comparison",
+          "observed_trials": 2,
+          "wall_seconds": {
+            "datajuicer": {
+              "max": 69.71484589600004,
+              "median": 69.71484589600004,
+              "min": 69.71484589600004,
+              "n": 1,
+              "p95_nearest_rank": 69.71484589600004
+            },
+            "stream_reference": {
+              "max": 1.8690724930002034,
+              "median": 1.8690724930002034,
+              "min": 1.8690724930002034,
+              "n": 1,
+              "p95_nearest_rank": 1.8690724930002034
+            }
+          }
+        },
+        "timing": "Fresh process start to successful exit, including imports, input verification, executor and final writes; excludes corpus freezing, source admission and audit",
+        "trials": [
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "stream_reference",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/fault-corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/fault-check-v3/000-stream_reference"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 4,
+              "rows": 84
+            },
+            "backend": "stream_reference",
+            "directory": "000-stream_reference",
+            "load_average_before": [
+              3.36572265625,
+              2.8955078125,
+              1.98095703125
+            ],
+            "process_tree_peak_rss_bytes": 59490304,
+            "repeat": 0,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:22:16.337829+00:00",
+            "status": "ok",
+            "wall_seconds": 1.8690724930002034
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "datajuicer",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/fault-corpus-v3",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/fault-check-v3/000-datajuicer"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 4,
+              "rows": 84
+            },
+            "backend": "datajuicer",
+            "directory": "000-datajuicer",
+            "load_average_before": [
+              3.5771484375,
+              2.947265625,
+              2.0029296875
+            ],
+            "process_tree_peak_rss_bytes": 601714688,
+            "repeat": 0,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:22:19.684639+00:00",
+            "status": "ok",
+            "wall_seconds": 69.71484589600004
+          }
+        ],
+        "version": 1
+      },
+      "workers": [
+        {
+          "accepted": 80,
+          "backend": "stream_reference",
+          "contract_sha256": "91128aabb6c3884493006537bbd0d8f3871d524f1bcdc9cb5dc3d2864c820290",
+          "corpus_sha256": "cb70a7a02f52d51428e997826161d6c18b9bd7f2a5fc9d3f04bb5685cb9db4f5",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "d81ef5b86b8b43cec278f0f3d5da6f7f131275804b2f880ed79f4b160d97ea86"
+          },
+          "phases": {
+            "normalize_and_write_seconds": 0.41213898599926324,
+            "setup_seconds": 0.87992017400029
+          },
+          "rows": 84,
+          "self_peak_rss_bytes": 54702080,
+          "status": "ok",
+          "worker_seconds": 1.2920766629995342
+        },
+        {
+          "accepted": 80,
+          "backend": "datajuicer",
+          "contract_sha256": "91128aabb6c3884493006537bbd0d8f3871d524f1bcdc9cb5dc3d2864c820290",
+          "corpus_sha256": "cb70a7a02f52d51428e997826161d6c18b9bd7f2a5fc9d3f04bb5685cb9db4f5",
+          "datajuicer_install": {
+            "archive_info": {
+              "hash": "sha256=57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec",
+              "hashes": {
+                "sha256": "57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec"
+              }
+            },
+            "url": "https://github.com/datajuicer/data-juicer/archive/09178e1e0ac76cfbfe11232d66244e1ccc5add6f.zip"
+          },
+          "datajuicer_version": "1.6.1",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "d81ef5b86b8b43cec278f0f3d5da6f7f131275804b2f880ed79f4b160d97ea86"
+          },
+          "phases": {
+            "executor_seconds": 40.98791278299905,
+            "normalize_and_write_seconds": 0.06138043299870333,
+            "setup_seconds": 26.48114173200156
+          },
+          "rows": 84,
+          "self_peak_rss_bytes": 418582528,
+          "status": "ok",
+          "worker_seconds": 67.53046177900069
+        }
+      ]
+    },
+    {
+      "role": "excluded-dependency-setup-failure",
+      "raw_report": "output/equal-work-20261102/smoke-v2/report.json",
+      "raw_report_sha256": "84789c8c60d5770abab28eab8d0b91822c6a6cd042aa1fbb4f9dbcba28c4d3a8",
+      "report": {
+        "cache_state": "Unique empty work/cache directories per trial, OS caches uncontrolled, no model execution",
+        "contract": {
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "datajuicer_revision": "09178e1e0ac76cfbfe11232d66244e1ccc5add6f",
+          "inputs": {
+            "hand_pose": {
+              "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/video_id=schedule-3a19e1596686/clip_id=c000/hand_pose.parquet",
+              "sha256": "b30d37c2bb9c5c38a3dc74578361b9a86da76c9d28812cef91688b890047245d"
+            },
+            "meta": {
+              "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/video_id=schedule-3a19e1596686/clip_id=c000/meta.json",
+              "sha256": "3b95777fc739d0a95e1baa3f4cdb8853cedf798d87b8ab3738e927d5499ae8cc"
+            },
+            "provenance": {
+              "path": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/throughput-validation/long-nonempty-v4/runs/run_id=baseline-w4-r0-f524b3/run_manifest.json",
+              "sha256": "2d59a2115e2fdd94e4d01342d70600796d2ed05751fc9a08cc638ea7297c1d2c"
+            },
+            "video": {
+              "path": "/home/lyrine/projects/egoworld/data/samples/visor-cut-0.mp4",
+              "sha256": "3a19e1596686eafb10ea5aa3d304abcc24d464d6f3a2ceb2a7ce544b23363e62"
+            }
+          },
+          "quality_limit": "Contract-valid does not imply accurate or useful pose",
+          "rows": 80,
+          "rule": "egoworld-hand-contract-v1",
+          "scope": "hand-artifact-contract-cleaning-only",
+          "source_identity": {
+            "experiments/equal_work/__init__.py": "20462987dac49772548a2f8f469644a313625bda535aa33d217202a6aa99d52d",
+            "experiments/equal_work/audit.py": "7563f0ec3a87a7a94c4f0c4648282efd5d742d011d7503339583a90fff959305",
+            "experiments/equal_work/contract.py": "1830d8add287ca3632c3516007dc1e44c390a916e23959444661f4c64f9107d9",
+            "experiments/equal_work/dj_operator.py": "a239553575dd117a886de25f4ea18536a41ecb9e1aa2d07f37eb130b4055a42a",
+            "experiments/equal_work/suite.py": "62eef52fe10f4b6a3b1ac2327019969bf0606f70162e4b50a317c78c45c73fff",
+            "experiments/equal_work/worker.py": "bdcd3e9d047f58671a5f6cf99de39a119c499959a80c158341d1086cabaee790",
+            "scripts/benchmark_equal_work.py": "b8732d8509bb6d603166877d27373b270c678aa697d6bbe424e1b5bfbcffcfad",
+            "src/egoworld/contracts.py": "118b38fef6c2111e863303a4bfa711b484d035c39a98d5c2c28f5a44ab1b9755"
+          },
+          "timing_scope": "Fresh process through persisted normalized outputs; no model inference",
+          "version": 1
+        },
+        "contract_sha256": "38c04df207c513eb722ded945bdb58702d22ffa0d7627189dbdea422d7cbd74f",
+        "controlled_environment": {
+          "CUDA_VISIBLE_DEVICES": "",
+          "MKL_NUM_THREADS": "1",
+          "NUMEXPR_NUM_THREADS": "1",
+          "OMP_NUM_THREADS": "1",
+          "OPENBLAS_NUM_THREADS": "1",
+          "PYTHONDONTWRITEBYTECODE": "1",
+          "PYTHONHASHSEED": "0",
+          "TOKENIZERS_PARALLELISM": "false"
+        },
+        "cpu_affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31
+        ],
+        "cpu_count": 32,
+        "created_utc": "2026-11-02T09:14:05.380938+00:00",
+        "interpreters": {
+          "datajuicer": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+          "stream_reference": "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python"
+        },
+        "memory_method": "20ms sampled sum RSS of child process tree; shared pages may be double counted",
+        "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+        "repeats": 1,
+        "summary": {
+          "all_trials_valid": false,
+          "datajuicer_over_stream_reference_wall_ratio": null,
+          "expected_trials": 2,
+          "interpretation": "CPU artifact-cleaning pilot; not a production EgoWorld or GPU inference comparison",
+          "observed_trials": 2,
+          "wall_seconds": {}
+        },
+        "timing": "Fresh process start to successful exit, including imports, input verification, executor and final writes; excludes corpus freezing, source admission and audit",
+        "trials": [
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "stream_reference",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v2",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/smoke-v2/000-stream_reference"
+            ],
+            "audit": {
+              "accepted": 80,
+              "comparison": "exact canonical JSON, keyed by sample_id, all decisions and all accepted fields",
+              "passed": true,
+              "rejected": 0,
+              "rows": 80
+            },
+            "backend": "stream_reference",
+            "directory": "000-stream_reference",
+            "load_average_before": [
+              3.99267578125,
+              3.05322265625,
+              1.578125
+            ],
+            "process_tree_peak_rss_bytes": 59379712,
+            "repeat": 0,
+            "returncode": 0,
+            "started_utc": "2026-11-02T09:14:07.143128+00:00",
+            "status": "ok",
+            "wall_seconds": 1.698205857001085
+          },
+          {
+            "argv": [
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/.venv/datajuicer-bench/bin/python",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/egoworld/scripts/benchmark_equal_work.py",
+              "worker",
+              "--backend",
+              "datajuicer",
+              "--corpus",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/corpus-v2",
+              "--output",
+              "/mnt/c/users/oscar/.codex/worktrees/stage-replay-gpu-probe/egoworld/output/equal-work-20261102/smoke-v2/000-datajuicer"
+            ],
+            "backend": "datajuicer",
+            "directory": "000-datajuicer",
+            "error": "RuntimeError: Worker exited with code -15; see stderr.log",
+            "load_average_before": [
+              3.9130859375,
+              3.05224609375,
+              1.5859375
+            ],
+            "process_tree_peak_rss_bytes": 598851584,
+            "repeat": 0,
+            "returncode": -15,
+            "started_utc": "2026-11-02T09:14:10.128813+00:00",
+            "status": "failed",
+            "wall_seconds": 132.37786233099905
+          }
+        ],
+        "version": 1
+      },
+      "workers": [
+        {
+          "accepted": 80,
+          "backend": "stream_reference",
+          "contract_sha256": "38c04df207c513eb722ded945bdb58702d22ffa0d7627189dbdea422d7cbd74f",
+          "corpus_sha256": "a7750293c89f2fc19800b524732064c6f691a905c37f95f8e016220ac9d70c56",
+          "output_sha256": {
+            "accepted.jsonl": "b1505d7d1334ffbe08c901bbf272caee0329faef43f8ea6275249e0613013237",
+            "decisions.jsonl": "ae48fcf9bdedd9165233ac4f3110614f69c2420670771087f6037a4b15fd26a9"
+          },
+          "phases": {
+            "normalize_and_write_seconds": 0.3663410080007452,
+            "setup_seconds": 0.8376393769995047
+          },
+          "rows": 80,
+          "self_peak_rss_bytes": 55689216,
+          "status": "ok",
+          "worker_seconds": 1.203998237999258
+        }
+      ]
+    }
+  ],
+  "setup_notes": [
+    "Initial source build needed Python development headers; local existing headers were supplied without modifying system packages.",
+    "Base interpreter lacked psutil; suite was launched with the isolated benchmark interpreter.",
+    "First Data-Juicer import attempted automatic Ray/Torch installation; setup worker was stopped and that comparison is excluded.",
+    "Ray 2.59.0 and CPU Torch 2.15.0+cpu were prepared outside subsequent timed invocations.",
+    "Measured trials run offline, verify environment versions before/after, and include all planned trials."
+  ],
+  "source_revision_meaning": "Commit containing the exact frozen experiment files. Initial invocations started before this local commit existed; file hashes identify executed code."
+}
