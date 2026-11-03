@@ -33,6 +33,8 @@ class PromptConfig:
     text_threshold: float = 0.25
     nms_iou: float = 0.5
     min_box_area: float = 256.0
+    containment_iom: float | None = None
+    containment_prefer: str = "confidence"
     gd_config: str = "./models/groundingdino/GroundingDINO_SwinT_OGC.py"
     gd_checkpoint: str = "./models/groundingdino/groundingdino_swint_ogc.pth"
     gd_device: str = "cuda"
@@ -146,7 +148,12 @@ class Sam2Operator(Operator):
                         )
                         detections = results
 
-                    detections = _filter_detections(detections, prompt_cfg.min_box_area, prompt_cfg.nms_iou)
+                    before_filter = len(detections)
+                    detections = _filter_detections(detections, prompt_cfg.min_box_area, prompt_cfg.nms_iou,
+                        prompt_cfg.containment_iom, prompt_cfg.containment_prefer)
+                    from egoworld.utils.timing import CURRENT
+                    if CURRENT.get() is not None:
+                        CURRENT.get().add("prompt_detections_suppressed", before_filter - len(detections))
                     used_ids: set[int] = set()
 
                     for detection in detections:
@@ -212,6 +219,12 @@ class Sam2Operator(Operator):
 
 
 def _load_prompt_config(raw: Dict[str, Any]) -> PromptConfig:
+    iom = raw.get("containment_iom")
+    prefer = raw.get("containment_prefer", "confidence")
+    if iom is not None and (isinstance(iom, bool) or not isinstance(iom, (int, float)) or not 0 < iom <= 1):
+        raise ValueError("containment_iom must be in (0,1] or null")
+    if prefer not in ("confidence", "smaller"):
+        raise ValueError("containment_prefer must be confidence or smaller")
     return PromptConfig(
         source=raw.get("source", "groundingdino"),
         prompt_text=raw.get("prompt_text", "hand ."),
@@ -222,6 +235,8 @@ def _load_prompt_config(raw: Dict[str, Any]) -> PromptConfig:
         text_threshold=float(raw.get("text_threshold", 0.25)),
         nms_iou=float(raw.get("nms_iou", 0.5)),
         min_box_area=float(raw.get("min_box_area", 256)),
+        containment_iom=iom,
+        containment_prefer=prefer,
         gd_config=raw.get("gd_config", "./models/groundingdino/GroundingDINO_SwinT_OGC.py"),
         gd_checkpoint=raw.get(
             "gd_checkpoint", "./models/groundingdino/groundingdino_swint_ogc.pth"
@@ -311,17 +326,34 @@ def _instance_masks(mask_logits: Any) -> np.ndarray:
     return (masks > 0).astype(np.uint8)
 
 
-def _filter_detections(detections: List[Detection], min_area: float, nms_iou: float) -> List[Detection]:
+def _filter_detections(detections: List[Detection], min_area: float, nms_iou: float,
+                       containment_iom: float | None = None, containment_prefer: str = "confidence") -> List[Detection]:
     # Keep semantic labels and confidence; suppress duplicates within the same class only.
+    candidates = [d for d in detections if _box_area(d.box_xyxy) >= min_area]
+    if containment_iom is not None:
+        # IoU alone misses a hand proposal contained in a much larger hand/arm
+        # proposal. This opt-in rule has no hand-count cap; distinct labels and
+        # disjoint instances survive. Tight-box preference is task-dependent.
+        priority = (lambda d: (_box_area(d.box_xyxy), -getattr(d, "score", 0.0))) if containment_prefer == "smaller" else (lambda d: -getattr(d, "score", 0.0))
+        distinct = []
+        for detection in sorted(candidates, key=priority):
+            if any(getattr(d, "phrase", "unknown") == getattr(detection, "phrase", "unknown") and
+                   _intersection_over_min(d.box_xyxy, detection.box_xyxy) >= containment_iom for d in distinct):
+                continue
+            distinct.append(detection)
+        candidates = distinct
     kept: List[Detection] = []
-    for detection in sorted(detections, key=lambda d: getattr(d, "score", 0.0), reverse=True):
-        if _box_area(detection.box_xyxy) < min_area:
-            continue
+    for detection in sorted(candidates, key=lambda d: getattr(d, "score", 0.0), reverse=True):
         if any(getattr(d, "phrase", "unknown") == getattr(detection, "phrase", "unknown")
                and _iou(d.box_xyxy, detection.box_xyxy) >= nms_iou for d in kept):
             continue
         kept.append(detection)
     return kept
+
+
+def _intersection_over_min(a, b):
+    intersection = max(0., min(a[2], b[2]) - max(a[0], b[0])) * max(0., min(a[3], b[3]) - max(a[1], b[1]))
+    return intersection / max(min(_box_area(a), _box_area(b)), 1e-12)
 
 
 def _union_masks(mask_logits: Any) -> np.ndarray | None:

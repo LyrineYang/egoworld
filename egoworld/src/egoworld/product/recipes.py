@@ -147,7 +147,7 @@ def export_selected(folder, selections, destination):
     return result
 
 
-def run_recipe(path, *, run_id=None, backend_factory=None):
+def run_recipe(path, *, run_id=None, backend_factory=None, pipeline_executor=None):
     from egoworld.utils.hashing import hash_session
     from egoworld.pipeline.driver import make_run_id
     started = time.perf_counter()
@@ -158,7 +158,7 @@ def run_recipe(path, *, run_id=None, backend_factory=None):
     try:
         with hash_session(registry) as stats:
             return _run_recipe(path, run_id=run_id, backend_factory=backend_factory, hash_stats=stats,
-                               prepared_recipe=prepared_recipe, entry_started=started)
+                               prepared_recipe=prepared_recipe, entry_started=started, pipeline_executor=pipeline_executor)
     except BaseException as exc:
         if run_id and all(c in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-" for c in run_id):
             manifest = Path(compiled["output_dir"]) / f"run_id={run_id}" / "data_manifest.json"
@@ -168,7 +168,7 @@ def run_recipe(path, *, run_id=None, backend_factory=None):
         raise
 
 
-def _run_recipe(path, *, run_id=None, backend_factory=None, hash_stats=None, prepared_recipe=None, entry_started=None):
+def _run_recipe(path, *, run_id=None, backend_factory=None, hash_stats=None, prepared_recipe=None, entry_started=None, pipeline_executor=None):
     from egoworld.manifests.build_manifest import build_manifests
     from egoworld.pipeline.driver import make_run_id, run_pipeline, _build_clip_tasks, _clip_to_dict
     from egoworld.pipeline.artifacts import load_stage, WriterActor
@@ -286,7 +286,7 @@ def _run_recipe(path, *, run_id=None, backend_factory=None, hash_stats=None, pre
                 write_json(str(root / "readiness.json"), readiness)
                 if not readiness["ok"]:
                     raise ValueError("Required kernels are not ready; see readiness.json")
-            run_pipeline(str(cfg_file), str(video_file), str(clip_file), run_id=run_id, backend_factory=backend_factory)
+            (pipeline_executor or run_pipeline)(str(cfg_file), str(video_file), str(clip_file), run_id=run_id, backend_factory=backend_factory)
         else:
             write_json(str(model_root / "run_manifest.json"), manifest)
         timings["pipeline_seconds"] = time.perf_counter() - started

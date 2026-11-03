@@ -16,7 +16,7 @@ def main():
     run.add_argument("--spec", required=True)
     run.add_argument("--output", required=True)
     worker = sub.add_parser("worker")
-    worker.add_argument("--kind", required=True, choices=("egoworld_recipe", "egoworld_cleaning", "datajuicer_native"))
+    worker.add_argument("--kind", required=True, choices=("egoworld_recipe", "egoworld_cleaning", "datajuicer_native", "datajuicer_matched_recipe"))
     worker.add_argument("--config", required=True)
     worker.add_argument("--output", required=True)
     args = parser.parse_args()

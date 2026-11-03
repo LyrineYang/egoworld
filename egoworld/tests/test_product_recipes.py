@@ -123,3 +123,20 @@ def test_empty_requested_data_is_partial_even_when_model_stage_commits(recipe_ca
     result = run("no-hands")
     assert result["status"] == "partial"
     assert result["empty_outputs"][0]["type"] == "hand_joints"
+
+
+def test_explicit_pipeline_executor_keeps_exports_and_verified_cache(recipe_case, thread_backend):
+    from egoworld.pipeline.driver import run_pipeline
+    data, _, calls, root = recipe_case
+    recipe = root / "recipe.json"
+    recipe.write_text(json.dumps(data))
+    executions = []
+    def executor(*args, **kwargs):
+        executions.append(kwargs["run_id"])
+        return run_pipeline(*args, **kwargs)
+    first = run_recipe(recipe, run_id="custom-first", backend_factory=thread_backend, pipeline_executor=executor)
+    assert first["status"] == "passed" and calls == ["sam2", "hamer"]
+    assert next(iter(first["exports"].values()))["hand_joints"]["rows"] > 0
+    second = run_recipe(recipe, run_id="custom-cache", backend_factory=thread_backend, pipeline_executor=executor)
+    assert second["status"] == "passed" and len(second["cache_hits"]) == 2
+    assert executions == ["custom-first"]

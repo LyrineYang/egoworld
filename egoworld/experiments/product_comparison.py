@@ -38,14 +38,21 @@ def worker(kind, config_path, output):
     output = Path(output)
     output.mkdir(exist_ok=False)
     config = json.loads(Path(config_path).read_text())
-    if kind == "egoworld_recipe":
+    if kind in ("egoworld_recipe", "datajuicer_matched_recipe"):
         from egoworld.product.recipes import run_recipe
+        executor = None
+        if kind == "datajuicer_matched_recipe":
+            from functools import partial
+            from matched_product import run_pipeline
+            native_python = config["datajuicer_python"]
+            config = json.loads(Path(config["recipe"]).read_text())
+            executor = partial(run_pipeline, python=native_python)
         config["output_dir"] = str(output / "runs")
         config["cache"]["root"] = str(output / "empty-result-cache")
         if config["cache"].get("read", True):
             raise ValueError("Fresh-model trial requires explicit cache.read=false")
         write(output / "recipe.json", config)
-        result = run_recipe(output / "recipe.json", run_id="c1")
+        result = run_recipe(output / "recipe.json", run_id="c1", pipeline_executor=executor)
         write(output / "worker.json", {"kind": kind, "status": result["status"],
               "data_manifest": str(Path(result["run_dir"], "data_manifest.json"))})
         if result["status"] != "passed":
@@ -253,7 +260,7 @@ def run_trial(job, output, timeout):
         if proc.returncode or before != after:
             raise RuntimeError(f"Worker exited {proc.returncode} or environment changed; inspect raw logs")
         result = json.loads((output / "worker/worker.json").read_text())
-        if job["kind"] == "egoworld_recipe":
+        if job["kind"] in ("egoworld_recipe", "datajuicer_matched_recipe"):
             trial["audit"] = audit_egoworld(result["data_manifest"])
         elif job["kind"] == "datajuicer_native":
             trial["audit"] = audit_datajuicer(result["export"])

@@ -15,6 +15,25 @@ from egoworld.utils.errors import DecodeError
 from egoworld.utils.mask import encode_mask_rle
 
 
+def test_opt_in_containment_keeps_tight_hand_and_distinct_instances():
+    from egoworld.operators.groundingdino_op import Detection
+    large = Detection((0, 0, 200, 200), .9, "hand")
+    tight = Detection((40, 40, 100, 100), .8, "hand")
+    other = Detection((220, 0, 270, 60), .7, "hand")
+    left = Detection((40, 40, 100, 100), .75, "left hand")
+    source = [large, tight, other, left]
+    assert len(sam2_op._filter_detections(source, 0, .5)) == 4
+    result = sam2_op._filter_detections(source, 0, .5, .9, "smaller")
+    assert tight in result and large not in result and other in result and left in result
+    assert len(sam2_op._filter_detections([tight, other], 0, .5, .9, "smaller")) == 2
+
+
+@pytest.mark.parametrize("value", [0, 1.1, True, float('nan')])
+def test_containment_policy_rejects_invalid_overlap(value):
+    with pytest.raises(ValueError, match="containment_iom"):
+        _load_prompt_config({"containment_iom": value})
+
+
 def test_prompt_config_defaults() -> None:
     cfg = _load_prompt_config({})
     assert cfg.source == "groundingdino"
