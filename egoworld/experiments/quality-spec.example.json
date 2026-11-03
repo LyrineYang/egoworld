@@ -1,0 +1,23 @@
+{
+  "corpus": "/absolute/quality/bound-corpus.json",
+  "policy": {
+    "wrist_match_diagonal_fraction": 0.25,
+    "mpjpe_thresholds_mm": [20, 50]
+  },
+  "pipelines": [
+    {
+      "name": "egoworld",
+      "kind": "egoworld",
+      "trial": "/absolute/quality/trials/egoworld-hands/trial.json",
+      "manifest": "/absolute/quality/trials/egoworld-hands/worker/runs/run_id=c1/data_manifest.json",
+      "focal_ratio": 19.53125
+    },
+    {
+      "name": "datajuicer",
+      "kind": "datajuicer",
+      "trial": "/absolute/quality/trials/datajuicer-hands/trial.json",
+      "export": "/absolute/quality/bound-corpus.native-scored.jsonl",
+      "focal_ratio": 19.53125
+    }
+  ]
+}

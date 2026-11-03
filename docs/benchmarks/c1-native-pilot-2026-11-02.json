@@ -212,7 +212,18 @@
       "right": 3
     },
     "both_finite_21x3_predictions": 6,
-    "validity": "Finite structural contracts, not pose accuracy or downstream quality."
+    "validity": "Finite structural contracts, not pose accuracy or downstream quality.",
+    "source_frames_scope": "EgoWorld source frames only. Previous native same-frame equivalence inference was incorrect; correction below.",
+    "native_verified_source_frames": [
+      0,
+      2,
+      2
+    ],
+    "native_original_preview_source_frames": [
+      0,
+      29,
+      29
+    ]
   },
   "native_settings": {
     "executor_type": "default",
@@ -1176,7 +1187,8 @@
     "EgoWorld scene and RGB-D world run successfully; corresponding native MoGe/MegaSAM/robot tasks were not run. The full strict C1 matrix and B2 repeats remain pending.",
     "Observed native CPU hand pipeline is faster in this tiny pilot. Does not establish framework speed or server scaling.",
     "NVML values are whole-device, including desktop baseline/other processes. Process-tree RSS can double-count shared pages.",
-    "No C2 recovery comparison or independent holdout annotation-quality evaluation. Fast3R production randomness not frozen."
+    "No C2 recovery comparison or independent holdout annotation-quality evaluation. Fast3R production randomness not frozen.",
+    "Corrected 2026-11-03: native three-frame slots actually sampled source frames [0,2,2], not [0,1,2]. Finite output count remains six; source coverage was not equal."
   ],
   "host": {
     "platform": "Linux-6.18.54.1-microsoft-standard-WSL2-x86_64-with-glibc2.39",
@@ -1354,5 +1366,17 @@
       "tracked_source_patch": null,
       "patch_sha256": null
     }
-  ]
+  ],
+  "native_sampling_correction_2026_11_03": {
+    "source_frames": [
+      0,
+      2,
+      2
+    ],
+    "old_same_source_frame_coverage_claim_valid": false,
+    "method": "Fixed native sampler PTS and prior saved-frame pixel verification; no model calls",
+    "evidence": "/mnt/d/EgoWorld/runs/output-quality-20261102/previous-pilot-sampling-recheck-verified.json",
+    "evidence_sha256": "a2e541d4eb1e660140d57b8a2b7f20ceb3450f59983f588fe783cc8dd56e9d67",
+    "original_raw_trials_unchanged": true
+  }
 }

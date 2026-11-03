@@ -39,3 +39,12 @@ Not established: same-quality performance superiority over Data-Juicer, server/m
 ## Native product pilot and server preparation
 
 The primary target is a single Linux server with 2–16 GPUs; RTX4060 is an additional validation environment. Portable RGB/RGB-D profiles and CPU/RAM/path checks are prepared; physical scaling is unverified. A [native C1 product pilot](../c1-native-comparison-20261102.md) now runs both complete hand pipelines: six finite hand predictions each, EgoWorld auto 100.77 s and unmodified native Data-Juicer CPU 61.18 s. Models, preprocessing, extra exports and handedness inputs differ, so no framework speed ratio is eligible. Strict matched-model/output C1, all corresponding task groups and quality/recovery experiments remain pending. See the [handoff](../handoff-server-comparison-20261102.md).
+
+
+## Common-output quality pilot (2026-11-03)
+
+Native product models may now differ; fixed-model execution remains a separate track. A seeded 12-image official FreiHAND evaluation pilot ran both complete pipelines and scores a shared wrist-relative OpenPose21 contract against independent labels. Exact-frame coverage is 12/12 versus 11/12, detected-only MPJPE 11.21/12.51 mm (different detected subsets), extra target-task predictions 6/1, and full wall time 525.57/165.48 s. This does not establish an overall winner. Data-Juicer retains its native CPU fallback and resource settings.
+
+Actual sampler PTS and lexical filename order are now checked: this native 36-slot run missed source frame 1 and repeated the last frame. The earlier three-slot pilot was also corrected to native source frames [0,2,2]; six finite predictions did not establish three distinct source frames. Original records remain intact. A separately labelled post-hoc identical-image analysis is available, with no model rerun or ground-truth pose-based selection.
+
+See the [quality protocol and results](../output-quality-comparison-20261103.md) and [machine-readable evidence](../benchmarks/output-quality-2026-11-03.json). Thirty-two targeted checks pass, including thirteen quality/frame-binding checks. The production source baseline and incoming handoff are unchanged; full fixed-model efficiency, egocentric holdout quality, other output types and physical multi-GPU scaling remain pending.

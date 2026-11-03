@@ -1,0 +1,1677 @@
+{
+  "version": 1,
+  "date": "2026-11-03",
+  "status": "scored_native_common_hand_output_pilot",
+  "baseline_commit": "8c296f7bdc315b25803358c185a7c2a4baccc178",
+  "scope": "Native HaMeR/WiLoR quality under same input, hand-root/OpenPose21 output contract; not full type matrix, temporal benchmark or framework speed claim",
+  "common_contract": {
+    "version": 1,
+    "output": "hand_joints",
+    "joint_order": "openpose21",
+    "length_unit": "meters",
+    "coord_frame": "hand_root",
+    "axes": "camera_x_right_y_down_z_forward",
+    "root_index": 0,
+    "scale_status": "model_prior_not_measured_world_scale"
+  },
+  "quality_policy": {
+    "wrist_match_diagonal_fraction": 0.25,
+    "mpjpe_thresholds_mm": [
+      20,
+      50
+    ]
+  },
+  "source_root": "/mnt/d/EgoWorld/runs/output-quality-20261102",
+  "corpus": {
+    "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/corpus-montage-v1/corpus.json",
+    "sha256": "3a83a1a7cd20b7ecf26011d9150113450a20c4700e468a5b0cb66e03033ba852",
+    "dataset": "FreiHAND official evaluation v2",
+    "terms_url": "https://lmb.informatik.uni-freiburg.de/resources/datasets/FreihandDataset.en.html",
+    "selection_seed": 20261102,
+    "selection_indices": [
+      183,
+      271,
+      498,
+      652,
+      1544,
+      1698,
+      2320,
+      2581,
+      2625,
+      2661,
+      3122,
+      3436
+    ],
+    "source_images": 12,
+    "video_frames": 36,
+    "score_frames": [
+      1,
+      4,
+      7,
+      10,
+      13,
+      16,
+      19,
+      22,
+      25,
+      28,
+      31,
+      34
+    ],
+    "source_archive": {
+      "url": "https://lmb.informatik.uni-freiburg.de/data/freihand/FreiHAND_pub_v2_eval.zip",
+      "size": 758382230,
+      "etag": "\"2d33fe96-5d61201dd5e58\""
+    },
+    "archive_members": [
+      {
+        "member": "evaluation_xyz.json",
+        "bytes": 5506793,
+        "sha256": "72aa38f5008f9d75d6fe873251b11d5286ba13442e5b95d2ce36ca422cee2ff0"
+      },
+      {
+        "member": "evaluation_K.json",
+        "bytes": 337775,
+        "sha256": "f4887519c169c557efb3e2d4d99ae9b18ec129cb7bc4f6b5df7e324e446caebb"
+      },
+      {
+        "member": "evaluation/rgb/00000183.jpg",
+        "bytes": 16674,
+        "sha256": "6b7d62be2a4773209a843fd6c4343a349de764432ffd1ba2b35efc4d1a7f048d"
+      },
+      {
+        "member": "evaluation/rgb/00000271.jpg",
+        "bytes": 24144,
+        "sha256": "d930d4eea95bc17a2e3d164649f3bb37bac87aa4803100e0d4c55747b12c30c5"
+      },
+      {
+        "member": "evaluation/rgb/00000498.jpg",
+        "bytes": 24466,
+        "sha256": "dcbc768ca23e8a9535e131e8794840de1e6469d208db36bba2837f5781fca9ef"
+      },
+      {
+        "member": "evaluation/rgb/00000652.jpg",
+        "bytes": 15576,
+        "sha256": "5787e5d36a737af1421862aafef31415c48337d21a0dc9434d461dee3646cbba"
+      },
+      {
+        "member": "evaluation/rgb/00001544.jpg",
+        "bytes": 22106,
+        "sha256": "6da5a8be3fb43b1418060189202f4d74aba585ca5177ac57d57789c8b3816849"
+      },
+      {
+        "member": "evaluation/rgb/00001698.jpg",
+        "bytes": 16828,
+        "sha256": "2259eeff492398daa92181cd52ccd55c602dcbcd88c58b3d8b32983cc80bc7e3"
+      },
+      {
+        "member": "evaluation/rgb/00002320.jpg",
+        "bytes": 14384,
+        "sha256": "3b9f36f58e9040ccf6c9fae97b1e2cf787005ed87b45cf1b47deab8718bb7638"
+      },
+      {
+        "member": "evaluation/rgb/00002581.jpg",
+        "bytes": 24728,
+        "sha256": "8699a876c0f652129f14ebf1a61933edbe14eb9c07a55164bb4807a1c8ae8ac1"
+      },
+      {
+        "member": "evaluation/rgb/00002625.jpg",
+        "bytes": 18536,
+        "sha256": "6af3a43591cab13408d58376a9c0b76b81bcf7cb3efe9f1bfbdfae72cb8c9fee"
+      },
+      {
+        "member": "evaluation/rgb/00002661.jpg",
+        "bytes": 26718,
+        "sha256": "ce194e6415d6cf97c2811348c5d9b75f1720724e673bdff795144019d6e3447c"
+      },
+      {
+        "member": "evaluation/rgb/00003122.jpg",
+        "bytes": 16173,
+        "sha256": "2ba92b71c4e535fb3c5b0497c5eb40681b34a2a52f735a7ab22ee2dcaa14be66"
+      },
+      {
+        "member": "evaluation/rgb/00003436.jpg",
+        "bytes": 12634,
+        "sha256": "aa985d183f904334f0ab29688e0891778a1db8499d1f744604d9468e0e8bbcdb"
+      }
+    ],
+    "download_bytes": 5061852,
+    "scope": "Small static image-pose pilot through real video interfaces; frame1 scored once per source image"
+  },
+  "primary_scoring": "Preregistered exact source-frame scoring; missing frame1 is a native coverage miss",
+  "quality": {
+    "egoworld": {
+      "gt_hands": 12,
+      "scored_predictions": 18,
+      "matched_hands": 12,
+      "false_positives": 6,
+      "missed_hands": 0,
+      "recall": 1.0,
+      "precision": 0.6666666666666666,
+      "handedness_accuracy_matched": 1.0,
+      "mpjpe_root_mm_detected_only": 11.207274039757559,
+      "pa_mpjpe_mm_detected_only": 6.45708761190886,
+      "pa_evaluable_hands": 12,
+      "reprojection_mean_px_detected_only": 4.942959134701208,
+      "pck_all_gt": {
+        "20": 0.9246031746031746,
+        "50": 0.9920634920634921
+      },
+      "quality_hands": {
+        "20": 12,
+        "50": 12
+      },
+      "quality_yield_all_gt": {
+        "20": 1.0,
+        "50": 1.0
+      },
+      "source_image_count": 12,
+      "details": [
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 1,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 8.763175929483655,
+          "pa_mpjpe_mm": 6.098889626509902,
+          "reprojection_mean_px": 4.0603288042679395
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 4,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 14.657853481981533,
+          "pa_mpjpe_mm": 3.944767379907084,
+          "reprojection_mean_px": 7.825991229410182
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 7,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 15.997494154637431,
+          "pa_mpjpe_mm": 12.241938696336861,
+          "reprojection_mean_px": 5.327729074396449
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 10,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 8.48812195639275,
+          "pa_mpjpe_mm": 5.354983535503913,
+          "reprojection_mean_px": 4.446493257351079
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 13,
+          "hand_id": "0",
+          "prediction_id": "2",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 17.620215524370252,
+          "pa_mpjpe_mm": 7.883602963404272,
+          "reprojection_mean_px": 4.067882099388394
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 16,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 7.466816948106107,
+          "pa_mpjpe_mm": 4.692634959651148,
+          "reprojection_mean_px": 5.827815776348689
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 19,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 7.688347481645042,
+          "pa_mpjpe_mm": 4.717390081651213,
+          "reprojection_mean_px": 6.168230952908767
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 22,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 10.075168873294617,
+          "pa_mpjpe_mm": 5.5972414193701265,
+          "reprojection_mean_px": 2.505145523104312
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 25,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 16.94975622646668,
+          "pa_mpjpe_mm": 13.706280533938635,
+          "reprojection_mean_px": 9.867503068808437
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 28,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.160690770456902,
+          "pa_mpjpe_mm": 3.8010064343525722,
+          "reprojection_mean_px": 2.790136757938992
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 31,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.502845674812766,
+          "pa_mpjpe_mm": 2.437967455900275,
+          "reprojection_mean_px": 3.339946084211895
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 34,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 8.116801455442994,
+          "pa_mpjpe_mm": 7.0083482563803114,
+          "reprojection_mean_px": 3.0883069882793457
+        }
+      ],
+      "raw_trial_status": "passed",
+      "native_wall_seconds": 525.5725796710003,
+      "quality_hands_per_second": {
+        "20": 0.022832241376655914,
+        "50": 0.022832241376655914
+      },
+      "native_trial_sha256": "e536286fc19cf217a129a861abcc592a7d0d2db8975a380db8bb51ac19f04f13",
+      "normalized_predictions": "/mnt/d/EgoWorld/runs/output-quality-20261102/scores-exact-v1/egoworld-predictions.json",
+      "normalized_sha256": "64d9d9f2956ee087ddf7803f3b2f6e4d62db64cc1c3167e56f074e285df0930d"
+    },
+    "datajuicer": {
+      "gt_hands": 12,
+      "scored_predictions": 12,
+      "matched_hands": 11,
+      "false_positives": 1,
+      "missed_hands": 1,
+      "recall": 0.9166666666666666,
+      "precision": 0.9166666666666666,
+      "handedness_accuracy_matched": 1.0,
+      "mpjpe_root_mm_detected_only": 12.508544170260961,
+      "pa_mpjpe_mm_detected_only": 7.18978216387821,
+      "pa_evaluable_hands": 11,
+      "reprojection_mean_px_detected_only": 9.69355821414848,
+      "pck_all_gt": {
+        "20": 0.8134920634920635,
+        "50": 0.9007936507936508
+      },
+      "quality_hands": {
+        "20": 10,
+        "50": 11
+      },
+      "quality_yield_all_gt": {
+        "20": 0.8333333333333334,
+        "50": 0.9166666666666666
+      },
+      "source_image_count": 12,
+      "details": [
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 1,
+          "hand_id": "0",
+          "status": "missed"
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 4,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 19.749280701107153,
+          "pa_mpjpe_mm": 5.036756465322682,
+          "reprojection_mean_px": 10.337244142958806
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 7,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 11.757744346045246,
+          "pa_mpjpe_mm": 8.891058155995609,
+          "reprojection_mean_px": 11.883461270576193
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 10,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 7.56745191012803,
+          "pa_mpjpe_mm": 5.44406038147166,
+          "reprojection_mean_px": 13.213341566482738
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 13,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.950902176177872,
+          "pa_mpjpe_mm": 5.577918640801204,
+          "reprojection_mean_px": 5.17620210199241
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 16,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 8.973447341172086,
+          "pa_mpjpe_mm": 4.825915757330389,
+          "reprojection_mean_px": 7.993800861187904
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 19,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 13.357089899774605,
+          "pa_mpjpe_mm": 6.093261635331874,
+          "reprojection_mean_px": 8.06359923747098
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 22,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 10.206899533081216,
+          "pa_mpjpe_mm": 6.3387292585018145,
+          "reprojection_mean_px": 10.820983648570872
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 25,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 27.064894266520337,
+          "pa_mpjpe_mm": 25.021377117902777,
+          "reprojection_mean_px": 20.5205936044064
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 28,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.461997056395408,
+          "pa_mpjpe_mm": 4.291072029706133,
+          "reprojection_mean_px": 4.757424234183405
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 31,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.833617552097618,
+          "pa_mpjpe_mm": 3.4023128539995864,
+          "reprojection_mean_px": 2.9433809716329864
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 34,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.670661090371011,
+          "pa_mpjpe_mm": 4.165141506296596,
+          "reprojection_mean_px": 10.919108716170573
+        }
+      ],
+      "raw_trial_status": "passed",
+      "native_wall_seconds": 165.4768715049995,
+      "quality_hands_per_second": {
+        "20": 0.06043140596659076,
+        "50": 0.06647454656324983
+      },
+      "native_trial_sha256": "6ae4045466a8da35b0d79fae8926389d2842c1a7bb8c496cc5eb31afef3564da",
+      "normalized_predictions": "/mnt/d/EgoWorld/runs/output-quality-20261102/scores-exact-v1/datajuicer-predictions.json",
+      "normalized_sha256": "de384cdc3701c77f9d17d0bdf7b44cfe33c6bd9d4f1cd0533d6f48d45aaeea33"
+    }
+  },
+  "image_equivalent_auxiliary_posthoc": {
+    "egoworld": {
+      "gt_hands": 12,
+      "scored_predictions": 18,
+      "matched_hands": 12,
+      "false_positives": 6,
+      "missed_hands": 0,
+      "recall": 1.0,
+      "precision": 0.6666666666666666,
+      "handedness_accuracy_matched": 1.0,
+      "mpjpe_root_mm_detected_only": 11.207274039757559,
+      "pa_mpjpe_mm_detected_only": 6.45708761190886,
+      "pa_evaluable_hands": 12,
+      "reprojection_mean_px_detected_only": 4.942959134701208,
+      "pck_all_gt": {
+        "20": 0.9246031746031746,
+        "50": 0.9920634920634921
+      },
+      "quality_hands": {
+        "20": 12,
+        "50": 12
+      },
+      "quality_yield_all_gt": {
+        "20": 1.0,
+        "50": 1.0
+      },
+      "source_image_count": 12,
+      "details": [
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 1,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 8.763175929483655,
+          "pa_mpjpe_mm": 6.098889626509902,
+          "reprojection_mean_px": 4.0603288042679395
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 4,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 14.657853481981533,
+          "pa_mpjpe_mm": 3.944767379907084,
+          "reprojection_mean_px": 7.825991229410182
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 7,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 15.997494154637431,
+          "pa_mpjpe_mm": 12.241938696336861,
+          "reprojection_mean_px": 5.327729074396449
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 10,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 8.48812195639275,
+          "pa_mpjpe_mm": 5.354983535503913,
+          "reprojection_mean_px": 4.446493257351079
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 13,
+          "hand_id": "0",
+          "prediction_id": "2",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 17.620215524370252,
+          "pa_mpjpe_mm": 7.883602963404272,
+          "reprojection_mean_px": 4.067882099388394
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 16,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 7.466816948106107,
+          "pa_mpjpe_mm": 4.692634959651148,
+          "reprojection_mean_px": 5.827815776348689
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 19,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 7.688347481645042,
+          "pa_mpjpe_mm": 4.717390081651213,
+          "reprojection_mean_px": 6.168230952908767
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 22,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 10.075168873294617,
+          "pa_mpjpe_mm": 5.5972414193701265,
+          "reprojection_mean_px": 2.505145523104312
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 25,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 16.94975622646668,
+          "pa_mpjpe_mm": 13.706280533938635,
+          "reprojection_mean_px": 9.867503068808437
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 28,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.160690770456902,
+          "pa_mpjpe_mm": 3.8010064343525722,
+          "reprojection_mean_px": 2.790136757938992
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 31,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.502845674812766,
+          "pa_mpjpe_mm": 2.437967455900275,
+          "reprojection_mean_px": 3.339946084211895
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 34,
+          "hand_id": "0",
+          "prediction_id": "1",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 8.116801455442994,
+          "pa_mpjpe_mm": 7.0083482563803114,
+          "reprojection_mean_px": 3.0883069882793457
+        }
+      ],
+      "raw_trial_status": "passed",
+      "native_wall_seconds": 525.5725796710003,
+      "quality_hands_per_second": {
+        "20": 0.022832241376655914,
+        "50": 0.022832241376655914
+      },
+      "native_trial_sha256": "e536286fc19cf217a129a861abcc592a7d0d2db8975a380db8bb51ac19f04f13",
+      "source_outputs": [
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000000-000000003-50fe53c6/hand_joints.parquet",
+          "sha256": "e293a50ec8cf17bf852bdb382afd3779faecc53bcfe078539a29a6526970de3b"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000003-000000006-fd0b74f1/hand_joints.parquet",
+          "sha256": "4f8b8f25284d16f9a160fb32d7342b56b998b617c1f3f07ad1450b4fe5b5f012"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000006-000000009-7f3d6dda/hand_joints.parquet",
+          "sha256": "258ed9c521fe62b050c5c8ca96a4cf9667423bcceda14977c5cbd71375f4fc19"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000009-000000012-358978b8/hand_joints.parquet",
+          "sha256": "e15c3e0339da986ef0aa13a8c0950083a14b8ad98ec18f8bfbabd5cc5736df03"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000012-000000015-d7cdaa17/hand_joints.parquet",
+          "sha256": "a490e75c8b67e53b1fc03b56d0862551d5f5707270c8b381adf54b3572bcdc5c"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000015-000000018-6733610d/hand_joints.parquet",
+          "sha256": "c3b6defe1d384c60705b702b4c9d4160fbc44113942e6b54da7585ec1eaedf47"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000018-000000021-0504252c/hand_joints.parquet",
+          "sha256": "178ae30eb5f41495ceedf3da4bbfcef4a3b48d1b57a56fb7c2cef7daaecb9171"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000021-000000024-1ed29e3f/hand_joints.parquet",
+          "sha256": "bdf3f7f2da86617f7344e9405d699fcb5346059785640d19d806ad35b7ed6c60"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000024-000000027-7cd6539a/hand_joints.parquet",
+          "sha256": "97378280845b09d9fe11eacdc702ee2df637a53da7cda4c3408952e615d3bd73"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000027-000000030-ebdab965/hand_joints.parquet",
+          "sha256": "0b79df919c9bcf0ef2f81ea44dc6908f0f2867a295cbb63919a344134f2e10fa"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000030-000000033-af068f23/hand_joints.parquet",
+          "sha256": "4ad95ef82b1cc99b9691ee3c87418d203ef617f41c9b7f291bc0e17355b2647a"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000033-000000036-82ddd0b3/hand_joints.parquet",
+          "sha256": "dcaebda4d3fe72bd790bbb5e523c7714629ee7e48c40893a92c4b24d936f7278"
+        }
+      ],
+      "normalized_predictions": "/mnt/d/EgoWorld/runs/output-quality-20261102/scores-image-v1/egoworld-predictions.json",
+      "normalized_sha256": "64d9d9f2956ee087ddf7803f3b2f6e4d62db64cc1c3167e56f074e285df0930d"
+    },
+    "datajuicer": {
+      "gt_hands": 12,
+      "scored_predictions": 13,
+      "matched_hands": 12,
+      "false_positives": 1,
+      "missed_hands": 0,
+      "recall": 1.0,
+      "precision": 0.9230769230769231,
+      "handedness_accuracy_matched": 1.0,
+      "mpjpe_root_mm_detected_only": 12.446082852867887,
+      "pa_mpjpe_mm_detected_only": 7.310108414753358,
+      "pa_evaluable_hands": 12,
+      "reprojection_mean_px_detected_only": 9.467453122769019,
+      "pck_all_gt": {
+        "20": 0.8888888888888888,
+        "50": 0.9801587301587301
+      },
+      "quality_hands": {
+        "20": 11,
+        "50": 12
+      },
+      "quality_yield_all_gt": {
+        "20": 0.9166666666666666,
+        "50": 1.0
+      },
+      "source_image_count": 12,
+      "details": [
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 1,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 11.759008361544037,
+          "pa_mpjpe_mm": 8.633697174379977,
+          "reprojection_mean_px": 6.980297117594956
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 4,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 19.749280701107153,
+          "pa_mpjpe_mm": 5.036756465322682,
+          "reprojection_mean_px": 10.337244142958806
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 7,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 11.757744346045246,
+          "pa_mpjpe_mm": 8.891058155995609,
+          "reprojection_mean_px": 11.883461270576193
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 10,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 7.56745191012803,
+          "pa_mpjpe_mm": 5.44406038147166,
+          "reprojection_mean_px": 13.213341566482738
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 13,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.950902176177872,
+          "pa_mpjpe_mm": 5.577918640801204,
+          "reprojection_mean_px": 5.17620210199241
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 16,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 8.973447341172086,
+          "pa_mpjpe_mm": 4.825915757330389,
+          "reprojection_mean_px": 7.993800861187904
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 19,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 13.357089899774605,
+          "pa_mpjpe_mm": 6.093261635331874,
+          "reprojection_mean_px": 8.06359923747098
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 22,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 10.206899533081216,
+          "pa_mpjpe_mm": 6.3387292585018145,
+          "reprojection_mean_px": 10.820983648570872
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 25,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 27.064894266520337,
+          "pa_mpjpe_mm": 25.021377117902777,
+          "reprojection_mean_px": 20.5205936044064
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 28,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.461997056395408,
+          "pa_mpjpe_mm": 4.291072029706133,
+          "reprojection_mean_px": 4.757424234183405
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 31,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.833617552097618,
+          "pa_mpjpe_mm": 3.4023128539995864,
+          "reprojection_mean_px": 2.9433809716329864
+        },
+        {
+          "sample_id": "freihand-pilot-12",
+          "frame_index": 34,
+          "hand_id": "0",
+          "prediction_id": "0",
+          "status": "matched",
+          "side_correct": true,
+          "mpjpe_root_mm": 9.670661090371011,
+          "pa_mpjpe_mm": 4.165141506296596,
+          "reprojection_mean_px": 10.919108716170573
+        }
+      ],
+      "raw_trial_status": "passed",
+      "native_wall_seconds": 165.4768715049995,
+      "quality_hands_per_second": {
+        "20": 0.06647454656324983,
+        "50": 0.07251768715990892
+      },
+      "native_trial_sha256": "6ae4045466a8da35b0d79fae8926389d2842c1a7bb8c496cc5eb31afef3564da",
+      "source_outputs": [
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/corpus-image-v1.native-scored.jsonl",
+          "sha256": "0e4746d537c6515c00debc61f386279d76f3686d9b71e75a32c8b52007a54df6"
+        },
+        {
+          "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/corpus-image-v1.native-scored_stats.jsonl",
+          "sha256": "fd51db243b914efeea81553f712e301f7c378bd402fb88e12cd5ecca79d254e6"
+        }
+      ],
+      "normalized_predictions": "/mnt/d/EgoWorld/runs/output-quality-20261102/scores-image-v1/datajuicer-predictions.json",
+      "normalized_sha256": "848f7c451e62247c9f4cc267918d0c33214ed729fd173fbfaa69a32bce2f1627"
+    }
+  },
+  "frame_binding": {
+    "source_corpus": "/mnt/d/EgoWorld/runs/output-quality-20261102/corpus-montage-v1/corpus.json",
+    "source_corpus_sha256": "3a83a1a7cd20b7ecf26011d9150113450a20c4700e468a5b0cb66e03033ba852",
+    "method": "Actual stock sampling PTS and lexical filenames plus decoded pixel comparison; no pose labels used",
+    "matching": "exact",
+    "records": {
+      "freihand-pilot-12": {
+        "actual_lexical_frame_order": [
+          0,
+          2,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          3,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          4,
+          31,
+          32,
+          33,
+          34,
+          35,
+          35,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10
+        ],
+        "files": [
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_0.jpg",
+            "source_frame": 0,
+            "sha256": "584125214d3675b4ccbbb703b56feef62cb7ca76c80e8696e4a5611f643c4ffc",
+            "decoded_mean_absolute_difference_0_255": 2.344547193877551
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_1.jpg",
+            "source_frame": 2,
+            "sha256": "584125214d3675b4ccbbb703b56feef62cb7ca76c80e8696e4a5611f643c4ffc",
+            "decoded_mean_absolute_difference_0_255": 2.344547193877551
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_10.jpg",
+            "source_frame": 11,
+            "sha256": "c44462389182ec81d5eaa6dfb66533d8c78940ae7b6dbf87c1cd55f8804d287f",
+            "decoded_mean_absolute_difference_0_255": 2.127896471088435
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_11.jpg",
+            "source_frame": 12,
+            "sha256": "d184daca065f95fa9c459b31082a552bb196784fbeed1e4d7c5dff0ca553ac1e",
+            "decoded_mean_absolute_difference_0_255": 3.1493276998299318
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_12.jpg",
+            "source_frame": 13,
+            "sha256": "d184daca065f95fa9c459b31082a552bb196784fbeed1e4d7c5dff0ca553ac1e",
+            "decoded_mean_absolute_difference_0_255": 3.1493276998299318
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_13.jpg",
+            "source_frame": 14,
+            "sha256": "d184daca065f95fa9c459b31082a552bb196784fbeed1e4d7c5dff0ca553ac1e",
+            "decoded_mean_absolute_difference_0_255": 3.1493276998299318
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_14.jpg",
+            "source_frame": 15,
+            "sha256": "e395a035fc8d205fdba6d13ee956bdd6bb26c99030ecc943e06581165af4c602",
+            "decoded_mean_absolute_difference_0_255": 2.2708798363095237
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_15.jpg",
+            "source_frame": 16,
+            "sha256": "e395a035fc8d205fdba6d13ee956bdd6bb26c99030ecc943e06581165af4c602",
+            "decoded_mean_absolute_difference_0_255": 2.2708798363095237
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_16.jpg",
+            "source_frame": 17,
+            "sha256": "e395a035fc8d205fdba6d13ee956bdd6bb26c99030ecc943e06581165af4c602",
+            "decoded_mean_absolute_difference_0_255": 2.2708798363095237
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_17.jpg",
+            "source_frame": 18,
+            "sha256": "44908442d821ff703ce5f1ddd31489cf0dbc61adbddcd52e3876f81b18aac368",
+            "decoded_mean_absolute_difference_0_255": 1.9257679634353742
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_18.jpg",
+            "source_frame": 19,
+            "sha256": "44908442d821ff703ce5f1ddd31489cf0dbc61adbddcd52e3876f81b18aac368",
+            "decoded_mean_absolute_difference_0_255": 1.9257679634353742
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_19.jpg",
+            "source_frame": 20,
+            "sha256": "44908442d821ff703ce5f1ddd31489cf0dbc61adbddcd52e3876f81b18aac368",
+            "decoded_mean_absolute_difference_0_255": 1.9257679634353742
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_2.jpg",
+            "source_frame": 3,
+            "sha256": "953814dd87d9c6719d26ad863ea8b30185222f1913cd7ff11ccace419abf44bf",
+            "decoded_mean_absolute_difference_0_255": 3.526353900935374
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_20.jpg",
+            "source_frame": 21,
+            "sha256": "0036750456fbe04d9070a61af22e5c6770f24a77ba028c891c7ec7b1664da101",
+            "decoded_mean_absolute_difference_0_255": 3.3998325892857144
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_21.jpg",
+            "source_frame": 22,
+            "sha256": "0036750456fbe04d9070a61af22e5c6770f24a77ba028c891c7ec7b1664da101",
+            "decoded_mean_absolute_difference_0_255": 3.3998325892857144
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_22.jpg",
+            "source_frame": 23,
+            "sha256": "0036750456fbe04d9070a61af22e5c6770f24a77ba028c891c7ec7b1664da101",
+            "decoded_mean_absolute_difference_0_255": 3.3998325892857144
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_23.jpg",
+            "source_frame": 24,
+            "sha256": "5fe2e16064ed323ba3177945b03ff0a01120e89906d99747007eed66ce0e366c",
+            "decoded_mean_absolute_difference_0_255": 2.537720556972789
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_24.jpg",
+            "source_frame": 25,
+            "sha256": "5fe2e16064ed323ba3177945b03ff0a01120e89906d99747007eed66ce0e366c",
+            "decoded_mean_absolute_difference_0_255": 2.537720556972789
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_25.jpg",
+            "source_frame": 26,
+            "sha256": "5fe2e16064ed323ba3177945b03ff0a01120e89906d99747007eed66ce0e366c",
+            "decoded_mean_absolute_difference_0_255": 2.537720556972789
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_26.jpg",
+            "source_frame": 27,
+            "sha256": "a9a13936e3d5cdc378b8acbc50eaa2e56692eb04059041ca85a2a8e120618f3b",
+            "decoded_mean_absolute_difference_0_255": 3.8631616709183674
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_27.jpg",
+            "source_frame": 28,
+            "sha256": "a9a13936e3d5cdc378b8acbc50eaa2e56692eb04059041ca85a2a8e120618f3b",
+            "decoded_mean_absolute_difference_0_255": 3.8631616709183674
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_28.jpg",
+            "source_frame": 29,
+            "sha256": "a9a13936e3d5cdc378b8acbc50eaa2e56692eb04059041ca85a2a8e120618f3b",
+            "decoded_mean_absolute_difference_0_255": 3.8631616709183674
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_29.jpg",
+            "source_frame": 30,
+            "sha256": "bb969ed597ddd250d54d0925e6616f5efdf52d607f6eca21248eef23dbd36fe7",
+            "decoded_mean_absolute_difference_0_255": 2.221885629251701
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_3.jpg",
+            "source_frame": 4,
+            "sha256": "953814dd87d9c6719d26ad863ea8b30185222f1913cd7ff11ccace419abf44bf",
+            "decoded_mean_absolute_difference_0_255": 3.526353900935374
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_30.jpg",
+            "source_frame": 31,
+            "sha256": "bb969ed597ddd250d54d0925e6616f5efdf52d607f6eca21248eef23dbd36fe7",
+            "decoded_mean_absolute_difference_0_255": 2.221885629251701
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_31.jpg",
+            "source_frame": 32,
+            "sha256": "bb969ed597ddd250d54d0925e6616f5efdf52d607f6eca21248eef23dbd36fe7",
+            "decoded_mean_absolute_difference_0_255": 2.221885629251701
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_32.jpg",
+            "source_frame": 33,
+            "sha256": "9af4ad332a51ca95f7ec61d9a017df9775d2b5c44c013e6555dcaa298b1ce7a1",
+            "decoded_mean_absolute_difference_0_255": 1.6896723533163265
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_33.jpg",
+            "source_frame": 34,
+            "sha256": "9af4ad332a51ca95f7ec61d9a017df9775d2b5c44c013e6555dcaa298b1ce7a1",
+            "decoded_mean_absolute_difference_0_255": 1.6896723533163265
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_34.jpg",
+            "source_frame": 35,
+            "sha256": "9af4ad332a51ca95f7ec61d9a017df9775d2b5c44c013e6555dcaa298b1ce7a1",
+            "decoded_mean_absolute_difference_0_255": 1.6896723533163265
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_35.jpg",
+            "source_frame": 35,
+            "sha256": "9af4ad332a51ca95f7ec61d9a017df9775d2b5c44c013e6555dcaa298b1ce7a1",
+            "decoded_mean_absolute_difference_0_255": 1.6896723533163265
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_4.jpg",
+            "source_frame": 5,
+            "sha256": "953814dd87d9c6719d26ad863ea8b30185222f1913cd7ff11ccace419abf44bf",
+            "decoded_mean_absolute_difference_0_255": 3.526353900935374
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_5.jpg",
+            "source_frame": 6,
+            "sha256": "ec7af89a14d4b7abeb79492001f17abbd3bd0410dacecdf09e20266163d0761e",
+            "decoded_mean_absolute_difference_0_255": 3.653114370748299
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_6.jpg",
+            "source_frame": 7,
+            "sha256": "ec7af89a14d4b7abeb79492001f17abbd3bd0410dacecdf09e20266163d0761e",
+            "decoded_mean_absolute_difference_0_255": 3.653114370748299
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_7.jpg",
+            "source_frame": 8,
+            "sha256": "ec7af89a14d4b7abeb79492001f17abbd3bd0410dacecdf09e20266163d0761e",
+            "decoded_mean_absolute_difference_0_255": 3.653114370748299
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_8.jpg",
+            "source_frame": 9,
+            "sha256": "c44462389182ec81d5eaa6dfb66533d8c78940ae7b6dbf87c1cd55f8804d287f",
+            "decoded_mean_absolute_difference_0_255": 2.127896471088435
+          },
+          {
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/native-assets-v2/frames/freihand-pilot-12/frame_9.jpg",
+            "source_frame": 10,
+            "sha256": "c44462389182ec81d5eaa6dfb66533d8c78940ae7b6dbf87c1cd55f8804d287f",
+            "decoded_mean_absolute_difference_0_255": 2.127896471088435
+          }
+        ],
+        "selected_raw_stats_positions": [
+          23,
+          32,
+          35,
+          4,
+          7,
+          10,
+          14,
+          17,
+          20,
+          24,
+          27
+        ],
+        "canonical_score_frames": [
+          4,
+          7,
+          10,
+          13,
+          16,
+          19,
+          22,
+          25,
+          28,
+          31,
+          34
+        ],
+        "strict_missing_score_frames": [
+          1
+        ],
+        "duplicate_source_frames": [
+          35
+        ]
+      }
+    },
+    "native_export": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/datajuicer-hands/worker/datajuicer.jsonl",
+    "native_export_sha256": "0e4746d537c6515c00debc61f386279d76f3686d9b71e75a32c8b52007a54df6",
+    "native_stats_sha256": "dc61328a3d8ccc0c3c8694e5cf253dc13a7ef5ff03fb9297ce2b22aa0c2c690f",
+    "timing_record_sha256": "68c1d77c5ffdb80e1a0cf2e072c45d030d873aade3665fa04da9360c9db89263",
+    "score_view_export": "/mnt/d/EgoWorld/runs/output-quality-20261102/corpus-exact-v1.native-scored.jsonl"
+  },
+  "native_trials": [
+    {
+      "name": "egoworld-hands",
+      "status": "passed",
+      "wall_seconds": 525.5725796710003,
+      "process_tree_peak_rss_bytes": 8694706176,
+      "gpu_baseline_used_bytes": [
+        826753024
+      ],
+      "gpu_whole_device_peak_used_bytes": [
+        6597648384
+      ],
+      "environment_stable": true,
+      "audit": {
+        "validated": true,
+        "output_counts": {
+          "hand_joints": 54
+        },
+        "artifacts": [
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000000-000000003-50fe53c6",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000000-000000003-50fe53c6/hand_joints.parquet",
+            "rows_or_points": 3,
+            "sha256": "e293a50ec8cf17bf852bdb382afd3779faecc53bcfe078539a29a6526970de3b"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000003-000000006-fd0b74f1",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000003-000000006-fd0b74f1/hand_joints.parquet",
+            "rows_or_points": 6,
+            "sha256": "4f8b8f25284d16f9a160fb32d7342b56b998b617c1f3f07ad1450b4fe5b5f012"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000006-000000009-7f3d6dda",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000006-000000009-7f3d6dda/hand_joints.parquet",
+            "rows_or_points": 9,
+            "sha256": "258ed9c521fe62b050c5c8ca96a4cf9667423bcceda14977c5cbd71375f4fc19"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000009-000000012-358978b8",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000009-000000012-358978b8/hand_joints.parquet",
+            "rows_or_points": 3,
+            "sha256": "e15c3e0339da986ef0aa13a8c0950083a14b8ad98ec18f8bfbabd5cc5736df03"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000012-000000015-d7cdaa17",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000012-000000015-d7cdaa17/hand_joints.parquet",
+            "rows_or_points": 6,
+            "sha256": "a490e75c8b67e53b1fc03b56d0862551d5f5707270c8b381adf54b3572bcdc5c"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000015-000000018-6733610d",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000015-000000018-6733610d/hand_joints.parquet",
+            "rows_or_points": 3,
+            "sha256": "c3b6defe1d384c60705b702b4c9d4160fbc44113942e6b54da7585ec1eaedf47"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000018-000000021-0504252c",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000018-000000021-0504252c/hand_joints.parquet",
+            "rows_or_points": 6,
+            "sha256": "178ae30eb5f41495ceedf3da4bbfcef4a3b48d1b57a56fb7c2cef7daaecb9171"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000021-000000024-1ed29e3f",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000021-000000024-1ed29e3f/hand_joints.parquet",
+            "rows_or_points": 3,
+            "sha256": "bdf3f7f2da86617f7344e9405d699fcb5346059785640d19d806ad35b7ed6c60"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000024-000000027-7cd6539a",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000024-000000027-7cd6539a/hand_joints.parquet",
+            "rows_or_points": 6,
+            "sha256": "97378280845b09d9fe11eacdc702ee2df637a53da7cda4c3408952e615d3bd73"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000027-000000030-ebdab965",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000027-000000030-ebdab965/hand_joints.parquet",
+            "rows_or_points": 3,
+            "sha256": "0b79df919c9bcf0ef2f81ea44dc6908f0f2867a295cbb63919a344134f2e10fa"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000030-000000033-af068f23",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000030-000000033-af068f23/hand_joints.parquet",
+            "rows_or_points": 3,
+            "sha256": "4ad95ef82b1cc99b9691ee3c87418d203ef617f41c9b7f291bc0e17355b2647a"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000033-000000036-82ddd0b3",
+            "output": "hand_joints",
+            "file": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/worker/runs/run_id=c1/exports/freihand-pilot-12-35e790f7-000000033-000000036-82ddd0b3/hand_joints.parquet",
+            "rows_or_points": 3,
+            "sha256": "dcaebda4d3fe72bd790bbb5e523c7714629ee7e48c40893a92c4b24d936f7278"
+          }
+        ],
+        "cleaning": {
+          "inputs": 1,
+          "accepted": 1,
+          "rejected": 0,
+          "reasons": {}
+        },
+        "computed_stages": [
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000000-000000003-50fe53c6",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000000-000000003-50fe53c6",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000003-000000006-fd0b74f1",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000003-000000006-fd0b74f1",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000006-000000009-7f3d6dda",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000006-000000009-7f3d6dda",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000009-000000012-358978b8",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000009-000000012-358978b8",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000012-000000015-d7cdaa17",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000012-000000015-d7cdaa17",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000015-000000018-6733610d",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000015-000000018-6733610d",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000018-000000021-0504252c",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000018-000000021-0504252c",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000021-000000024-1ed29e3f",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000021-000000024-1ed29e3f",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000024-000000027-7cd6539a",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000024-000000027-7cd6539a",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000027-000000030-ebdab965",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000027-000000030-ebdab965",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000030-000000033-af068f23",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000030-000000033-af068f23",
+            "kernel": "hamer"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000033-000000036-82ddd0b3",
+            "kernel": "sam2"
+          },
+          {
+            "clip_id": "freihand-pilot-12-35e790f7-000000033-000000036-82ddd0b3",
+            "kernel": "hamer"
+          }
+        ],
+        "stage_commits": [
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2",
+          "hamer",
+          "sam2"
+        ],
+        "qc": [
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 3,
+            "object_count": 1,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 6,
+            "object_count": 2,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 9,
+            "object_count": 3,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 3,
+            "object_count": 1,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 6,
+            "object_count": 2,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 3,
+            "object_count": 1,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 6,
+            "object_count": 2,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 3,
+            "object_count": 1,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 6,
+            "object_count": 2,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 3,
+            "object_count": 1,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 3,
+            "object_count": 1,
+            "empty_stages": []
+          },
+          {
+            "status": "pass",
+            "empty_mask_rate": 0.0,
+            "processed_frames": 3,
+            "expected_frames": 3,
+            "frame_coverage": 1.0,
+            "nonempty_instance_rows": 3,
+            "object_count": 1,
+            "empty_stages": []
+          }
+        ],
+        "validity": "Production contracts and checked exports; accuracy and downstream usefulness unlabelled"
+      },
+      "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/egoworld-hands/trial.json",
+      "sha256": "e536286fc19cf217a129a861abcc592a7d0d2db8975a380db8bb51ac19f04f13"
+    },
+    {
+      "name": "datajuicer-hands",
+      "status": "passed",
+      "wall_seconds": 165.4768715049995,
+      "process_tree_peak_rss_bytes": 6891773952,
+      "gpu_baseline_used_bytes": [
+        833437696
+      ],
+      "gpu_whole_device_peak_used_bytes": [
+        833667072
+      ],
+      "environment_stable": true,
+      "audit": {
+        "exported_samples": 1,
+        "sample_ids": [
+          "freihand-pilot-12"
+        ],
+        "finite_21x3_hand_predictions": 39,
+        "invalid_hand_predictions": 0,
+        "metadata_keys": [
+          "hand_reconstruction_tags",
+          "input_id"
+        ],
+        "native_hand_frame_counts": [
+          36
+        ],
+        "export_sha256": "0e4746d537c6515c00debc61f386279d76f3686d9b71e75a32c8b52007a54df6",
+        "stats_sidecar": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/datajuicer-hands/worker/datajuicer_stats.jsonl",
+        "stats_sidecar_sha256": "dc61328a3d8ccc0c3c8694e5cf253dc13a7ef5ff03fb9297ce2b22aa0c2c690f",
+        "validity": "Finite 21x3 predictions only; native model differs, no pose-accuracy or coordinate-equivalence guarantee"
+      },
+      "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/datajuicer-hands/trial.json",
+      "sha256": "6ae4045466a8da35b0d79fae8926389d2842c1a7bb8c496cc5eb31afef3564da"
+    }
+  ],
+  "native_settings": {
+    "executor_type": "default",
+    "np": 4,
+    "use_cache": true,
+    "skip_op_error": true,
+    "op_fusion": false,
+    "auto_op_parallelism": true,
+    "torch_version": "2.5.1+cpu",
+    "cuda_available": false,
+    "datajuicer_version": "1.6.1",
+    "direct_url": {
+      "archive_info": {
+        "hash": "sha256=57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec",
+        "hashes": {
+          "sha256": "57fdbf61c5966c880469c839845cf6b17dd41b73f6d97c305e942c3c7bd3c2ec"
+        }
+      },
+      "url": "file:///tmp/egoworld-native-wheelhouse/datajuicer-source.zip"
+    }
+  },
+  "raw_report": {
+    "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/pair-v2/report.json",
+    "sha256": "f0366581e37f570b5c50fecacc8420ea4419621bea51579506c61046b86a9503"
+  },
+  "quality_report": {
+    "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/scores-exact-v1/report.json",
+    "sha256": "29c0fdee7233d90c5263d7f99164a62dfdce5b5b909777cdb435aa7520759b76"
+  },
+  "validation": {
+    "targeted_tests": 32,
+    "new_quality_tests": 13,
+    "log": "/mnt/d/EgoWorld/runs/output-quality-20261102/targeted-tests-final.log",
+    "log_sha256": "0615a627c189f5a42491ac9f1029fb5f06bcf55babf9ebb3f7be57c4a7f86642",
+    "incoming_handoff_unchanged": true,
+    "frozen_analysis_policy_unchanged": true,
+    "production_source_hash": "0b05f2ca23124447a18a0d3265f825def23d9b447be55c7f652f9030bb818dbc",
+    "production_source_changed": false
+  },
+  "retained_interruption": {
+    "status": "interrupted_without_final_record",
+    "observed_utc": "2026-11-03T12:27:56.767374+00:00",
+    "worker_process_found": false,
+    "final_manifest_exists": false,
+    "sam2_commits": 2,
+    "hamer_commits": 2,
+    "last_observation_seconds": 138.37362977000157,
+    "cause": "unknown_external_interruption; no successful completion inferred",
+    "services_restarted_by_this_task": false
+  },
+  "campaign_timing": {
+    "completed_pair_only": true,
+    "egoworld_additional_recorded_exposure_seconds_lower_bound": 138.37362977000157,
+    "egoworld_total_attempted_exposure_seconds_lower_bound": 663.9462094410019,
+    "interrupted_attempt_actual_end_and_downtime": "unknown; not fabricated"
+  },
+  "same_model_framework_speed_ratio": null,
+  "fixed_model_execution_track": {
+    "stage_interface": "left/right Dex six rows each exact; existing baseline acceptance",
+    "full_pipeline_five_repeat_benchmark_complete": false
+  },
+  "limits": [
+    "Pilot subset, no general accuracy/speed superiority conclusion.",
+    "Source images may be correlated; image count is not independent subject/capture count.",
+    "PA alignment removes scale/orientation/translation; it does not validate metric world pose.",
+    "Conditional pose errors are accompanied by all-GT coverage and quality yield.",
+    "Model/resource/output scopes differ; end-to-end time is a native product observation.",
+    "Only 12 seeded FreiHAND eval images; not an independently audited egocentric/temporal holdout.",
+    "EgoWorld receives an all-right task prior; WiLoR detects side. Side accuracy not equally informed.",
+    "Task-configured native DJ chain: duration/resolution/hand OP, frame_num36; no stationary-rejecting motion filter. Original CPU/device/resource/cache/error/mesh/vis defaults preserved.",
+    "EgoWorld splits into twelve three-frame clips; native WiLoR handles all frames of one row. Extra work and startup/residency costs differ.",
+    "Native CPU-only Torch baseline versus local RTX4060 CUDA; no server scaling conclusion.",
+    "Success-run wall times exclude dataset preparation and prior interrupted attempt; all known interruption records retained.",
+    "No physical metric world-coordinate, mesh-accuracy, robot-task or training-usefulness claim.",
+    "FreiHAND has one annotated target; extras are off-target predictions for this task, not a claim of exhaustive generic hand-detection FP labels."
+  ],
+  "source_snapshot": {
+    "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/source-snapshot-final",
+    "manifest_sha256": "4c15ecc9c062b404347bcc980b30b04cbbde39afbb30e57abfdbdfc181ddd919"
+  },
+  "ground_truth_values_unchanged_across_frame_views": true,
+  "posthoc_auxiliary_policy": "Image-equivalence only, verified repeated RGB pixels; not preregistered; primary exact-frame result unchanged.",
+  "previous_pilot_sampling_correction": {
+    "path": "/mnt/d/EgoWorld/runs/output-quality-20261102/previous-pilot-sampling-recheck-verified.json",
+    "sha256": "a2e541d4eb1e660140d57b8a2b7f20ceb3450f59983f588fe783cc8dd56e9d67",
+    "verified_source_frames": [
+      0,
+      2,
+      2
+    ]
+  },
+  "retained_binding_failures": [
+    {
+      "record": "/mnt/d/EgoWorld/runs/output-quality-20261102/scores-v1",
+      "status": "no_accuracy_result",
+      "reason": "Initial ordinal-as-source-frame assumption failed pixel verification; scorer then refused missing corpus. Corrected with native PTS and separate frame views; no model rerun."
+    }
+  ]
+}
