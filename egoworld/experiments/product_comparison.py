@@ -45,8 +45,9 @@ def worker(kind, config_path, output):
             from functools import partial
             from matched_product import run_pipeline
             native_python = config["datajuicer_python"]
+            map_mode = config.get("map_mode", "process")
             config = json.loads(Path(config["recipe"]).read_text())
-            executor = partial(run_pipeline, python=native_python)
+            executor = partial(run_pipeline, python=native_python, map_mode=map_mode)
         config["output_dir"] = str(output / "runs")
         config["cache"]["root"] = str(output / "empty-result-cache")
         if config["cache"].get("read", True):

@@ -12,9 +12,11 @@ from egoworld.product.datajuicer_adapter import EgoWorldStageMapper
 
 @OPERATORS.register_module("egoworld_matched_prepare_mapper")
 class MatchedPrepareMapper(Mapper):
-    def __init__(self, config: dict = None, work_root: str = None, *args, **kwargs):
+    def __init__(self, config: dict = None, work_root: str = None, inprocess: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.config, self.work_root = config, work_root
+        if inprocess:
+            self.auto_op_parallelism, self.num_proc = False, None
 
     def process_single(self, sample):
         from egoworld.pipeline.stages import PrepareActor
@@ -29,6 +31,11 @@ class MatchedPrepareMapper(Mapper):
 
 @OPERATORS.register_module("egoworld_matched_stage_mapper")
 class MatchedStageMapper(EgoWorldStageMapper):
+    def __init__(self, config_path=None, stage=None, output_root=None, inprocess: bool = False, *args, **kwargs):
+        super().__init__(config_path, stage, output_root, *args, **kwargs)
+        if inprocess:
+            self.auto_op_parallelism, self.num_proc = False, None
+
     def process_single(self, sample, context=False):
         row = dict(sample)
         state = super().process_single(json.loads(row["egoworld_state"]), context)
@@ -49,9 +56,11 @@ class MatchedStageMapper(EgoWorldStageMapper):
 
 @OPERATORS.register_module("egoworld_matched_finalize_mapper")
 class MatchedFinalizeMapper(Mapper):
-    def __init__(self, config: dict = None, output_root: str = None, *args, **kwargs):
+    def __init__(self, config: dict = None, output_root: str = None, inprocess: bool = False, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.config, self.output_root = config, output_root
+        if inprocess:
+            self.auto_op_parallelism, self.num_proc = False, None
 
     def process_single(self, sample):
         from egoworld.pipeline.artifacts import WriterActor

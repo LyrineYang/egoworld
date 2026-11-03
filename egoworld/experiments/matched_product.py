@@ -27,7 +27,7 @@ def execute(config_path, samples_path, output):
     config, stages = spec["config"], spec["stages"]
     root = Path(output)
     root.mkdir(exist_ok=False)
-    common = {"num_proc": 1, "auto_op_parallelism": False}
+    common = {"num_proc": 1, "auto_op_parallelism": False, "inprocess": spec.get("map_mode", "process") == "inprocess"}
     process = [{"egoworld_matched_prepare_mapper": {"config": config,
         "work_root": spec["work_root"], **common}}]
     process += [{"egoworld_matched_stage_mapper": {"config_path": spec["model_config"],
@@ -43,7 +43,8 @@ def execute(config_path, samples_path, output):
     dist = metadata.distribution("py-data-juicer")
     write(root / "installation.json", {"version": dist.version,
         "direct_url": json.loads(dist.read_text("direct_url.json") or "{}"),
-        "resource_policy": "Explicit matched-model baseline: one serial OP process, one visible external GPU; no native resource claim"})
+        "resource_policy": "Explicit matched-model baseline: one serial OP process, one visible external GPU; no native resource claim",
+        "map_mode": spec.get("map_mode", "process")})
     DefaultExecutor(init_configs(["--config", str(root / "datajuicer-config.json")])).run()
     rows = [json.loads(json.loads(line)["egoworld_state"]) for line in (root / "clips.jsonl").read_text().splitlines() if line.strip()]
     expected = [json.loads(json.loads(line)["egoworld_state"])["egoworld_clip"]["clip_id"] for line in Path(samples_path).read_text().splitlines() if line.strip()]
@@ -55,13 +56,15 @@ def execute(config_path, samples_path, output):
     write(root / "execution.json", {"status": "passed", "clips": len(rows), "stages": stages})
 
 
-def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id, python, backend_factory=None):
+def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id, python, map_mode="process", backend_factory=None):
     from egoworld.config import load_config
     from egoworld.contracts import OUTPUT_SCHEMA_VERSION, enabled_stages
     from egoworld.pipeline.driver import load_manifest, _build_clip_tasks, _clip_to_dict
     from egoworld.utils.provenance import provenance
     if backend_factory is not None:
         raise ValueError("The matched DefaultExecutor does not use an EgoWorld backend")
+    if map_mode not in ("process", "inprocess"):
+        raise ValueError("map_mode must be process or inprocess")
     config = load_config(config_path).resolved()
     if config.execution.split_execution or config.num_gpus != 1:
         raise ValueError("Initial shared-model baseline requires full stages and one GPU")
@@ -76,7 +79,7 @@ def run_pipeline(config_path, video_manifest_path, clip_manifest_path, *, run_id
     model_root = Path(config.paths.output_root) / f"run_id={run_id}"
     work = model_root / "matched-executor"
     work.mkdir(parents=True, exist_ok=False)
-    spec = {"config": asdict(config), "stages": list(graph), "model_root": str(model_root),
+    spec = {"config": asdict(config), "stages": list(graph), "model_root": str(model_root), "map_mode": map_mode,
         "model_config": str(Path(config_path).resolve()), "work_root": str(model_root / ".work")}
     write(work / "spec.json", spec)
     samples = work / "samples.jsonl"
