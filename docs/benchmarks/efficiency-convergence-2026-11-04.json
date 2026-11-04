@@ -1,0 +1,4126 @@
+{
+  "schema_version": 1,
+  "status": "completed_audited",
+  "measurement_commit": "30bf1608f2d74a1bf04e7f16909de76c4ce11a01",
+  "environment": "RTX 4060 Laptop 8 GB, WSL; no physical multi-GPU claims",
+  "raw_artifacts_root": "/mnt/d/EgoWorld/runs/efficiency-goal-20261103",
+  "groups": 13,
+  "executions": 45,
+  "group_audit": [
+    {
+      "name": "holdout-native",
+      "track": "native_product",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "bc14716ecf899250a9ab7a0f57b468760ff4dbd2efe2a606b897bd3e6a9f6b09"
+    },
+    {
+      "name": "fixed3-r0",
+      "track": "fixed_models",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "0d7ab4461ca93cd07cf05ff4cefff90ba4e5a8e3889d7bc9391036840a8babd1"
+    },
+    {
+      "name": "fixed3-r1",
+      "track": "fixed_models",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "5663594bd2ce0d06647b5cf3e4d21cc6349b848d43629bb41c6cc4ad961b41a0"
+    },
+    {
+      "name": "fixed3-r2",
+      "track": "fixed_models",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "07154ac2512049241c92741def26f859300ed00457383ce33a13f4addb380c80"
+    },
+    {
+      "name": "fixed3-r3",
+      "track": "fixed_models",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "722df92b0acf88bd5ce1859210751e34e384286aa1903d4512993127ca3c24fe"
+    },
+    {
+      "name": "fixed3-r4",
+      "track": "fixed_models",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "210205b55b8155892c7426c535a1cdd9f1712acfa4b1398aea837935e7a6e464"
+    },
+    {
+      "name": "native-dev-r0",
+      "track": "native_product",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "1c0609ad5dd2cb2d08b4c86243ff5300084228c24b3ce7243257b4ce2bf4cecb"
+    },
+    {
+      "name": "native-dev-r1",
+      "track": "native_product",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "730d577486631ef7fddf655bb87d6470ff30d2808083e09c074693de1291136f"
+    },
+    {
+      "name": "native-dev-r2",
+      "track": "native_product",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "e4a9fab3f2ea83559e0735a95cf7919abe5d6c9cc3d120042c5125f492591b21"
+    },
+    {
+      "name": "native-prefix1",
+      "track": "native_product",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "f79f5bcf65a5cb1d8b4bed92647cfc76ca0e97e9a237a82601ae258e9529c162"
+    },
+    {
+      "name": "fixed3-prefix1",
+      "track": "fixed_models",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "649ad98ba0f03bd57fda04b95e82c5bfcf34bf0f6b4b4c2194fd55328ee1df6b"
+    },
+    {
+      "name": "native-prefix4",
+      "track": "native_product",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "edf104aa4f3e8c3c7c1d8fe214e15f2d61f7109deae5f0a35b1140e87f41f22f"
+    },
+    {
+      "name": "fixed3-prefix4",
+      "track": "fixed_models",
+      "raw_status": "completed",
+      "audit_status": "passed",
+      "raw_report_sha256": "c9e5c8ebde58222a0c038d89b4e8efca4d7b9bcf0d2669f831d6df46c103b92e"
+    }
+  ],
+  "pre_restart_groups": [
+    "holdout-native",
+    "fixed3-r0",
+    "fixed3-r1",
+    "fixed3-r2"
+  ],
+  "post_restart_groups": [
+    "fixed3-r3",
+    "fixed3-r4",
+    "native-dev-r0",
+    "native-dev-r1",
+    "native-dev-r2",
+    "native-prefix1",
+    "fixed3-prefix1",
+    "native-prefix4",
+    "fixed3-prefix4"
+  ],
+  "development_distributions": [
+    {
+      "track": "fixed_models",
+      "name": "egoworld",
+      "n": 5,
+      "wall_seconds": {
+        "n": 5,
+        "median": 96.821832513,
+        "mean": 104.47976534459974,
+        "min": 88.28783560299962,
+        "max": 143.65061156499996,
+        "values": [
+          88.28783560299962,
+          93.25578077999853,
+          100.38276626200059,
+          96.821832513,
+          143.65061156499996
+        ]
+      },
+      "common_output_ready_seconds": {
+        "n": 5,
+        "median": 97.255745822,
+        "mean": 104.87351688700016,
+        "min": 88.65673355000035,
+        "max": 144.0336550290001,
+        "values": [
+          88.65673355000035,
+          93.64317882799878,
+          100.77827120600159,
+          97.255745822,
+          144.0336550290001
+        ]
+      },
+      "quality_yield": {
+        "exact_frames": {
+          "20": {
+            "n": 5,
+            "median": 0.12338602617847087,
+            "mean": 0.11785453934843815,
+            "min": 0.08331386159424956,
+            "max": 0.13535350919772243,
+            "values": [
+              0.13535350919772243,
+              0.12814601287768404,
+              0.11907328689406384,
+              0.12338602617847087,
+              0.08331386159424956
+            ]
+          },
+          "50": {
+            "n": 5,
+            "median": 0.12338602617847087,
+            "mean": 0.11785453934843815,
+            "min": 0.08331386159424956,
+            "max": 0.13535350919772243,
+            "values": [
+              0.13535350919772243,
+              0.12814601287768404,
+              0.11907328689406384,
+              0.12338602617847087,
+              0.08331386159424956
+            ]
+          }
+        },
+        "identical_image_content": {
+          "20": {
+            "n": 5,
+            "median": 0.12338602617847087,
+            "mean": 0.11785453934843815,
+            "min": 0.08331386159424956,
+            "max": 0.13535350919772243,
+            "values": [
+              0.13535350919772243,
+              0.12814601287768404,
+              0.11907328689406384,
+              0.12338602617847087,
+              0.08331386159424956
+            ]
+          },
+          "50": {
+            "n": 5,
+            "median": 0.12338602617847087,
+            "mean": 0.11785453934843815,
+            "min": 0.08331386159424956,
+            "max": 0.13535350919772243,
+            "values": [
+              0.13535350919772243,
+              0.12814601287768404,
+              0.11907328689406384,
+              0.12338602617847087,
+              0.08331386159424956
+            ]
+          }
+        }
+      }
+    },
+    {
+      "track": "fixed_models",
+      "name": "shared-inprocess",
+      "n": 5,
+      "wall_seconds": {
+        "n": 5,
+        "median": 114.04836706599963,
+        "mean": 114.25536724920013,
+        "min": 108.82697805600003,
+        "max": 120.54310343500038,
+        "values": [
+          114.04836706599963,
+          111.42157363300066,
+          120.54310343500038,
+          108.82697805600003,
+          116.436814056
+        ]
+      },
+      "common_output_ready_seconds": {
+        "n": 5,
+        "median": 114.40577594600109,
+        "mean": 114.64452548800034,
+        "min": 109.25828882400003,
+        "max": 120.91232729900003,
+        "values": [
+          114.40577594600109,
+          111.81234066400066,
+          120.91232729900003,
+          109.25828882400003,
+          116.8338947069999
+        ]
+      },
+      "quality_yield": {
+        "exact_frames": {
+          "20": {
+            "n": 5,
+            "median": 0.10488980910949755,
+            "mean": 0.10479987131153586,
+            "min": 0.09924546378406565,
+            "max": 0.10983148399230687,
+            "values": [
+              0.10488980910949755,
+              0.10732267948902303,
+              0.09924546378406565,
+              0.10983148399230687,
+              0.10270992018278614
+            ]
+          },
+          "50": {
+            "n": 5,
+            "median": 0.10488980910949755,
+            "mean": 0.10479987131153586,
+            "min": 0.09924546378406565,
+            "max": 0.10983148399230687,
+            "values": [
+              0.10488980910949755,
+              0.10732267948902303,
+              0.09924546378406565,
+              0.10983148399230687,
+              0.10270992018278614
+            ]
+          }
+        },
+        "identical_image_content": {
+          "20": {
+            "n": 5,
+            "median": 0.10488980910949755,
+            "mean": 0.10479987131153586,
+            "min": 0.09924546378406565,
+            "max": 0.10983148399230687,
+            "values": [
+              0.10488980910949755,
+              0.10732267948902303,
+              0.09924546378406565,
+              0.10983148399230687,
+              0.10270992018278614
+            ]
+          },
+          "50": {
+            "n": 5,
+            "median": 0.10488980910949755,
+            "mean": 0.10479987131153586,
+            "min": 0.09924546378406565,
+            "max": 0.10983148399230687,
+            "values": [
+              0.10488980910949755,
+              0.10732267948902303,
+              0.09924546378406565,
+              0.10983148399230687,
+              0.10270992018278614
+            ]
+          }
+        }
+      }
+    },
+    {
+      "track": "fixed_models",
+      "name": "shared-process",
+      "n": 5,
+      "wall_seconds": {
+        "n": 5,
+        "median": 119.87664310100081,
+        "mean": 117.52830067360019,
+        "min": 104.23459693800032,
+        "max": 125.68373210200002,
+        "values": [
+          104.23459693800032,
+          120.7633782869998,
+          119.87664310100081,
+          125.68373210200002,
+          117.08315293999999
+        ]
+      },
+      "common_output_ready_seconds": {
+        "n": 5,
+        "median": 120.25238084199918,
+        "mean": 117.91933720139969,
+        "min": 104.59715585599952,
+        "max": 126.121652713,
+        "values": [
+          104.59715585599952,
+          121.16548875999979,
+          120.25238084199918,
+          126.121652713,
+          117.46000783599993
+        ]
+      },
+      "quality_yield": {
+        "exact_frames": {
+          "20": {
+            "n": 5,
+            "median": 0.09979012403726893,
+            "mean": 0.1021725523599442,
+            "min": 0.09514623176804517,
+            "max": 0.11472587281933919,
+            "values": [
+              0.11472587281933919,
+              0.09903810171367497,
+              0.09979012403726893,
+              0.09514623176804517,
+              0.10216243146139277
+            ]
+          },
+          "50": {
+            "n": 5,
+            "median": 0.09979012403726893,
+            "mean": 0.1021725523599442,
+            "min": 0.09514623176804517,
+            "max": 0.11472587281933919,
+            "values": [
+              0.11472587281933919,
+              0.09903810171367497,
+              0.09979012403726893,
+              0.09514623176804517,
+              0.10216243146139277
+            ]
+          }
+        },
+        "identical_image_content": {
+          "20": {
+            "n": 5,
+            "median": 0.09979012403726893,
+            "mean": 0.1021725523599442,
+            "min": 0.09514623176804517,
+            "max": 0.11472587281933919,
+            "values": [
+              0.11472587281933919,
+              0.09903810171367497,
+              0.09979012403726893,
+              0.09514623176804517,
+              0.10216243146139277
+            ]
+          },
+          "50": {
+            "n": 5,
+            "median": 0.09979012403726893,
+            "mean": 0.1021725523599442,
+            "min": 0.09514623176804517,
+            "max": 0.11472587281933919,
+            "values": [
+              0.11472587281933919,
+              0.09903810171367497,
+              0.09979012403726893,
+              0.09514623176804517,
+              0.10216243146139277
+            ]
+          }
+        }
+      }
+    },
+    {
+      "track": "native_product",
+      "name": "egoworld",
+      "n": 3,
+      "wall_seconds": {
+        "n": 3,
+        "median": 81.02934975500011,
+        "mean": 80.95081025766679,
+        "min": 80.63132936800002,
+        "max": 81.19175165000024,
+        "values": [
+          80.63132936800002,
+          81.19175165000024,
+          81.02934975500011
+        ]
+      },
+      "common_output_ready_seconds": {
+        "n": 3,
+        "median": 81.46429507699986,
+        "mean": 81.3570963403334,
+        "min": 81.03487521599982,
+        "max": 81.57211872800053,
+        "values": [
+          81.03487521599982,
+          81.57211872800053,
+          81.46429507699986
+        ]
+      },
+      "quality_yield": {
+        "exact_frames": {
+          "20": {
+            "n": 3,
+            "median": 0.14730379718694708,
+            "mean": 0.1474990914926972,
+            "min": 0.14710908809434745,
+            "max": 0.14808438919679703,
+            "values": [
+              0.14808438919679703,
+              0.14710908809434745,
+              0.14730379718694708
+            ]
+          },
+          "50": {
+            "n": 3,
+            "median": 0.14730379718694708,
+            "mean": 0.1474990914926972,
+            "min": 0.14710908809434745,
+            "max": 0.14808438919679703,
+            "values": [
+              0.14808438919679703,
+              0.14710908809434745,
+              0.14730379718694708
+            ]
+          }
+        },
+        "identical_image_content": {
+          "20": {
+            "n": 3,
+            "median": 0.14730379718694708,
+            "mean": 0.1474990914926972,
+            "min": 0.14710908809434745,
+            "max": 0.14808438919679703,
+            "values": [
+              0.14808438919679703,
+              0.14710908809434745,
+              0.14730379718694708
+            ]
+          },
+          "50": {
+            "n": 3,
+            "median": 0.14730379718694708,
+            "mean": 0.1474990914926972,
+            "min": 0.14710908809434745,
+            "max": 0.14808438919679703,
+            "values": [
+              0.14808438919679703,
+              0.14710908809434745,
+              0.14730379718694708
+            ]
+          }
+        }
+      }
+    },
+    {
+      "track": "native_product",
+      "name": "native-cpu",
+      "n": 3,
+      "wall_seconds": {
+        "n": 3,
+        "median": 156.78431864799995,
+        "mean": 157.6931237189999,
+        "min": 155.03639210099982,
+        "max": 161.25866040799997,
+        "values": [
+          161.25866040799997,
+          155.03639210099982,
+          156.78431864799995
+        ]
+      },
+      "common_output_ready_seconds": {
+        "n": 3,
+        "median": 158.04586095000013,
+        "mean": 158.92988849333332,
+        "min": 156.30683863700006,
+        "max": 162.43696589299975,
+        "values": [
+          162.43696589299975,
+          156.30683863700006,
+          158.04586095000013
+        ]
+      },
+      "quality_yield": {
+        "exact_frames": {
+          "20": {
+            "n": 3,
+            "median": 0.06327277373726117,
+            "mean": 0.06293728093447598,
+            "min": 0.06156234170605714,
+            "max": 0.06397672736010962,
+            "values": [
+              0.06156234170605714,
+              0.06397672736010962,
+              0.06327277373726117
+            ]
+          },
+          "50": {
+            "n": 3,
+            "median": 0.0696000511109873,
+            "mean": 0.06923100902792358,
+            "min": 0.06771857587666286,
+            "max": 0.07037440009612057,
+            "values": [
+              0.06771857587666286,
+              0.07037440009612057,
+              0.0696000511109873
+            ]
+          }
+        },
+        "identical_image_content": {
+          "20": {
+            "n": 3,
+            "median": 0.0696000511109873,
+            "mean": 0.06923100902792358,
+            "min": 0.06771857587666286,
+            "max": 0.07037440009612057,
+            "values": [
+              0.06771857587666286,
+              0.07037440009612057,
+              0.0696000511109873
+            ]
+          },
+          "50": {
+            "n": 3,
+            "median": 0.07592732848471341,
+            "mean": 0.07552473712137117,
+            "min": 0.07387481004726856,
+            "max": 0.07677207283213154,
+            "values": [
+              0.07387481004726856,
+              0.07677207283213154,
+              0.07592732848471341
+            ]
+          }
+        }
+      }
+    },
+    {
+      "track": "native_product",
+      "name": "native-cuda",
+      "n": 3,
+      "wall_seconds": {
+        "n": 3,
+        "median": 49.086157533999994,
+        "mean": 49.920119001666684,
+        "min": 48.83292908700014,
+        "max": 51.84127038399993,
+        "values": [
+          48.83292908700014,
+          51.84127038399993,
+          49.086157533999994
+        ]
+      },
+      "common_output_ready_seconds": {
+        "n": 3,
+        "median": 50.308917390999795,
+        "mean": 51.14036519066667,
+        "min": 50.03705885699992,
+        "max": 53.0751193240003,
+        "values": [
+          50.03705885699992,
+          53.0751193240003,
+          50.308917390999795
+        ]
+      },
+      "quality_yield": {
+        "exact_frames": {
+          "20": {
+            "n": 3,
+            "median": 0.1987719179540323,
+            "mean": 0.19567866412268656,
+            "min": 0.18841220005468837,
+            "max": 0.19985187435933902,
+            "values": [
+              0.19985187435933902,
+              0.18841220005468837,
+              0.1987719179540323
+            ]
+          },
+          "50": {
+            "n": 3,
+            "median": 0.21864910974943552,
+            "mean": 0.2152465305349552,
+            "min": 0.2072534200601572,
+            "max": 0.21983706179527293,
+            "values": [
+              0.21983706179527293,
+              0.2072534200601572,
+              0.21864910974943552
+            ]
+          }
+        },
+        "identical_image_content": {
+          "20": {
+            "n": 3,
+            "median": 0.21864910974943552,
+            "mean": 0.2152465305349552,
+            "min": 0.2072534200601572,
+            "max": 0.21983706179527293,
+            "values": [
+              0.21983706179527293,
+              0.2072534200601572,
+              0.21864910974943552
+            ]
+          },
+          "50": {
+            "n": 3,
+            "median": 0.23852630154483875,
+            "mean": 0.23481439694722386,
+            "min": 0.22609464006562602,
+            "max": 0.23982224923120682,
+            "values": [
+              0.23982224923120682,
+              0.22609464006562602,
+              0.23852630154483875
+            ]
+          }
+        }
+      }
+    },
+    {
+      "track": "native_product",
+      "name": "native-cuda-minimal",
+      "n": 3,
+      "wall_seconds": {
+        "n": 3,
+        "median": 39.19852027399975,
+        "mean": 39.5980255929998,
+        "min": 38.42616601399982,
+        "max": 41.16939049099983,
+        "values": [
+          38.42616601399982,
+          39.19852027399975,
+          41.16939049099983
+        ]
+      },
+      "common_output_ready_seconds": {
+        "n": 3,
+        "median": 40.41729683199992,
+        "mean": 40.82404106066641,
+        "min": 39.637261318999435,
+        "max": 42.41756503099987,
+        "values": [
+          39.637261318999435,
+          40.41729683199992,
+          42.41756503099987
+        ]
+      },
+      "quality_yield": {
+        "exact_frames": {
+          "20": {
+            "n": 3,
+            "median": 0.24741882272746696,
+            "mean": 0.24515269295790484,
+            "min": 0.23575139196914624,
+            "max": 0.2522878641771013,
+            "values": [
+              0.2522878641771013,
+              0.24741882272746696,
+              0.23575139196914624
+            ]
+          },
+          "50": {
+            "n": 3,
+            "median": 0.27216070500021367,
+            "mean": 0.2696679622536953,
+            "min": 0.25932653116606086,
+            "max": 0.2775166505948114,
+            "values": [
+              0.2775166505948114,
+              0.27216070500021367,
+              0.25932653116606086
+            ]
+          }
+        },
+        "identical_image_content": {
+          "20": {
+            "n": 3,
+            "median": 0.27216070500021367,
+            "mean": 0.2696679622536953,
+            "min": 0.25932653116606086,
+            "max": 0.2775166505948114,
+            "values": [
+              0.2775166505948114,
+              0.27216070500021367,
+              0.25932653116606086
+            ]
+          },
+          "50": {
+            "n": 3,
+            "median": 0.29690258727296037,
+            "mean": 0.2941832315494858,
+            "min": 0.2829016703629755,
+            "max": 0.30274543701252155,
+            "values": [
+              0.30274543701252155,
+              0.29690258727296037,
+              0.2829016703629755
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "eligible_fixed_model_ratios": {
+    "shared-process": {
+      "n": 5,
+      "median": 1.1941954537108581,
+      "mean": 1.1565870256674544,
+      "min": 0.815055025971967,
+      "max": 1.2980928871091633,
+      "values": [
+        1.1806224065420277,
+        1.2949693550032566,
+        1.1941954537108581,
+        1.2980928871091633,
+        0.815055025971967
+      ],
+      "definition": "shared-process seconds / egoworld seconds",
+      "scope": "Within-host fixed-image repeated-run variability only; not independent data/model generalization",
+      "reference_faster_pairs": 4,
+      "environment_note": "Five original predeclared paired groups span explicitly recorded pre/post external restart blocks; do not claim one uninterrupted host/cache/thermal state."
+    },
+    "shared-inprocess": {
+      "n": 5,
+      "median": 1.1947953542510934,
+      "mean": 1.1243913441358748,
+      "min": 0.8105556446121631,
+      "max": 1.29177894425724,
+      "values": [
+        1.29177894425724,
+        1.1947953542510934,
+        1.2008346444685634,
+        1.1239921330903144,
+        0.8105556446121631
+      ],
+      "definition": "shared-inprocess seconds / egoworld seconds",
+      "scope": "Within-host fixed-image repeated-run variability only; not independent data/model generalization",
+      "reference_faster_pairs": 4,
+      "environment_note": "Five original predeclared paired groups span explicitly recorded pre/post external restart blocks; do not claim one uninterrupted host/cache/thermal state."
+    }
+  },
+  "robot_validity": {
+    "reference_rows": 195,
+    "rows_covered_by_parity": 585,
+    "zero_tolerance_violations": 0,
+    "minimum_limit_margin_radians": 1.19209286886246e-09,
+    "fk_valid": true
+  },
+  "trial_rows": [
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 86.39775533399916,
+      "process_tree_peak_rss_bytes": 7869816832,
+      "gpu_whole_device_peak_used_bytes": [
+        6586834944
+      ],
+      "group": "holdout-native",
+      "track": "native_product",
+      "role": "frozen_disjoint_image_holdout",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 12.86128181731449,
+          "pa_mpjpe_mm_detected_only": 5.971966457758594,
+          "reprojection_mean_px_detected_only": 4.639009233127013,
+          "pck_all_gt": {
+            "20": 0.8412698412698413,
+            "50": 0.9841269841269841
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 0.33704925699930754,
+          "common_output_ready_seconds": 86.73480459099846,
+          "quality_hands_per_second_common": {
+            "20": 0.11529397047881079,
+            "50": 0.13835276457457296
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.11574374775527078,
+            "50": 0.13889249730632494
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 12.86128181731449,
+          "pa_mpjpe_mm_detected_only": 5.971966457758594,
+          "reprojection_mean_px_detected_only": 4.639009233127013,
+          "pck_all_gt": {
+            "20": 0.8412698412698413,
+            "50": 0.9841269841269841
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 0.33704925699930754,
+          "common_output_ready_seconds": 86.73480459099846,
+          "quality_hands_per_second_common": {
+            "20": 0.11529397047881079,
+            "50": 0.13835276457457296
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.11574374775527078,
+            "50": 0.13889249730632494
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "native-cpu",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 158.6308754769998,
+      "process_tree_peak_rss_bytes": 6898626560,
+      "gpu_whole_device_peak_used_bytes": [
+        823738368
+      ],
+      "group": "holdout-native",
+      "track": "native_product",
+      "role": "frozen_disjoint_image_holdout",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 9.998847884259298,
+          "pa_mpjpe_mm_detected_only": 5.604729347538977,
+          "reprojection_mean_px_detected_only": 6.118381362491423,
+          "pck_all_gt": {
+            "20": 0.8650793650793651,
+            "50": 0.9126984126984127
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2343423320016882,
+          "common_output_ready_seconds": 159.86521780900148,
+          "quality_hands_per_second_common": {
+            "20": 0.06880796305011275,
+            "50": 0.06880796305011275
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.06934337320476373,
+            "50": 0.06934337320476373
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 9.805822557166207,
+          "pa_mpjpe_mm_detected_only": 5.640181414489409,
+          "reprojection_mean_px_detected_only": 5.955710314689488,
+          "pck_all_gt": {
+            "20": 0.9484126984126984,
+            "50": 0.996031746031746
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2343423320016882,
+          "common_output_ready_seconds": 159.86521780900148,
+          "quality_hands_per_second_common": {
+            "20": 0.07506323241830481,
+            "50": 0.07506323241830481
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.07564731622337863,
+            "50": 0.07564731622337863
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "native-cuda",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 51.18502804699892,
+      "process_tree_peak_rss_bytes": 7098601472,
+      "gpu_whole_device_peak_used_bytes": [
+        3881050112
+      ],
+      "group": "holdout-native",
+      "track": "native_product",
+      "role": "frozen_disjoint_image_holdout",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 10.937519327665653,
+          "pa_mpjpe_mm_detected_only": 6.066512362827967,
+          "reprojection_mean_px_detected_only": 7.070222747301995,
+          "pck_all_gt": {
+            "20": 0.8412698412698413,
+            "50": 0.9166666666666666
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.1913872659988556,
+          "common_output_ready_seconds": 52.37641531299778,
+          "quality_hands_per_second_common": {
+            "20": 0.19092562826685833,
+            "50": 0.21001819109354417
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.1953696301742345,
+            "50": 0.21490659319165795
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 10.576094433360892,
+          "pa_mpjpe_mm_detected_only": 6.029551184428917,
+          "reprojection_mean_px_detected_only": 6.975391226423017,
+          "pck_all_gt": {
+            "20": 0.9206349206349206,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.1913872659988556,
+          "common_output_ready_seconds": 52.37641531299778,
+          "quality_hands_per_second_common": {
+            "20": 0.21001819109354417,
+            "50": 0.22911075392023
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.21490659319165795,
+            "50": 0.2344435562090814
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "native-cuda-minimal",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 40.92526285799977,
+      "process_tree_peak_rss_bytes": 7101333504,
+      "gpu_whole_device_peak_used_bytes": [
+        3877380096
+      ],
+      "group": "holdout-native",
+      "track": "native_product",
+      "role": "frozen_disjoint_image_holdout",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 10.643092880248465,
+          "pa_mpjpe_mm_detected_only": 5.813345379318443,
+          "reprojection_mean_px_detected_only": 7.287243734176145,
+          "pck_all_gt": {
+            "20": 0.8373015873015873,
+            "50": 0.9126984126984127
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.1642306749999989,
+          "common_output_ready_seconds": 42.08949353299977,
+          "quality_hands_per_second_common": {
+            "20": 0.2613478822541683,
+            "50": 0.2613478822541683
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.2687826352677855,
+            "50": 0.2687826352677855
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 10.514339839780368,
+          "pa_mpjpe_mm_detected_only": 5.987428314920645,
+          "reprojection_mean_px_detected_only": 7.407765586160637,
+          "pck_all_gt": {
+            "20": 0.9166666666666666,
+            "50": 0.996031746031746
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.1642306749999989,
+          "common_output_ready_seconds": 42.08949353299977,
+          "quality_hands_per_second_common": {
+            "20": 0.28510678064091083,
+            "50": 0.28510678064091083
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.2932174202921296,
+            "50": 0.2932174202921296
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 88.28783560299962,
+      "process_tree_peak_rss_bytes": 8374456320,
+      "gpu_whole_device_peak_used_bytes": [
+        6588211200
+      ],
+      "group": "fixed3-r0",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.36889794700073253,
+          "common_output_ready_seconds": 88.65673355000035,
+          "quality_hands_per_second_common": {
+            "20": 0.13535350919772243,
+            "50": 0.13535350919772243
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.13591906425206662,
+            "50": 0.13591906425206662
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.36889794700073253,
+          "common_output_ready_seconds": 88.65673355000035,
+          "quality_hands_per_second_common": {
+            "20": 0.13535350919772243,
+            "50": 0.13535350919772243
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.13591906425206662,
+            "50": 0.13591906425206662
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "shared-process",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 104.23459693800032,
+      "process_tree_peak_rss_bytes": 5322076160,
+      "gpu_whole_device_peak_used_bytes": [
+        6586769408
+      ],
+      "group": "fixed3-r0",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.3625589179991948,
+          "common_output_ready_seconds": 104.59715585599952,
+          "quality_hands_per_second_common": {
+            "20": 0.11472587281933919,
+            "50": 0.11472587281933919
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.1151249235140009,
+            "50": 0.1151249235140009
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.3625589179991948,
+          "common_output_ready_seconds": 104.59715585599952,
+          "quality_hands_per_second_common": {
+            "20": 0.11472587281933919,
+            "50": 0.11472587281933919
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.1151249235140009,
+            "50": 0.1151249235140009
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "shared-inprocess",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 114.04836706599963,
+      "process_tree_peak_rss_bytes": 4765364224,
+      "gpu_whole_device_peak_used_bytes": [
+        7193796608
+      ],
+      "group": "fixed3-r0",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.3574088800014579,
+          "common_output_ready_seconds": 114.40577594600109,
+          "quality_hands_per_second_common": {
+            "20": 0.10488980910949755,
+            "50": 0.10488980910949755
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10521851657074245,
+            "50": 0.10521851657074245
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.3574088800014579,
+          "common_output_ready_seconds": 114.40577594600109,
+          "quality_hands_per_second_common": {
+            "20": 0.10488980910949755,
+            "50": 0.10488980910949755
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10521851657074245,
+            "50": 0.10521851657074245
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "shared-inprocess",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 111.42157363300066,
+      "process_tree_peak_rss_bytes": 4765200384,
+      "gpu_whole_device_peak_used_bytes": [
+        7213457408
+      ],
+      "group": "fixed3-r1",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.39076703099999577,
+          "common_output_ready_seconds": 111.81234066400066,
+          "quality_hands_per_second_common": {
+            "20": 0.10732267948902303,
+            "50": 0.10732267948902303
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10769907127254806,
+            "50": 0.10769907127254806
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.39076703099999577,
+          "common_output_ready_seconds": 111.81234066400066,
+          "quality_hands_per_second_common": {
+            "20": 0.10732267948902303,
+            "50": 0.10732267948902303
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10769907127254806,
+            "50": 0.10769907127254806
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 93.25578077999853,
+      "process_tree_peak_rss_bytes": 8378310656,
+      "gpu_whole_device_peak_used_bytes": [
+        7207518208
+      ],
+      "group": "fixed3-r1",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.38739804800025013,
+          "common_output_ready_seconds": 93.64317882799878,
+          "quality_hands_per_second_common": {
+            "20": 0.12814601287768404,
+            "50": 0.12814601287768404
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.12867835001359781,
+            "50": 0.12867835001359781
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.38739804800025013,
+          "common_output_ready_seconds": 93.64317882799878,
+          "quality_hands_per_second_common": {
+            "20": 0.12814601287768404,
+            "50": 0.12814601287768404
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.12867835001359781,
+            "50": 0.12867835001359781
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "shared-process",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 120.7633782869998,
+      "process_tree_peak_rss_bytes": 5323079680,
+      "gpu_whole_device_peak_used_bytes": [
+        7605264384
+      ],
+      "group": "fixed3-r1",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.40211047299999336,
+          "common_output_ready_seconds": 121.16548875999979,
+          "quality_hands_per_second_common": {
+            "20": 0.09903810171367497,
+            "50": 0.09903810171367497
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.09936787269631892,
+            "50": 0.09936787269631892
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.40211047299999336,
+          "common_output_ready_seconds": 121.16548875999979,
+          "quality_hands_per_second_common": {
+            "20": 0.09903810171367497,
+            "50": 0.09903810171367497
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.09936787269631892,
+            "50": 0.09936787269631892
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "shared-process",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 119.87664310100081,
+      "process_tree_peak_rss_bytes": 5322559488,
+      "gpu_whole_device_peak_used_bytes": [
+        7626031104
+      ],
+      "group": "fixed3-r2",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.37573774099837465,
+          "common_output_ready_seconds": 120.25238084199918,
+          "quality_hands_per_second_common": {
+            "20": 0.09979012403726893,
+            "50": 0.09979012403726893
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10010290319766066,
+            "50": 0.10010290319766066
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.37573774099837465,
+          "common_output_ready_seconds": 120.25238084199918,
+          "quality_hands_per_second_common": {
+            "20": 0.09979012403726893,
+            "50": 0.09979012403726893
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10010290319766066,
+            "50": 0.10010290319766066
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "shared-inprocess",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 120.54310343500038,
+      "process_tree_peak_rss_bytes": 4765736960,
+      "gpu_whole_device_peak_used_bytes": [
+        7684452352
+      ],
+      "group": "fixed3-r2",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.36922386399965035,
+          "common_output_ready_seconds": 120.91232729900003,
+          "quality_hands_per_second_common": {
+            "20": 0.09924546378406565,
+            "50": 0.09924546378406565
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.09954945291806493,
+            "50": 0.09954945291806493
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.36922386399965035,
+          "common_output_ready_seconds": 120.91232729900003,
+          "quality_hands_per_second_common": {
+            "20": 0.09924546378406565,
+            "50": 0.09924546378406565
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.09954945291806493,
+            "50": 0.09954945291806493
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 100.38276626200059,
+      "process_tree_peak_rss_bytes": 8376160256,
+      "gpu_whole_device_peak_used_bytes": [
+        7409315840
+      ],
+      "group": "fixed3-r2",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.39550494400100433,
+          "common_output_ready_seconds": 100.77827120600159,
+          "quality_hands_per_second_common": {
+            "20": 0.11907328689406384,
+            "50": 0.11907328689406384
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.11954243190190449,
+            "50": 0.11954243190190449
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.39550494400100433,
+          "common_output_ready_seconds": 100.77827120600159,
+          "quality_hands_per_second_common": {
+            "20": 0.11907328689406384,
+            "50": 0.11907328689406384
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.11954243190190449,
+            "50": 0.11954243190190449
+          }
+        }
+      },
+      "environment_block": "pre_external_restart"
+    },
+    {
+      "name": "shared-process",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 125.68373210200002,
+      "process_tree_peak_rss_bytes": 5319606272,
+      "gpu_whole_device_peak_used_bytes": [
+        6871793664
+      ],
+      "group": "fixed3-r3",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.43792061099998136,
+          "common_output_ready_seconds": 126.121652713,
+          "quality_hands_per_second_common": {
+            "20": 0.09514623176804517,
+            "50": 0.09514623176804517
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.09547775037632768,
+            "50": 0.09547775037632768
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.43792061099998136,
+          "common_output_ready_seconds": 126.121652713,
+          "quality_hands_per_second_common": {
+            "20": 0.09514623176804517,
+            "50": 0.09514623176804517
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.09547775037632768,
+            "50": 0.09547775037632768
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 96.821832513,
+      "process_tree_peak_rss_bytes": 8367722496,
+      "gpu_whole_device_peak_used_bytes": [
+        6872875008
+      ],
+      "group": "fixed3-r3",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.4339133089999905,
+          "common_output_ready_seconds": 97.255745822,
+          "quality_hands_per_second_common": {
+            "20": 0.12338602617847087,
+            "50": 0.12338602617847087
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.12393898864069519,
+            "50": 0.12393898864069519
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.4339133089999905,
+          "common_output_ready_seconds": 97.255745822,
+          "quality_hands_per_second_common": {
+            "20": 0.12338602617847087,
+            "50": 0.12338602617847087
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.12393898864069519,
+            "50": 0.12393898864069519
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "shared-inprocess",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 108.82697805600003,
+      "process_tree_peak_rss_bytes": 4764794880,
+      "gpu_whole_device_peak_used_bytes": [
+        6874546176
+      ],
+      "group": "fixed3-r3",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.431310768000003,
+          "common_output_ready_seconds": 109.25828882400003,
+          "quality_hands_per_second_common": {
+            "20": 0.10983148399230687,
+            "50": 0.10983148399230687
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.11026677588920146,
+            "50": 0.11026677588920146
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.431310768000003,
+          "common_output_ready_seconds": 109.25828882400003,
+          "quality_hands_per_second_common": {
+            "20": 0.10983148399230687,
+            "50": 0.10983148399230687
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.11026677588920146,
+            "50": 0.11026677588920146
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "shared-inprocess",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 116.436814056,
+      "process_tree_peak_rss_bytes": 4765392896,
+      "gpu_whole_device_peak_used_bytes": [
+        6866731008
+      ],
+      "group": "fixed3-r4",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.39708065099989653,
+          "common_output_ready_seconds": 116.8338947069999,
+          "quality_hands_per_second_common": {
+            "20": 0.10270992018278614,
+            "50": 0.10270992018278614
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10306018845748072,
+            "50": 0.10306018845748072
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.39708065099989653,
+          "common_output_ready_seconds": 116.8338947069999,
+          "quality_hands_per_second_common": {
+            "20": 0.10270992018278614,
+            "50": 0.10270992018278614
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10306018845748072,
+            "50": 0.10306018845748072
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "shared-process",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 117.08315293999999,
+      "process_tree_peak_rss_bytes": 5323431936,
+      "gpu_whole_device_peak_used_bytes": [
+        6867447808
+      ],
+      "group": "fixed3-r4",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.3768548959999407,
+          "common_output_ready_seconds": 117.46000783599993,
+          "quality_hands_per_second_common": {
+            "20": 0.10216243146139277,
+            "50": 0.10216243146139277
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10249126111379557,
+            "50": 0.10249126111379557
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.3768548959999407,
+          "common_output_ready_seconds": 117.46000783599993,
+          "quality_hands_per_second_common": {
+            "20": 0.10216243146139277,
+            "50": 0.10216243146139277
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10249126111379557,
+            "50": 0.10249126111379557
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 143.65061156499996,
+      "process_tree_peak_rss_bytes": 8380129280,
+      "gpu_whole_device_peak_used_bytes": [
+        6861811712
+      ],
+      "group": "fixed3-r4",
+      "track": "fixed_models",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.38304346400013856,
+          "common_output_ready_seconds": 144.0336550290001,
+          "quality_hands_per_second_common": {
+            "20": 0.08331386159424956,
+            "50": 0.08331386159424956
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.0835360174890043,
+            "50": 0.0835360174890043
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.38304346400013856,
+          "common_output_ready_seconds": 144.0336550290001,
+          "quality_hands_per_second_common": {
+            "20": 0.08331386159424956,
+            "50": 0.08331386159424956
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.0835360174890043,
+            "50": 0.0835360174890043
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 80.63132936800002,
+      "process_tree_peak_rss_bytes": 7871717376,
+      "gpu_whole_device_peak_used_bytes": [
+        6405173248
+      ],
+      "group": "native-dev-r0",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.4035458479997942,
+          "common_output_ready_seconds": 81.03487521599982,
+          "quality_hands_per_second_common": {
+            "20": 0.14808438919679703,
+            "50": 0.14808438919679703
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.14882552593461784,
+            "50": 0.14882552593461784
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.4035458479997942,
+          "common_output_ready_seconds": 81.03487521599982,
+          "quality_hands_per_second_common": {
+            "20": 0.14808438919679703,
+            "50": 0.14808438919679703
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.14882552593461784,
+            "50": 0.14882552593461784
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cpu",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 161.25866040799997,
+      "process_tree_peak_rss_bytes": 6886973440,
+      "gpu_whole_device_peak_used_bytes": [
+        646598656
+      ],
+      "group": "native-dev-r0",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 12.003005490699802,
+          "pa_mpjpe_mm_detected_only": 6.771809717737049,
+          "reprojection_mean_px_detected_only": 7.537816936847467,
+          "pck_all_gt": {
+            "20": 0.8373015873015873,
+            "50": 0.9007936507936508
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.1783054849997825,
+          "common_output_ready_seconds": 162.43696589299975,
+          "quality_hands_per_second_common": {
+            "20": 0.06156234170605714,
+            "50": 0.06771857587666286
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.062012173328855856,
+            "50": 0.06821339066174145
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.842570262684438,
+          "pa_mpjpe_mm_detected_only": 6.783340359652292,
+          "reprojection_mean_px_detected_only": 7.427194163630591,
+          "pck_all_gt": {
+            "20": 0.9126984126984127,
+            "50": 0.9841269841269841
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.1783054849997825,
+          "common_output_ready_seconds": 162.43696589299975,
+          "quality_hands_per_second_common": {
+            "20": 0.06771857587666286,
+            "50": 0.07387481004726856
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.06821339066174145,
+            "50": 0.07441460799462703
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 48.83292908700014,
+      "process_tree_peak_rss_bytes": 7101083648,
+      "gpu_whole_device_peak_used_bytes": [
+        3697225728
+      ],
+      "group": "native-dev-r0",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.953693072732058,
+          "pa_mpjpe_mm_detected_only": 7.596480116312205,
+          "reprojection_mean_px_detected_only": 9.702402481353461,
+          "pck_all_gt": {
+            "20": 0.8452380952380952,
+            "50": 0.8968253968253969
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2041297699997813,
+          "common_output_ready_seconds": 50.03705885699992,
+          "quality_hands_per_second_common": {
+            "20": 0.19985187435933902,
+            "50": 0.21983706179527293
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.20477985218097658,
+            "50": 0.22525783739907423
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.68468843149258,
+          "pa_mpjpe_mm_detected_only": 7.4389828398356,
+          "reprojection_mean_px_detected_only": 9.443890027889053,
+          "pck_all_gt": {
+            "20": 0.9206349206349206,
+            "50": 0.9801587301587301
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2041297699997813,
+          "common_output_ready_seconds": 50.03705885699992,
+          "quality_hands_per_second_common": {
+            "20": 0.21983706179527293,
+            "50": 0.23982224923120682
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.22525783739907423,
+            "50": 0.2457358226171719
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda-minimal",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 38.42616601399982,
+      "process_tree_peak_rss_bytes": 7102767104,
+      "gpu_whole_device_peak_used_bytes": [
+        3700584448
+      ],
+      "group": "native-dev-r0",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.911660607994241,
+          "pa_mpjpe_mm_detected_only": 7.36207448943579,
+          "reprojection_mean_px_detected_only": 7.482594791515524,
+          "pck_all_gt": {
+            "20": 0.8373015873015873,
+            "50": 0.8968253968253969
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.211095304999617,
+          "common_output_ready_seconds": 39.637261318999435,
+          "quality_hands_per_second_common": {
+            "20": 0.2522878641771013,
+            "50": 0.2775166505948114
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.260239337860475,
+            "50": 0.2862632716465225
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.790755727576515,
+          "pa_mpjpe_mm_detected_only": 7.3968974108638,
+          "reprojection_mean_px_detected_only": 7.398834628350335,
+          "pck_all_gt": {
+            "20": 0.9126984126984127,
+            "50": 0.9801587301587301
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.211095304999617,
+          "common_output_ready_seconds": 39.637261318999435,
+          "quality_hands_per_second_common": {
+            "20": 0.2775166505948114,
+            "50": 0.30274543701252155
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.2862632716465225,
+            "50": 0.31228720543257
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda-minimal",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 39.19852027399975,
+      "process_tree_peak_rss_bytes": 7103033344,
+      "gpu_whole_device_peak_used_bytes": [
+        3694522368
+      ],
+      "group": "native-dev-r1",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.00448001816173,
+          "pa_mpjpe_mm_detected_only": 6.911008977793899,
+          "reprojection_mean_px_detected_only": 8.460984810877086,
+          "pck_all_gt": {
+            "20": 0.8492063492063492,
+            "50": 0.9047619047619048
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2187765580001724,
+          "common_output_ready_seconds": 40.41729683199992,
+          "quality_hands_per_second_common": {
+            "20": 0.24741882272746696,
+            "50": 0.27216070500021367
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.25511167080031255,
+            "50": 0.28062283788034376
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 10.872877623328591,
+          "pa_mpjpe_mm_detected_only": 6.942730593147719,
+          "reprojection_mean_px_detected_only": 8.845314714459933,
+          "pck_all_gt": {
+            "20": 0.9246031746031746,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2187765580001724,
+          "common_output_ready_seconds": 40.41729683199992,
+          "quality_hands_per_second_common": {
+            "20": 0.27216070500021367,
+            "50": 0.29690258727296037
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.28062283788034376,
+            "50": 0.306134004960375
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 51.84127038399993,
+      "process_tree_peak_rss_bytes": 7099523072,
+      "gpu_whole_device_peak_used_bytes": [
+        3689771008
+      ],
+      "group": "native-dev-r1",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.320231539566043,
+          "pa_mpjpe_mm_detected_only": 7.049513433195259,
+          "reprojection_mean_px_detected_only": 9.285920568312275,
+          "pck_all_gt": {
+            "20": 0.8253968253968254,
+            "50": 0.9007936507936508
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.233848940000371,
+          "common_output_ready_seconds": 53.0751193240003,
+          "quality_hands_per_second_common": {
+            "20": 0.18841220005468837,
+            "50": 0.2072534200601572
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.1928965074722852,
+            "50": 0.21218615821951373
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.243011893558057,
+          "pa_mpjpe_mm_detected_only": 7.121223485209357,
+          "reprojection_mean_px_detected_only": 9.324400169919615,
+          "pck_all_gt": {
+            "20": 0.9007936507936508,
+            "50": 0.9801587301587301
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.233848940000371,
+          "common_output_ready_seconds": 53.0751193240003,
+          "quality_hands_per_second_common": {
+            "20": 0.2072534200601572,
+            "50": 0.22609464006562602
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.21218615821951373,
+            "50": 0.23147580896674225
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cpu",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 155.03639210099982,
+      "process_tree_peak_rss_bytes": 6900060160,
+      "gpu_whole_device_peak_used_bytes": [
+        646746112
+      ],
+      "group": "native-dev-r1",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.984469921157789,
+          "pa_mpjpe_mm_detected_only": 7.130789723984647,
+          "reprojection_mean_px_detected_only": 8.84668816220708,
+          "pck_all_gt": {
+            "20": 0.8214285714285714,
+            "50": 0.8968253968253969
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.270446536000236,
+          "common_output_ready_seconds": 156.30683863700006,
+          "quality_hands_per_second_common": {
+            "20": 0.06397672736010962,
+            "50": 0.07037440009612057
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.0645009849912233,
+            "50": 0.07095108349034564
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.765813776838675,
+          "pa_mpjpe_mm_detected_only": 7.113321978803529,
+          "reprojection_mean_px_detected_only": 8.616281365531002,
+          "pck_all_gt": {
+            "20": 0.8968253968253969,
+            "50": 0.9801587301587301
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.270446536000236,
+          "common_output_ready_seconds": 156.30683863700006,
+          "quality_hands_per_second_common": {
+            "20": 0.07037440009612057,
+            "50": 0.07677207283213154
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.07095108349034564,
+            "50": 0.07740118198946797
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 81.19175165000024,
+      "process_tree_peak_rss_bytes": 7871873024,
+      "gpu_whole_device_peak_used_bytes": [
+        6401912832
+      ],
+      "group": "native-dev-r1",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.38036707800029035,
+          "common_output_ready_seconds": 81.57211872800053,
+          "quality_hands_per_second_common": {
+            "20": 0.14710908809434745,
+            "50": 0.14710908809434745
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.1477982646775421,
+            "50": 0.1477982646775421
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.38036707800029035,
+          "common_output_ready_seconds": 81.57211872800053,
+          "quality_hands_per_second_common": {
+            "20": 0.14710908809434745,
+            "50": 0.14710908809434745
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.1477982646775421,
+            "50": 0.1477982646775421
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cpu",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 156.78431864799995,
+      "process_tree_peak_rss_bytes": 6900371456,
+      "gpu_whole_device_peak_used_bytes": [
+        649695232
+      ],
+      "group": "native-dev-r2",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 12.54664004623358,
+          "pa_mpjpe_mm_detected_only": 7.0610216386411615,
+          "reprojection_mean_px_detected_only": 8.834965020863011,
+          "pck_all_gt": {
+            "20": 0.8055555555555556,
+            "50": 0.9007936507936508
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.26154230200018,
+          "common_output_ready_seconds": 158.04586095000013,
+          "quality_hands_per_second_common": {
+            "20": 0.06327277373726117,
+            "50": 0.0696000511109873
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.06378188894293203,
+            "50": 0.07016007783722523
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 12.356723571975408,
+          "pa_mpjpe_mm_detected_only": 6.95824917540796,
+          "reprojection_mean_px_detected_only": 8.534127598359932,
+          "pck_all_gt": {
+            "20": 0.8849206349206349,
+            "50": 0.9841269841269841
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.26154230200018,
+          "common_output_ready_seconds": 158.04586095000013,
+          "quality_hands_per_second_common": {
+            "20": 0.0696000511109873,
+            "50": 0.07592732848471341
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.07016007783722523,
+            "50": 0.07653826673151844
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 81.02934975500011,
+      "process_tree_peak_rss_bytes": 7874007040,
+      "gpu_whole_device_peak_used_bytes": [
+        6400208896
+      ],
+      "group": "native-dev-r2",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.43494532199974856,
+          "common_output_ready_seconds": 81.46429507699986,
+          "quality_hands_per_second_common": {
+            "20": 0.14730379718694708,
+            "50": 0.14730379718694708
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.1480944871985661,
+            "50": 0.1480944871985661
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 10.272212723678164,
+          "pa_mpjpe_mm_detected_only": 6.122639346804408,
+          "reprojection_mean_px_detected_only": 4.664312368235251,
+          "pck_all_gt": {
+            "20": 0.9523809523809523,
+            "50": 0.9920634920634921
+          },
+          "quality_hands": {
+            "20": 12,
+            "50": 12
+          },
+          "common_output_rows": 36,
+          "normalization_seconds": 0.43494532199974856,
+          "common_output_ready_seconds": 81.46429507699986,
+          "quality_hands_per_second_common": {
+            "20": 0.14730379718694708,
+            "50": 0.14730379718694708
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.1480944871985661,
+            "50": 0.1480944871985661
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda-minimal",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 41.16939049099983,
+      "process_tree_peak_rss_bytes": 7102644224,
+      "gpu_whole_device_peak_used_bytes": [
+        3692785664
+      ],
+      "group": "native-dev-r2",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.157594291325562,
+          "pa_mpjpe_mm_detected_only": 6.270518628462051,
+          "reprojection_mean_px_detected_only": 7.95020828951042,
+          "pck_all_gt": {
+            "20": 0.8492063492063492,
+            "50": 0.9047619047619048
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2481745400000364,
+          "common_output_ready_seconds": 42.41756503099987,
+          "quality_hands_per_second_common": {
+            "20": 0.23575139196914624,
+            "50": 0.25932653116606086
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.2428989081629987,
+            "50": 0.2671887989792986
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.10428408091949,
+          "pa_mpjpe_mm_detected_only": 6.4033196129518,
+          "reprojection_mean_px_detected_only": 8.170389439030957,
+          "pck_all_gt": {
+            "20": 0.9246031746031746,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2481745400000364,
+          "common_output_ready_seconds": 42.41756503099987,
+          "quality_hands_per_second_common": {
+            "20": 0.25932653116606086,
+            "50": 0.2829016703629755
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.2671887989792986,
+            "50": 0.29147868979559843
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 49.086157533999994,
+      "process_tree_peak_rss_bytes": 7100903424,
+      "gpu_whole_device_peak_used_bytes": [
+        3692392448
+      ],
+      "group": "native-dev-r2",
+      "track": "native_product",
+      "role": "development_repeats",
+      "source_images": 12,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 12,
+          "matched_hands": 11,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 12.324837266377058,
+          "pa_mpjpe_mm_detected_only": 7.51836104027009,
+          "reprojection_mean_px_detected_only": 9.059677153195416,
+          "pck_all_gt": {
+            "20": 0.8214285714285714,
+            "50": 0.8968253968253969
+          },
+          "quality_hands": {
+            "20": 10,
+            "50": 11
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2227598569998008,
+          "common_output_ready_seconds": 50.308917390999795,
+          "quality_hands_per_second_common": {
+            "20": 0.1987719179540323,
+            "50": 0.21864910974943552
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.2037234222921891,
+            "50": 0.224095764521408
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 12,
+          "matched_hands": 12,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 12.297696928556709,
+          "pa_mpjpe_mm_detected_only": 7.581982269901453,
+          "reprojection_mean_px_detected_only": 9.061763236778024,
+          "pck_all_gt": {
+            "20": 0.8968253968253969,
+            "50": 0.9761904761904762
+          },
+          "quality_hands": {
+            "20": 11,
+            "50": 12
+          },
+          "common_output_rows": 39,
+          "normalization_seconds": 1.2227598569998008,
+          "common_output_ready_seconds": 50.308917390999795,
+          "quality_hands_per_second_common": {
+            "20": 0.21864910974943552,
+            "50": 0.23852630154483875
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.224095764521408,
+            "50": 0.2444681067506269
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 63.48317491199987,
+      "process_tree_peak_rss_bytes": 7850913792,
+      "gpu_whole_device_peak_used_bytes": [
+        6401060864
+      ],
+      "group": "native-prefix1",
+      "track": "native_product",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 1,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 8.763175929483655,
+          "pa_mpjpe_mm_detected_only": 6.098889626509902,
+          "reprojection_mean_px_detected_only": 4.0603288042679395,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.05681913300031738,
+          "common_output_ready_seconds": 63.539994045000185,
+          "quality_hands_per_second_common": {
+            "20": 0.015738119196104766,
+            "50": 0.015738119196104766
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.015752205232113802,
+            "50": 0.015752205232113802
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 8.763175929483655,
+          "pa_mpjpe_mm_detected_only": 6.098889626509902,
+          "reprojection_mean_px_detected_only": 4.0603288042679395,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.05681913300031738,
+          "common_output_ready_seconds": 63.539994045000185,
+          "quality_hands_per_second_common": {
+            "20": 0.015738119196104766,
+            "50": 0.015738119196104766
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.015752205232113802,
+            "50": 0.015752205232113802
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cpu",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 38.68908241500003,
+      "process_tree_peak_rss_bytes": 6894002176,
+      "gpu_whole_device_peak_used_bytes": [
+        637440000
+      ],
+      "group": "native-prefix1",
+      "track": "native_product",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 1,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 1,
+          "matched_hands": 0,
+          "missed_hands": 1,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": null,
+          "pa_mpjpe_mm_detected_only": null,
+          "reprojection_mean_px_detected_only": null,
+          "pck_all_gt": {
+            "20": 0.0,
+            "50": 0.0
+          },
+          "quality_hands": {
+            "20": 0,
+            "50": 0
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.9737377110004672,
+          "common_output_ready_seconds": 39.6628201260005,
+          "quality_hands_per_second_common": {
+            "20": 0.0,
+            "50": 0.0
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.0,
+            "50": 0.0
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 9.725125025148381,
+          "pa_mpjpe_mm_detected_only": 6.572931931586338,
+          "reprojection_mean_px_detected_only": 5.17391588942808,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.9737377110004672,
+          "common_output_ready_seconds": 39.6628201260005,
+          "quality_hands_per_second_common": {
+            "20": 0.025212528933222823,
+            "50": 0.025212528933222823
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.025847084954702698,
+            "50": 0.025847084954702698
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 36.39959174900014,
+      "process_tree_peak_rss_bytes": 7101214720,
+      "gpu_whole_device_peak_used_bytes": [
+        3695783936
+      ],
+      "group": "native-prefix1",
+      "track": "native_product",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 1,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 1,
+          "matched_hands": 0,
+          "missed_hands": 1,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": null,
+          "pa_mpjpe_mm_detected_only": null,
+          "reprojection_mean_px_detected_only": null,
+          "pck_all_gt": {
+            "20": 0.0,
+            "50": 0.0
+          },
+          "quality_hands": {
+            "20": 0,
+            "50": 0
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.9385927590001302,
+          "common_output_ready_seconds": 37.33818450800027,
+          "quality_hands_per_second_common": {
+            "20": 0.0,
+            "50": 0.0
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.0,
+            "50": 0.0
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 9.75646927191177,
+          "pa_mpjpe_mm_detected_only": 7.286686398025685,
+          "reprojection_mean_px_detected_only": 13.603742833464754,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.9385927590001302,
+          "common_output_ready_seconds": 37.33818450800027,
+          "quality_hands_per_second_common": {
+            "20": 0.02678223414386243,
+            "50": 0.02678223414386243
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.02747283559924732,
+            "50": 0.02747283559924732
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda-minimal",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 37.32025188899979,
+      "process_tree_peak_rss_bytes": 7100661760,
+      "gpu_whole_device_peak_used_bytes": [
+        3690950656
+      ],
+      "group": "native-prefix1",
+      "track": "native_product",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 1,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 1,
+          "matched_hands": 0,
+          "missed_hands": 1,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": null,
+          "pa_mpjpe_mm_detected_only": null,
+          "reprojection_mean_px_detected_only": null,
+          "pck_all_gt": {
+            "20": 0.0,
+            "50": 0.0
+          },
+          "quality_hands": {
+            "20": 0,
+            "50": 0
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 1.0004711199999292,
+          "common_output_ready_seconds": 38.32072300899972,
+          "quality_hands_per_second_common": {
+            "20": 0.0,
+            "50": 0.0
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.0,
+            "50": 0.0
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 12.475322103852482,
+          "pa_mpjpe_mm_detected_only": 8.850342004616442,
+          "reprojection_mean_px_detected_only": 5.724537652336587,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 0.9523809523809523
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 1.0004711199999292,
+          "common_output_ready_seconds": 38.32072300899972,
+          "quality_hands_per_second_common": {
+            "20": 0.02609554104094402,
+            "50": 0.02609554104094402
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.026795103178142047,
+            "50": 0.026795103178142047
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 70.48615936599981,
+      "process_tree_peak_rss_bytes": 8345370624,
+      "gpu_whole_device_peak_used_bytes": [
+        6405353472
+      ],
+      "group": "fixed3-prefix1",
+      "track": "fixed_models",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 1,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 8.763175929483655,
+          "pa_mpjpe_mm_detected_only": 6.098889626509902,
+          "reprojection_mean_px_detected_only": 4.0603288042679395,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.05344486000012694,
+          "common_output_ready_seconds": 70.53960422599994,
+          "quality_hands_per_second_common": {
+            "20": 0.014176433380546437,
+            "50": 0.014176433380546437
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.014187182405661995,
+            "50": 0.014187182405661995
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 8.763175929483655,
+          "pa_mpjpe_mm_detected_only": 6.098889626509902,
+          "reprojection_mean_px_detected_only": 4.0603288042679395,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.05344486000012694,
+          "common_output_ready_seconds": 70.53960422599994,
+          "quality_hands_per_second_common": {
+            "20": 0.014176433380546437,
+            "50": 0.014176433380546437
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.014187182405661995,
+            "50": 0.014187182405661995
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "shared-process",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 61.02893915499999,
+      "process_tree_peak_rss_bytes": 5312245760,
+      "gpu_whole_device_peak_used_bytes": [
+        6399717376
+      ],
+      "group": "fixed3-prefix1",
+      "track": "fixed_models",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 1,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 8.763175929483655,
+          "pa_mpjpe_mm_detected_only": 6.098889626509902,
+          "reprojection_mean_px_detected_only": 4.0603288042679395,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.05185934000019188,
+          "common_output_ready_seconds": 61.08079849500018,
+          "quality_hands_per_second_common": {
+            "20": 0.0163717571583786,
+            "50": 0.0163717571583786
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.016385669058743123,
+            "50": 0.016385669058743123
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 8.763175929483655,
+          "pa_mpjpe_mm_detected_only": 6.098889626509902,
+          "reprojection_mean_px_detected_only": 4.0603288042679395,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.05185934000019188,
+          "common_output_ready_seconds": 61.08079849500018,
+          "quality_hands_per_second_common": {
+            "20": 0.0163717571583786,
+            "50": 0.0163717571583786
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.016385669058743123,
+            "50": 0.016385669058743123
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "shared-inprocess",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 61.86985641500041,
+      "process_tree_peak_rss_bytes": 4753981440,
+      "gpu_whole_device_peak_used_bytes": [
+        6405353472
+      ],
+      "group": "fixed3-prefix1",
+      "track": "fixed_models",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 1,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 8.763175929483655,
+          "pa_mpjpe_mm_detected_only": 6.098889626509902,
+          "reprojection_mean_px_detected_only": 4.0603288042679395,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.052625703000103385,
+          "common_output_ready_seconds": 61.92248211800052,
+          "quality_hands_per_second_common": {
+            "20": 0.016149223445119387,
+            "50": 0.016149223445119387
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.01616295976658431,
+            "50": 0.01616295976658431
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 1,
+          "matched_hands": 1,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 8.763175929483655,
+          "pa_mpjpe_mm_detected_only": 6.098889626509902,
+          "reprojection_mean_px_detected_only": 4.0603288042679395,
+          "pck_all_gt": {
+            "20": 0.9047619047619048,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 1,
+            "50": 1
+          },
+          "common_output_rows": 3,
+          "normalization_seconds": 0.052625703000103385,
+          "common_output_ready_seconds": 61.92248211800052,
+          "quality_hands_per_second_common": {
+            "20": 0.016149223445119387,
+            "50": 0.016149223445119387
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.01616295976658431,
+            "50": 0.01616295976658431
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 68.04241801799981,
+      "process_tree_peak_rss_bytes": 7862779904,
+      "gpu_whole_device_peak_used_bytes": [
+        6400274432
+      ],
+      "group": "native-prefix4",
+      "track": "native_product",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 4,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 11.976661380623842,
+          "pa_mpjpe_mm_detected_only": 6.910144809564439,
+          "reprojection_mean_px_detected_only": 5.415135591356412,
+          "pck_all_gt": {
+            "20": 0.8928571428571429,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 12,
+          "normalization_seconds": 0.13527283000030366,
+          "common_output_ready_seconds": 68.17769084800011,
+          "quality_hands_per_second_common": {
+            "20": 0.058670218223111525,
+            "50": 0.058670218223111525
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.058786858499676596,
+            "50": 0.058786858499676596
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 11.976661380623842,
+          "pa_mpjpe_mm_detected_only": 6.910144809564439,
+          "reprojection_mean_px_detected_only": 5.415135591356412,
+          "pck_all_gt": {
+            "20": 0.8928571428571429,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 12,
+          "normalization_seconds": 0.13527283000030366,
+          "common_output_ready_seconds": 68.17769084800011,
+          "quality_hands_per_second_common": {
+            "20": 0.058670218223111525,
+            "50": 0.058670218223111525
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.058786858499676596,
+            "50": 0.058786858499676596
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cpu",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 77.15809758099977,
+      "process_tree_peak_rss_bytes": 6894272512,
+      "gpu_whole_device_peak_used_bytes": [
+        637702144
+      ],
+      "group": "native-prefix4",
+      "track": "native_product",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 4,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 4,
+          "matched_hands": 3,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 10.053311623372496,
+          "pa_mpjpe_mm_detected_only": 6.101912786060859,
+          "reprojection_mean_px_detected_only": 8.20587562001863,
+          "pck_all_gt": {
+            "20": 0.7142857142857143,
+            "50": 0.75
+          },
+          "quality_hands": {
+            "20": 3,
+            "50": 3
+          },
+          "common_output_rows": 15,
+          "normalization_seconds": 0.9962644550000732,
+          "common_output_ready_seconds": 78.15436203599984,
+          "quality_hands_per_second_common": {
+            "20": 0.03838557339407525,
+            "50": 0.03838557339407525
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.03888120746951584,
+            "50": 0.03888120746951584
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 10.732912588302238,
+          "pa_mpjpe_mm_detected_only": 6.5130177298570056,
+          "reprojection_mean_px_detected_only": 7.519712307614618,
+          "pck_all_gt": {
+            "20": 0.9404761904761905,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 15,
+          "normalization_seconds": 0.9962644550000732,
+          "common_output_ready_seconds": 78.15436203599984,
+          "quality_hands_per_second_common": {
+            "20": 0.051180764525433665,
+            "50": 0.051180764525433665
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.051841609959354454,
+            "50": 0.051841609959354454
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 40.20651788100031,
+      "process_tree_peak_rss_bytes": 7102623744,
+      "gpu_whole_device_peak_used_bytes": [
+        3691540480
+      ],
+      "group": "native-prefix4",
+      "track": "native_product",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 4,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 4,
+          "matched_hands": 3,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.419635705409023,
+          "pa_mpjpe_mm_detected_only": 6.393933681765081,
+          "reprojection_mean_px_detected_only": 7.754013983108945,
+          "pck_all_gt": {
+            "20": 0.6666666666666666,
+            "50": 0.75
+          },
+          "quality_hands": {
+            "20": 3,
+            "50": 3
+          },
+          "common_output_rows": 15,
+          "normalization_seconds": 0.9851136619995486,
+          "common_output_ready_seconds": 41.19163154299986,
+          "quality_hands_per_second_common": {
+            "20": 0.07283032712283577,
+            "50": 0.07283032712283577
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.07461476790601798,
+            "50": 0.07461476790601798
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 11.386918859536344,
+          "pa_mpjpe_mm_detected_only": 6.571885604797455,
+          "reprojection_mean_px_detected_only": 9.12418543189314,
+          "pck_all_gt": {
+            "20": 0.8928571428571429,
+            "50": 1.0
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 15,
+          "normalization_seconds": 0.9851136619995486,
+          "common_output_ready_seconds": 41.19163154299986,
+          "quality_hands_per_second_common": {
+            "20": 0.0971071028304477,
+            "50": 0.0971071028304477
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.09948635720802397,
+            "50": 0.09948635720802397
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "native-cuda-minimal",
+      "kind": "datajuicer_native",
+      "status": "passed",
+      "wall_seconds": 36.712083365000126,
+      "process_tree_peak_rss_bytes": 7101517824,
+      "gpu_whole_device_peak_used_bytes": [
+        3691540480
+      ],
+      "group": "native-prefix4",
+      "track": "native_product",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 4,
+      "full_parity": false,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 4,
+          "matched_hands": 3,
+          "missed_hands": 1,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 10.625360405720222,
+          "pa_mpjpe_mm_detected_only": 6.4036477114795645,
+          "reprojection_mean_px_detected_only": 7.073663815263672,
+          "pck_all_gt": {
+            "20": 0.6904761904761905,
+            "50": 0.75
+          },
+          "quality_hands": {
+            "20": 3,
+            "50": 3
+          },
+          "common_output_rows": 15,
+          "normalization_seconds": 1.1917678210002123,
+          "common_output_ready_seconds": 37.90385118600034,
+          "quality_hands_per_second_common": {
+            "20": 0.07914763028375439,
+            "50": 0.07914763028375439
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.0817169641442927,
+            "50": 0.0817169641442927
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 1,
+          "mpjpe_root_mm_detected_only": 10.536625829376515,
+          "pa_mpjpe_mm_detected_only": 6.739684035615364,
+          "reprojection_mean_px_detected_only": 6.905736168243964,
+          "pck_all_gt": {
+            "20": 0.9166666666666666,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 15,
+          "normalization_seconds": 1.1917678210002123,
+          "common_output_ready_seconds": 37.90385118600034,
+          "quality_hands_per_second_common": {
+            "20": 0.10553017371167252,
+            "50": 0.10553017371167252
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.10895595219239028,
+            "50": 0.10895595219239028
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "egoworld",
+      "kind": "egoworld_recipe",
+      "status": "passed",
+      "wall_seconds": 70.85077545000013,
+      "process_tree_peak_rss_bytes": 8349323264,
+      "gpu_whole_device_peak_used_bytes": [
+        6399324160
+      ],
+      "group": "fixed3-prefix4",
+      "track": "fixed_models",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 4,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 11.976661380623842,
+          "pa_mpjpe_mm_detected_only": 6.910144809564439,
+          "reprojection_mean_px_detected_only": 5.415135591356412,
+          "pck_all_gt": {
+            "20": 0.8928571428571429,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 12,
+          "normalization_seconds": 0.13816194800028825,
+          "common_output_ready_seconds": 70.98893739800042,
+          "quality_hands_per_second_common": {
+            "20": 0.056346807638124614,
+            "50": 0.056346807638124614
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.05645668624788485,
+            "50": 0.05645668624788485
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 11.976661380623842,
+          "pa_mpjpe_mm_detected_only": 6.910144809564439,
+          "reprojection_mean_px_detected_only": 5.415135591356412,
+          "pck_all_gt": {
+            "20": 0.8928571428571429,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 12,
+          "normalization_seconds": 0.13816194800028825,
+          "common_output_ready_seconds": 70.98893739800042,
+          "quality_hands_per_second_common": {
+            "20": 0.056346807638124614,
+            "50": 0.056346807638124614
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.05645668624788485,
+            "50": 0.05645668624788485
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "shared-process",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 69.79705277699986,
+      "process_tree_peak_rss_bytes": 5317431296,
+      "gpu_whole_device_peak_used_bytes": [
+        6401306624
+      ],
+      "group": "fixed3-prefix4",
+      "track": "fixed_models",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 4,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 11.976661380623842,
+          "pa_mpjpe_mm_detected_only": 6.910144809564439,
+          "reprojection_mean_px_detected_only": 5.415135591356412,
+          "pck_all_gt": {
+            "20": 0.8928571428571429,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 12,
+          "normalization_seconds": 0.13864919300021938,
+          "common_output_ready_seconds": 69.93570197000008,
+          "quality_hands_per_second_common": {
+            "20": 0.05719539358761076,
+            "50": 0.05719539358761076
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.05730901006350393,
+            "50": 0.05730901006350393
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 11.976661380623842,
+          "pa_mpjpe_mm_detected_only": 6.910144809564439,
+          "reprojection_mean_px_detected_only": 5.415135591356412,
+          "pck_all_gt": {
+            "20": 0.8928571428571429,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 12,
+          "normalization_seconds": 0.13864919300021938,
+          "common_output_ready_seconds": 69.93570197000008,
+          "quality_hands_per_second_common": {
+            "20": 0.05719539358761076,
+            "50": 0.05719539358761076
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.05730901006350393,
+            "50": 0.05730901006350393
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    },
+    {
+      "name": "shared-inprocess",
+      "kind": "datajuicer_matched_recipe",
+      "status": "passed",
+      "wall_seconds": 69.2838022650003,
+      "process_tree_peak_rss_bytes": 4759818240,
+      "gpu_whole_device_peak_used_bytes": [
+        6406336512
+      ],
+      "group": "fixed3-prefix4",
+      "track": "fixed_models",
+      "role": "nested_prefix_volume_exploration_single_run_no_CI",
+      "source_images": 4,
+      "full_parity": true,
+      "quality": {
+        "exact_frames": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 11.976661380623842,
+          "pa_mpjpe_mm_detected_only": 6.910144809564439,
+          "reprojection_mean_px_detected_only": 5.415135591356412,
+          "pck_all_gt": {
+            "20": 0.8928571428571429,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 12,
+          "normalization_seconds": 0.13403833700022005,
+          "common_output_ready_seconds": 69.41784060200052,
+          "quality_hands_per_second_common": {
+            "20": 0.05762207474780951,
+            "50": 0.05762207474780951
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.05773355198810526,
+            "50": 0.05773355198810526
+          }
+        },
+        "identical_image_content": {
+          "gt_hands": 4,
+          "matched_hands": 4,
+          "missed_hands": 0,
+          "false_positives": 0,
+          "mpjpe_root_mm_detected_only": 11.976661380623842,
+          "pa_mpjpe_mm_detected_only": 6.910144809564439,
+          "reprojection_mean_px_detected_only": 5.415135591356412,
+          "pck_all_gt": {
+            "20": 0.8928571428571429,
+            "50": 0.9880952380952381
+          },
+          "quality_hands": {
+            "20": 4,
+            "50": 4
+          },
+          "common_output_rows": 12,
+          "normalization_seconds": 0.13403833700022005,
+          "common_output_ready_seconds": 69.41784060200052,
+          "quality_hands_per_second_common": {
+            "20": 0.05762207474780951,
+            "50": 0.05762207474780951
+          },
+          "quality_hands_per_second_raw": {
+            "20": 0.05773355198810526,
+            "50": 0.05773355198810526
+          }
+        }
+      },
+      "environment_block": "post_external_restart"
+    }
+  ],
+  "limits": [
+    "Native product models/device/export work differ; native latency ratios are not framework speedups.",
+    "Exact source frames are primary; identical static-image content is a predeclared supplementary score.",
+    "Three/five repeats quantify this host and fixed corpus; they do not increase independent sample count or prove a population confidence interval.",
+    "1/4-image prefix points are single runs on nested image subsets; no isolated throughput scaling law.",
+    "EgoWorld FreiHAND side is a right-hand task prior; native predicts side. Do not generalize side accuracy.",
+    "MPJPE averages are conditional on matched detections; coverage, PCK and qualified counts keep all GT in the denominator.",
+    "Additional predictions are false positives for this single-target output task, not an independent annotation audit of every background hand.",
+    "All root coordinates use model-prior scale; no measured world-scale accuracy is established.",
+    "Physical 2\u201316 GPU results are unavailable; server placement benefits remain hypotheses."
+  ]
+}
