@@ -1,5 +1,7 @@
 # Implementation and evidence ledger
 
+The 2026-11-04 benchmark includes 45 audited executions across 13 groups. The 12-clip fixed-model track has exact output parity and favors EgoWorld in four of five paired runs. Native CUDA Data-Juicer is faster for the hand-only task, and the independent holdout shows different coverage and joint-error tradeoffs. The dated entries below describe earlier stages. [Formal report and figures](../efficiency-convergence.md)
+
 Reviewed **2026-11-02** for the combined implementation through `248b0c2`, including the replay/GPU-probe branch through `3e2aa5d`. The previously separate cleaning/cache and execution changes are integrated and committed. The historical readiness snapshot does not describe an outstanding uncommitted merge.
 
 The central target is more complete and efficient embodied-data cleaning and processing than Data-Juicer. Core results must compare identical inputs, model behavior, output requirements, and cleaning rules. An advantage has not yet been established.

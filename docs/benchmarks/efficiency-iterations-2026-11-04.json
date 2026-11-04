@@ -1,0 +1,182 @@
+{
+  "scope": "Diagnostic runs from the completed study. The 45 formal runs are tracked separately.",
+  "diagnostic_sources_sha256": {
+    "baseline-diagnosis.json": "18bf9e5d48593993faf4ccd10ff3506020e9bc717a10a6a15ce3a65e27332b8b",
+    "residency-v1/report.json": "14f0cc1823a798a578ff3793cfda24fc074d3560a55cd727a46876dd8694c686",
+    "residency-v1/parity.json": "be8c3cc18c3fb1b4ed760633b341db105f82d35e98e35105f63c9b3aa18bd0ef",
+    "nonsplit-v1/parity.json": "213ccfb9288194b2eeee091c7a78fbc80ab4a563c992e0f9c6ab6858335aed3f",
+    "selected-policy.json": "02e0e6fc9b9d7c9ecf84667100a7bd8f30f31b8a58181387265cc4105df8fde2",
+    "validation-summary.json": "2b72a78b64fc689279b033081f713626a25d65f66a5d42f7797999c4d96aed04",
+    "formal-analysis-v1/outlier-diagnosis.json": "bd21408afca65fe86640bc7f539093064cd327c77a4b8dcfc90fb09bfec9a867"
+  },
+  "baseline_quality_source": "output-quality-2026-11-03.json",
+  "schedule": [
+    {
+      "label": "Single active clip",
+      "wall_seconds": 525.5725796710003,
+      "runner_logs": 48,
+      "stages": {
+        "hamer": {
+          "inference_seconds": 354.5839533010003,
+          "runner_roundtrip_seconds": 369.9577690799997,
+          "model_cache_hit": 0,
+          "model_load_seconds": 244.1903654789985,
+          "phase_forward_wall_seconds": 5.731831024000712,
+          "write_seconds": 1.0498815860000832
+        },
+        "sam2": {
+          "inference_seconds": 87.20886915799929,
+          "runner_roundtrip_seconds": 97.82846462400084,
+          "model_cache_hit": 0,
+          "model_load_seconds": 68.64700631800042,
+          "phase_sam_propagate_wall_seconds": 1.6418844180016094,
+          "write_seconds": 1.8684526140004891
+        }
+      }
+    },
+    {
+      "label": "Resident models, split stages",
+      "wall_seconds": 181.32631601100002,
+      "runner_logs": 28,
+      "stages": {
+        "hamer": {
+          "inference_seconds": 137.60552913399442,
+          "model_cache_hit": 9,
+          "model_load_seconds": 60.45230663799339,
+          "phase_forward_wall_seconds": 5.082024725998963
+        },
+        "sam2": {
+          "inference_seconds": 30.83790025700091,
+          "model_cache_hit": 9,
+          "model_load_seconds": 16.518879920998188
+        }
+      }
+    },
+    {
+      "label": "Resident models, whole stages",
+      "wall_seconds": 87.62171011499959,
+      "runner_logs": 2,
+      "stages": {
+        "hamer": {
+          "model_cache_hit": 11,
+          "model_load_seconds": 18.167628735003746,
+          "inference_seconds": 30.345661891000418,
+          "phase_forward_wall_seconds": 3.2537482409952645
+        },
+        "sam2": {
+          "model_cache_hit": 11,
+          "model_load_seconds": 5.75757089400031,
+          "inference_seconds": 13.207646986998952
+        }
+      }
+    }
+  ],
+  "same_export_rows": 54,
+  "quality": {
+    "baseline": {
+      "matched_hands": 12,
+      "gt_hands": 12,
+      "false_positives": 6,
+      "mpjpe_root_mm_detected_only": 11.207274039757559,
+      "quality_hands": {
+        "20": 12,
+        "50": 12
+      }
+    },
+    "area_policy": {
+      "matched_hands": 12,
+      "gt_hands": 12,
+      "false_positives": 0,
+      "mpjpe_root_mm_detected_only": 10.272212723678164,
+      "quality_hands": {
+        "20": 12,
+        "50": 12
+      }
+    },
+    "area_policy_settings": {
+      "box_threshold": 0.22,
+      "min_box_area": 1024,
+      "containment_iom": 0.9,
+      "containment_prefer": "smaller"
+    },
+    "raw_prediction_rows": {
+      "baseline": 54,
+      "area_policy": 36
+    },
+    "guard_checks": {
+      "left-confidence": {
+        "expected_side_counts": {
+          "left": 6
+        },
+        "side_counts": {},
+        "coverage_guard_passed": false,
+        "product_status": "partial"
+      },
+      "both-confidence": {
+        "expected_side_counts": {
+          "left": 6,
+          "right": 6
+        },
+        "side_counts": {
+          "right": 6
+        },
+        "coverage_guard_passed": false,
+        "product_status": "passed"
+      },
+      "left-area": {
+        "expected_side_counts": {
+          "left": 6
+        },
+        "side_counts": {
+          "left": 6
+        },
+        "coverage_guard_passed": true,
+        "product_status": "passed"
+      },
+      "both-area": {
+        "expected_side_counts": {
+          "left": 6,
+          "right": 6
+        },
+        "side_counts": {
+          "right": 6,
+          "left": 6
+        },
+        "coverage_guard_passed": true,
+        "product_status": "passed"
+      }
+    }
+  },
+  "timing_components": [
+    {
+      "group": "fixed3-r0",
+      "pipeline_seconds": 65.3573849330005,
+      "provenance_seconds": 14.0823352110001,
+      "publish_export_seconds": 7.196991565000644
+    },
+    {
+      "group": "fixed3-r1",
+      "pipeline_seconds": 68.90098746799958,
+      "provenance_seconds": 14.16441124800076,
+      "publish_export_seconds": 8.470100123999146
+    },
+    {
+      "group": "fixed3-r2",
+      "pipeline_seconds": 74.55366106200017,
+      "provenance_seconds": 15.905146700000842,
+      "publish_export_seconds": 7.989144818000568
+    },
+    {
+      "group": "fixed3-r3",
+      "pipeline_seconds": 72.78471964700009,
+      "provenance_seconds": 14.038444736000088,
+      "publish_export_seconds": 8.311142038999947
+    },
+    {
+      "group": "fixed3-r4",
+      "pipeline_seconds": 105.23430003499993,
+      "provenance_seconds": 23.123591441999906,
+      "publish_export_seconds": 12.4557389900001
+    }
+  ]
+}

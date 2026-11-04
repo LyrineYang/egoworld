@@ -8,7 +8,7 @@ An offline annotation toolkit for egocentric video, built around hands, objects,
 
 The primary deployment target is a single Linux server with **2–16 GPUs**. RTX 4060 Laptop validation is an additional environment; server scaling still requires hardware measurements. See the [server and comparison handoff](docs/handoff-server-comparison-20261102.md).
 
-**Core evaluation:** more complete and efficient embodied-data cleaning than Data-Juicer, measured with identical inputs, common output contracts and independent quality requirements. Native product models may differ; a separate fixed-model track isolates execution efficiency. See the [two-track quality protocol](docs/output-quality-comparison-20261103.md) and [comparison work in progress](docs/comparison-next.md).
+**Benchmark results.** EgoWorld finished ahead in four of five 12-clip paired runs with identical models and outputs. Native CUDA Data-Juicer was faster for the hand-only task on the same RTX 4060 Laptop GPU. [Full analysis and figures 中文](docs/efficiency-convergence.md) · [Trial data](docs/assets/benchmarks/trials.csv) · [Project site preview](website/README.md)
 
 [Overview](#from-video-to-usable-data) · [Quick start](#quick-start) · [Insights](docs/en/insights.md) · [Research plan](docs/en/research-plan.md) · [Documentation](docs/en/README.md)
 
@@ -113,6 +113,10 @@ Only enabled stages produce associated outputs. Use `egoworld schema` for field 
 Output recipes select data types, include shared model kernels, and reuse verified stage outputs across runs. Run `egoworld data catalog` or see the [recipe and coordinate guide](docs/data-recipes.md). Calibrated world outputs require metric scale evidence and compatible coordinate frames.
 
 ## Research, with an evidence trail
+
+![Five paired runs compare EgoWorld and both Data-Juicer execution modes. EgoWorld finished sooner in four rounds and later in the fifth.](docs/assets/benchmarks/paired-runs.svg)
+
+The 12-clip shared-model median times are 96.82 seconds for EgoWorld, 119.88 for Data-Juicer process map, and 114.05 for its in-process map. The 1- and 4-clip checks are single runs. The report includes all 45 audited executions, the scheduling iterations, and separate development and holdout quality scores. [Benchmark report](docs/efficiency-convergence.md)
 
 The core research goal is **more complete and efficient cleaning and processing of embodied data than general-purpose systems such as Data-Juicer**, evaluated with the same inputs, model behavior, output requirements, and cleaning rules. Superiority remains a hypothesis. The next phase focuses on **quality-preserving efficiency**: less repeated identity checking and decoding, bounded intermediate data, better model reuse, and explainable filtering. New model families are not the immediate priority.
 

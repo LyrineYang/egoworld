@@ -29,7 +29,7 @@
       >
       <span class="header-note">Perception / Data / Research</span>
       <nav aria-label="Main navigation">
-        <a href="#workflow">Workflow</a><a href="#research">Research</a
+        <a href="#workflow">Workflow</a><a href="benchmarks.html">Benchmarks</a
         ><a href="https://github.com/LyrineYang/egoworld/tree/main/docs/en"
           >Docs <span aria-hidden="true">↗</span></a
         >
@@ -54,8 +54,8 @@
           <div class="hero-links">
             <a class="button" href="https://github.com/LyrineYang/egoworld"
               >Explore on GitHub <span aria-hidden="true">↗</span></a
-            ><a class="text-link" href="#workflow"
-              >See the workflow <span aria-hidden="true">↓</span></a
+            ><a class="text-link" href="benchmarks.html"
+              >Explore benchmark results <span aria-hidden="true">→</span></a
             >
           </div>
         </div>
@@ -307,11 +307,27 @@
         </div>
       </section>
 
+      <section class="workflow-band" aria-labelledby="benchmark-title">
+        <div class="wrap section">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">04 / Measured efficiency</p>
+              <h2 id="benchmark-title">What changed, and where it helped.</h2>
+            </div>
+            <a class="text-link" href="benchmarks.html">Open all 45 runs <span aria-hidden="true">→</span></a>
+          </div>
+          <figure class="evidence-figure">
+            <a href="benchmarks.html#iterations"><img src="assets/benchmarks/scheduling-iterations.svg" loading="lazy" alt="Three scheduling diagnostics reduce whole-run time from 525.57 to 181.33 to 87.62 seconds with all 54 original hand export rows equal." /></a>
+            <figcaption>Scheduling diagnostics on 12 clips. The separate fixed-model and native-product comparisons show where EgoWorld gains time and where native CUDA Data-Juicer is faster.</figcaption>
+          </figure>
+        </div>
+      </section>
+
       <section class="status-band" aria-labelledby="status-title">
         <div class="wrap section">
           <div class="section-heading">
             <div>
-              <p class="eyebrow">04 / In the open</p>
+              <p class="eyebrow">05 / In the open</p>
               <h2 id="status-title">Built with an evidence trail.</h2>
             </div>
             <a

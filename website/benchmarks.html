@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content="EgoWorld and Data-Juicer on a single RTX 4060 Laptop GPU. Explore 45 audited runs, scheduling iterations, and native hand quality." />
+    <meta name="theme-color" content="#f6f3eb" />
+    <title>EgoWorld · Efficiency evidence</title>
+    <link rel="icon" href="assets/mark.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+    <header class="site-header wrap">
+      <a class="wordmark" href="index.html" aria-label="EgoWorld home"><img src="assets/mark.svg" width="32" height="32" alt="" />EgoWorld</a>
+      <span class="header-note">Research / Evidence</span>
+      <nav aria-label="Main navigation">
+        <a href="index.html#workflow">Workflow</a>
+        <a href="#trials">All trials</a>
+        <a href="https://github.com/LyrineYang/egoworld">GitHub</a>
+      </nav>
+    </header>
+    <main id="main" class="evidence wrap">
+      <section class="evidence-hero" aria-labelledby="evidence-title">
+        <p class="eyebrow">Benchmark report · 04 November 2026</p>
+        <h1 id="evidence-title">A faster path to the <em>same outputs.</em></h1>
+        <p class="lede">On 12 clips with matching model weights and outputs, EgoWorld finished ahead of both Data-Juicer execution modes in four of five paired runs. Native CUDA Data-Juicer finished sooner on the hand-only task.</p>
+        <p class="hero-detail">One RTX 4060 Laptop GPU, 8 GB. The fixed-model and native-product tracks answer different questions.</p>
+        <div class="hero-links">
+          <a class="button" href="#fixed-models">Explore the results <span aria-hidden="true">↓</span></a>
+          <a href="assets/benchmarks/trials.csv" download>Trial CSV</a>
+          <a href="assets/benchmarks/efficiency-convergence-2026-11-04.json" download>Audited JSON</a>
+          <a href="https://github.com/LyrineYang/egoworld/blob/main/docs/efficiency-convergence.md">Full report 中文</a>
+        </div>
+        <dl class="evidence-metrics">
+          <div><dt>Audited executions</dt><dd>45 <small>across 13 groups</small></dd></div>
+          <div><dt>Scheduling diagnostic</dt><dd>525.57 → 87.62 <small>seconds</small></dd></div>
+          <div><dt>Paired median ratio</dt><dd>1.19× <small>DJ seconds / EgoWorld seconds</small></dd></div>
+        </dl>
+      </section>
+
+      <section class="evidence-section" id="iterations" aria-labelledby="iterations-title">
+        <p class="eyebrow">01 / Iteration history</p>
+        <h2 id="iterations-title">Reduce model reloads and check the output.</h2>
+        <p>Keeping models resident across more clips reduced the cost of repeated loading. These three diagnostic runs kept the original 54 exported hand rows exactly equal. The final setting also changed stage splitting and submission limits, so the measurements describe configurations as a whole.</p>
+        <figure class="evidence-figure">
+          <a href="assets/benchmarks/scheduling-iterations.svg"><img src="assets/benchmarks/scheduling-iterations.svg" alt="Three scheduling settings finish in 525.57, 181.33 and 87.62 seconds with 48, 28 and 2 runner logs respectively. Summed loading also declines." /></a>
+          <figcaption>Whole-run time, runner logs and summed incremental model loading across three settings.</figcaption>
+        </figure>
+        <figure class="evidence-figure">
+          <a href="assets/benchmarks/pipeline-outcomes.svg"><img src="assets/benchmarks/pipeline-outcomes.svg" alt="The workflow connects scheduling, SAM2 plus DINO box filtering, HaMeR hand reconstruction and Dex export. The separate filtering comparison reduces scored extra predictions from six to zero with twelve matched hands in both settings." /></a>
+          <figcaption>Scheduling changed runtime with equal exports. The separate box-filter experiment changed the development predictions and kept 12 of 12 target hands matched.</figcaption>
+        </figure>
+        <p>The accepted filter combines a minimum box area with containment overlap at the original 0.22 confidence threshold. Raising confidence to 0.35 lost left-hand coverage. The selected setting passed the left-hand and bimanual guards on all six evaluated frames in each clip.</p>
+      </section>
+
+      <section class="evidence-section" id="fixed-models" aria-labelledby="fixed-title">
+        <p class="eyebrow">02 / Fixed models</p>
+        <h2 id="fixed-title">An execution comparison with output parity.</h2>
+        <p>EgoWorld and Data-Juicer’s two DefaultExecutor configurations run SAM2, HaMeR and Dex with the same weights, inputs and GPU. The 12-clip medians are 96.82, 119.88 and 114.05 seconds respectively. Seven fixed-model groups matched every audited stage and export field exactly.</p>
+        <figure class="evidence-figure">
+          <a href="assets/benchmarks/paired-runs.svg"><img src="assets/benchmarks/paired-runs.svg" alt="Five paired times and ratios show EgoWorld ahead in rounds one through four and slower in round five, at 143.65 seconds. A divider separates the two restart blocks." /></a>
+          <figcaption>All five pairs are shown. The within-pair median is approximately 1.19× for each Data-Juicer execution mode.</figcaption>
+        </figure>
+        <figure class="evidence-figure">
+          <a href="assets/benchmarks/workload-size.svg"><img src="assets/benchmarks/workload-size.svg" alt="At one and four clips the single EgoWorld trials take longer. At twelve clips EgoWorld has a lower median, with the widest observed range." /></a>
+          <figcaption>The 1- and 4-clip points are single runs on nested prefixes. At 12 clips the figure shows the median and observed range.</figcaption>
+        </figure>
+        <details class="evidence-details">
+          <summary>What slowed down round five? <span class="expand" aria-hidden="true">+</span></summary>
+          <figure class="evidence-figure">
+            <a href="assets/benchmarks/slow-round.svg"><img src="assets/benchmarks/slow-round.svg" loading="lazy" alt="From round four to five, pipeline time rose from 72.8 to 105.2 seconds, asset verification from 14.0 to 23.1 seconds and export from 8.3 to 12.5 seconds." /></a>
+            <figcaption>The pipeline, asset verification and export all took longer. The study did not isolate the host-side cause.</figcaption>
+          </figure>
+        </details>
+        <details class="evidence-details">
+          <summary>Which outputs were checked? <span class="expand" aria-hidden="true">+</span></summary>
+          <p>The audit compared masks, instances, tracks, hand pose, robot mapping, hand-joint export and robot-joint export. Each full 12-clip execution produced 36 rows per audited category. Numerical arrays and QC matched as well.</p>
+          <p>The URDF audit found zero limit violations in 195 reference robot rows across the seven groups. Exact parity covers 585 rows across all three executors. Fingertip forward kinematics passed for the reference rows.</p>
+        </details>
+      </section>
+
+      <section class="evidence-section" id="native" aria-labelledby="native-title">
+        <p class="eyebrow">03 / Native hand products</p>
+        <h2 id="native-title">The fastest hand export has a different quality profile.</h2>
+        <p>On the development set, EgoWorld’s median whole-run time was 81.03 seconds. Native Data-Juicer took 156.78 seconds on CPU, 49.09 seconds on CUDA, and 39.20 seconds with CUDA mesh and visualization exports disabled. This track compares native workflows with a common hand output contract.</p>
+        <figure class="evidence-figure">
+          <a href="assets/benchmarks/native-quality-cost.svg"><img src="assets/benchmarks/native-quality-cost.svg" alt="Ready time, number of hands within 20 millimeters and matched-joint error for each native workflow. CUDA finishes sooner, while EgoWorld's development quality lead in MPJPE reverses on the holdout." /></a>
+          <figcaption>Ready time includes common-output normalization. On the holdout, EgoWorld matches 12 of 12 exact-frame targets, compared with 11 of 12 for the native Data-Juicer configurations. Data-Juicer has lower matched-hand MPJPE there.</figcaption>
+        </figure>
+        <p>The primary score uses the original source frame. The supplementary score treats decoded-identical frames as equivalent on these static fixtures and appears separately in the CSV. A missed frame contributes to the all-target quality denominator. MPJPE averages only matched hands.</p>
+      </section>
+
+      <section class="evidence-section" id="trials" aria-labelledby="trials-title">
+        <p class="eyebrow">04 / Measurement record</p>
+        <h2 id="trials-title">Inspect all 45 audited executions.</h2>
+        <p>Repetitions describe variation on the same input. Development, disjoint holdout and nested prefix rows have distinct roles. The measurement commit is <code>30bf160</code>. Physical scaling to 2–16 GPUs remains unmeasured.</p>
+        <details class="evidence-details">
+          <summary>Open the per-run table <span class="expand" aria-hidden="true">+</span></summary>
+          <div class="evidence-table" role="region" aria-label="Trial table" tabindex="0">
+            <table>
+              <caption>All executions in recorded order, using exact-frame quality scores</caption>
+              <thead><tr><th scope="col">Group</th><th scope="col">Configuration</th><th scope="col">Images</th><th scope="col">Wall (s)</th><th scope="col">Ready (s)</th><th scope="col">Matched</th><th scope="col">≤20 mm</th><th scope="col">MPJPE (mm)</th></tr></thead>
+              <tbody>
+                <!-- TRIAL_ROWS -->
+              </tbody>
+            </table>
+          </div>
+        </details>
+        <div class="hero-links">
+          <a class="text-link" href="assets/benchmarks/trials.csv" download>Download CSV</a>
+          <a class="text-link" href="assets/benchmarks/efficiency-iterations-2026-11-04.json" download>Diagnostic data and source hashes</a>
+          <a class="text-link" href="https://github.com/LyrineYang/egoworld/blob/main/docs/efficiency-convergence.md">Chinese analysis and reproduction notes</a>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer wrap">
+      <a class="wordmark" href="index.html">EgoWorld<span class="footer-dot">.</span></a>
+      <p>Structured data from human experience.</p>
+      <div><a href="index.html">Project home</a><a href="#main">Back to top</a></div>
+      <span class="footer-note">Evidence from a single host · 2026</span>
+    </footer>
+  </body>
+</html>
