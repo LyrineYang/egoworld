@@ -140,6 +140,8 @@ GPU 使用 FreiHAND 官方评估标签。每张图像编码为 3 帧，评分取
 
 长测合计预算窗口为 **1631 s**，两端各跑一次。两端均有 **785/864** 达标，MPJPE 为 **12.57 mm**，清洗误拒 0/864、漏拒 0/6。EgoWorld 与 Data-Juicer 分别产出 **1.257** 和 **0.852** 只达标手每秒。逐值审计覆盖 864 个 clip。两臂采样期间均未观察到外部 CUDA 作业。 [长测机器可读结果](benchmarks/v100-2026-11-09/endurance.json)
 
+后续实验复用原 864 张和 6 个故障输入，仅对 EgoWorld 的 SAM2 进程限制 OpenCV 解码线程。共享 V100 上的配对和逐值审计用时 29 分 38 秒，实测 1.444×。阶段归因、空闲卡条件预估和 100 TB 换算见后续报告。[双卡长测复盘](v100-endurance-followup.md)
+
 ### 复现入口
 
 使用相同模型环境、两张空闲 V100 和本地冻结 recipe。配置中 `num_gpus` 设为 2，模型 runner 指向各自的原生解释器。按发布的种子、排除集合和样本 SHA-256 准备 FreiHAND 语料。小批量使用 `stream-checked-pinned`，较大批次使用 `stream-checked-dual`。下列命令假设在包含 Python、FFmpeg、CUDA、NVML 和模型依赖的环境中从仓库根目录运行。

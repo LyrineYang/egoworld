@@ -60,18 +60,21 @@ def stage_worker(config_path, stage, fd, verify):
 
 
 class Slot:
-    def __init__(self, stage, config_path, params, device, log, verify):
+    def __init__(self, stage, config_path, params, device, log, verify, decoder_threads=None):
         command = params["runner_command"]
         if command[1:] != ["-m", "egoworld.worker"]:
             raise ValueError("Pilot only supports the standard EgoWorld native stage interpreter")
         read_fd, write_fd = os.pipe()
+        env = {**os.environ, "CUDA_VISIBLE_DEVICES": device}
+        if stage == "sam2" and decoder_threads is not None:
+            env["OPENCV_FFMPEG_THREADS"] = str(decoder_threads)
         try:
             with log.open("w") as stream:
                 self.process = subprocess.Popen(
                     [command[0], "-B", str(Path(__file__).resolve()), str(config_path), stage, str(write_fd), str(int(verify))],
                     stdin=subprocess.PIPE, stdout=stream, stderr=subprocess.STDOUT, text=True,
                     pass_fds=(write_fd,), cwd=params.get("working_dir"),
-                    env={**os.environ, "CUDA_VISIBLE_DEVICES": device})
+                    env=env)
         except BaseException:
             os.close(read_fd)
             raise
@@ -117,7 +120,7 @@ class Slot:
             self.reader.close()
 
 
-def pipeline(config_path, videos, clips, *, run_id, layout, backend_factory=None):
+def pipeline(config_path, videos, clips, *, run_id, layout, backend_factory=None, sam2_decoder_threads=None):
     from egoworld.config import load_config
     from egoworld.contracts import OUTPUT_SCHEMA_VERSION, enabled_stages
     from egoworld.pipeline.artifacts import WriterActor
@@ -161,7 +164,7 @@ def pipeline(config_path, videos, clips, *, run_id, layout, backend_factory=None
             slots[stage] = []
             for index, device in enumerate(devices):
                 slot = Slot(stage, config_path, getattr(config.operators, stage).params, device,
-                            work / f"{stage}-{index}.log", fused_checks)
+                            work / f"{stage}-{index}.log", fused_checks, sam2_decoder_threads)
                 stack.callback(slot.close)
                 slots[stage].append(slot)
         if fused_checks:
@@ -212,6 +215,7 @@ def pipeline(config_path, videos, clips, *, run_id, layout, backend_factory=None
     preload = {stage: [{"device": slot.device, "seconds": slot.preload_seconds} for slot in group]
                for stage, group in slots.items()}
     write(work / "execution.json", {"wall_seconds": time.perf_counter() - started,
+          "sam2_decoder_threads": sam2_decoder_threads,
           "model_preload_seconds": preload, "clip_commits": sorted(receipts, key=lambda r: r["committed_seconds"])})
     return run_id
 

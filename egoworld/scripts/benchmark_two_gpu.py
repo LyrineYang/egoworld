@@ -32,16 +32,25 @@ def freeze(args):
             for row in corpus["samples"].values()]
     if len(data) < 2:
         raise ValueError("Two GPUs require at least two unique inputs")
-    for index, row in enumerate(data[:2]):
-        duplicate = target / f"byte-duplicate-{index}.mp4"
-        duplicate.write_bytes(Path(row["path"]).read_bytes())
-        blank = target / f"blank-{index}.mp4"
-        color = ("black", "white")[index]
-        subprocess.run([args.ffmpeg, "-v", "error", "-f", "lavfi", "-i",
-                        f"color={color}:s=224x224:r=1:d=3", "-c:v", "libx264", "-threads", "1", str(blank)], check=True)
-        corrupt = target / f"corrupt-{index}.mp4"
-        corrupt.write_bytes(f"synthetic broken video header {index}\n".encode())
-        data.extend({"path": str(p), "sha256": sha(p), "expected": "rejected"} for p in (duplicate, blank, corrupt))
+    pose_policy = {"wrist_match_diagonal_fraction": .25, "mpjpe_thresholds_mm": [20, 50]}
+    if args.input_plan:
+        input_plan = read(args.input_plan)
+        frozen = input_plan["inputs"]
+        if data != [row for row in frozen if row["expected"] == "accepted"]:
+            raise ValueError("Frozen positive inputs differ from the corpus")
+        data = frozen
+        pose_policy = input_plan["pose_policy"]
+    else:
+        for index, row in enumerate(data[:2]):
+            duplicate = target / f"byte-duplicate-{index}.mp4"
+            duplicate.write_bytes(Path(row["path"]).read_bytes())
+            blank = target / f"blank-{index}.mp4"
+            color = ("black", "white")[index]
+            subprocess.run([args.ffmpeg, "-v", "error", "-f", "lavfi", "-i",
+                            f"color={color}:s=224x224:r=1:d=3", "-c:v", "libx264", "-threads", "1", str(blank)], check=True)
+            corrupt = target / f"corrupt-{index}.mp4"
+            corrupt.write_bytes(f"synthetic broken video header {index}\n".encode())
+            data.extend({"path": str(p), "sha256": sha(p), "expected": "rejected"} for p in (duplicate, blank, corrupt))
     recipe = read(args.recipe)
     recipe["config"] = str((args.recipe.parent / recipe["config"]).resolve())
     recipe["inputs"] = [row["path"] for row in data]
@@ -55,9 +64,12 @@ def freeze(args):
     spec = target / "recipe.json"
     write(spec, recipe)
     paths += [spec, Path(__file__), EXPERIMENTS / "two_gpu_stream.py", EXPERIMENTS / "two_gpu_shards.py"]
+    if args.input_plan:
+        paths.append(args.input_plan)
     write(target / "plan.json", {"inputs": data, "corpus": str(args.corpus), "devices": args.devices,
+          "sam2_decoder_threads": args.sam2_decoder_threads,
           "hashes": {str(p): sha(p) for p in paths},
-          "pose_policy": {"wrist_match_diagonal_fraction": .25, "mpjpe_thresholds_mm": [20, 50]}})
+          "pose_policy": pose_policy})
 
 
 def worker(args):
@@ -70,10 +82,11 @@ def worker(args):
     spec = args.output / "recipe.json"
     write(spec, recipe)
     native = args.engine != "datajuicer"
+    plan = read(args.study / "plan.json")
     if native:
-        execute = partial(pipeline, layout=args.engine)
+        execute = partial(pipeline, layout=args.engine, sam2_decoder_threads=plan.get("sam2_decoder_threads"))
     else:
-        execute = partial(shard_pipeline, device_ids=tuple(read(args.study / "plan.json")["devices"]),
+        execute = partial(shard_pipeline, device_ids=tuple(plan["devices"]),
                           python=str(args.dj_python))
     result = run_recipe(spec, run_id="c1", pipeline_executor=execute, backend_factory=True if native else None)
     if result["status"] not in ("passed", "partial"):
@@ -99,6 +112,7 @@ def monitor(output, devices):
                         pids = {proc.pid for proc in nvml.nvmlDeviceGetComputeRunningProcesses(handle) if proc.pid > 0}
                         memory = nvml.nvmlDeviceGetMemoryInfo(handle, nvml.nvmlMemory_v2)
                         group.append({"seconds": time.monotonic(), "device": index, "used_bytes": int(memory.used),
+                                      "gpu_busy_percent": nvml.nvmlDeviceGetUtilizationRates(handle).gpu,
                                       "own_pids": sorted(pids & own), "outside_pids": sorted(pids - own)})
                     log.write(json.dumps(group) + "\n")
                     records.extend(group)
@@ -173,20 +187,23 @@ def audit(args):
     outputs = [args.study / engine for engine in engines]
     manifests = [path / "runs/run_id=c1/data_manifest.json" for path in outputs]
     parity = audit_recipe_pair(*manifests, allow_review=True)
-    metrics, qualities = {}, []
+    metrics, qualities, cleaning = {}, [], []
     for engine, path, manifest in zip(engines, outputs, manifests):
         artifacts = audit_egoworld(manifest)
         pred, _ = egoworld_predictions(manifest, corpus["samples"], 5000 / 256)
         quality = evaluate(pred, corpus["ground_truth"], corpus["samples"], plan["pose_policy"])
         qualities.append(quality)
         write(path / "quality.json", quality)
-        decisions = {row["path"]: row["status"] for row in read(manifest.parent / "cleaning.json")["records"]}
+        records = read(manifest.parent / "cleaning.json")["records"]
+        decisions = {row["path"]: row["status"] for row in records}
+        cleaning.append({row["path"]: (row["status"], row["reasons"]) for row in records})
         if set(decisions) != {row["path"] for row in plan["inputs"]}:
             raise ValueError("Cleaning coverage differs from frozen inputs")
         good = [row for row in plan["inputs"] if row["expected"] == "accepted"]
         bad = [row for row in plan["inputs"] if row["expected"] == "rejected"]
         wall = read(path / "trial.json")["wall_seconds"]
-        metrics[engine] = {"wall_seconds": wall, "qualified_20mm": quality["quality_hands"]["20"],
+        metrics[engine] = {"wall_seconds": wall, "timings": read(manifest)["timings"],
+                           "qualified_20mm": quality["quality_hands"]["20"],
                            "qualified_per_second": quality["quality_hands"]["20"] / wall,
                            "mpjpe_root_mm": quality["mpjpe_root_mm_detected_only"],
                            "false_rejects": sum(decisions[row["path"]] != "accepted" for row in good),
@@ -194,8 +211,11 @@ def audit(args):
                            "good": len(good), "bad": len(bad), "output_counts": artifacts["output_counts"]}
     if qualities[0] != qualities[1]:
         raise ValueError("Independent quality differs")
+    if cleaning[0] != cleaning[1]:
+        raise ValueError("Cleaning decisions or rejection reasons differ")
     shared = any(read(path / "gpu-monitor.json")["outside_only_pids"] for path in outputs)
-    report = {"parity": parity, "metrics": metrics, "observed_other_compute": shared,
+    report = {"parity": parity, "cleaning_parity_inputs": len(cleaning[0]),
+              "metrics": metrics, "observed_other_compute": shared,
               "datajuicer_over_egoworld_wall_ratio": metrics["datajuicer"]["wall_seconds"] / metrics[args.layout]["wall_seconds"]}
     write(args.study / "report.json", report)
     print(json.dumps(report, indent=2))
@@ -214,7 +234,8 @@ def run(args):
     if args.datajuicer_first:
         engines.reverse()
     for engine in engines:
-        measure(args, engine, deadline)
+        print(f"Starting {engine} on devices {','.join(plan['devices'])}", flush=True)
+        print(f"{engine} completed in {measure(args, engine, deadline):.2f}s", flush=True)
     audit(args)
 
 
@@ -225,6 +246,13 @@ def absolute(value):
 def executable(value):
     # Resolving the final symlink would escape a virtual environment.
     return Path(os.path.abspath(value))
+
+
+def positive_int(value):
+    count = int(value)
+    if count < 1:
+        raise argparse.ArgumentTypeError("Decoder thread count must be positive")
+    return count
 
 
 def devices(value):
@@ -241,6 +269,8 @@ def main():
     init = sub.add_parser("freeze")
     init.add_argument("--recipe", required=True, type=absolute)
     init.add_argument("--corpus", required=True, type=absolute)
+    init.add_argument("--input-plan", type=absolute, help="Reuse all frozen inputs, including negative fixtures")
+    init.add_argument("--sam2-decoder-threads", type=positive_int, help="OpenCV FFmpeg threads in EgoWorld SAM2 workers")
     init.add_argument("--devices", type=devices, required=True)
     init.add_argument("--ffmpeg", default="ffmpeg")
     run_parser = sub.add_parser("run")
