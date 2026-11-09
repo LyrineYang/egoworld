@@ -12,7 +12,7 @@ def _canonical(rows):
     return sorted(json.dumps(row, sort_keys=True, allow_nan=False) for row in rows)
 
 
-def audit_recipe_pair(first, second):
+def audit_recipe_pair(first, second, *, allow_review=False):
     from egoworld.contracts import STAGE_ARTIFACTS
     from egoworld.pipeline.artifacts import load_stage
     paths = [Path(first), Path(second)]
@@ -38,11 +38,25 @@ def audit_recipe_pair(first, second):
         if run_manifests[0]["provenance"][key] != run_manifests[1]["provenance"][key]:
             raise ValueError(f"Model/source identity mismatch: {key}")
     expected = {(clip, stage) for clip in clips[0] for stage in run_manifests[0]["stages"]}
-    if any({(r["clip_id"], r["kernel"]) for r in m["computed"]} != expected for m in manifests):
-        raise ValueError("Not all required model stages executed")
+    if allow_review and _canonical(manifests[0].get("filtered", [])) != _canonical(manifests[1].get("filtered", [])):
+        raise ValueError("Branch filtering decisions differ")
+    for manifest in manifests:
+        computed = {(row["clip_id"], row["kernel"]) for row in manifest["computed"]}
+        filtered = {(row["clip_id"], row["kernel"]) for row in manifest.get("filtered", [])} if allow_review else set()
+        if computed & filtered or computed | filtered != expected:
+            raise ValueError("Not all required model stages executed or committed a matched filter decision")
     for stage in run_manifests[0]["stages"]:
         if run_manifests[0]["config"]["operators"][stage] != run_manifests[1]["config"]["operators"][stage]:
             raise ValueError(f"Different kernel parameters/environment: {stage}")
+    allowed_qc = {"pass", "review"} if allow_review else {"pass"}
+    review_clips = 0
+    directories = []
+    for root in model_roots:
+        folders = list(root.glob("video_id=*/clip_id=*"))
+        index = {folder.name.removeprefix("clip_id="): folder for folder in folders}
+        if len(index) != len(folders) or not clips[0].issubset(index):
+            raise ValueError("Missing or duplicate model clip directory")
+        directories.append(index)
     counts = {}
     def equal_tables(a, b, key):
         tables = [pq.ParquetFile(p).read() for p in (a, b)]
@@ -50,7 +64,7 @@ def audit_recipe_pair(first, second):
             raise ValueError(f"Full logical output differs: {key}")
         counts[key] = counts.get(key, 0) + tables[0].num_rows
     for clip in sorted(clips[0]):
-        folders = [next(root.glob(f"video_id=*/clip_id={clip}")) for root in model_roots]
+        folders = [index[clip] for index in directories]
         stages = list(run_manifests[0]["stages"])
         for stage in stages:
             for folder, run in zip(folders, run_manifests):
@@ -74,9 +88,10 @@ def audit_recipe_pair(first, second):
             if Path(info["file"]).suffix == ".parquet":
                 equal_tables(info["file"], other["file"], "export/" + output)
         qcs = [json.loads((folder / "qc.json").read_text()) for folder in folders]
-        if qcs[0] != qcs[1] or qcs[0]["status"] != "pass":
+        if qcs[0] != qcs[1] or qcs[0]["status"] not in allowed_qc:
             raise ValueError("QC mismatch or incomplete product quality")
+        review_clips += qcs[0]["status"] == "review"
     if not counts.get("export/hand_joints"):
         raise ValueError("Empty hand product does not prove model parity")
-    return {"passed": True, "clips": len(clips[0]), "stages": stages, "rows": counts,
+    return {"passed": True, "clips": len(clips[0]), "review_clips": review_clips, "stages": stages, "rows": counts,
         "comparison": "All stage/export logical fields exact, masks/tracks included, row order ignored; arrays exact; same kernel parameters and QC"}

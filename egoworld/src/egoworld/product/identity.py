@@ -1,7 +1,31 @@
 """Content identities for the code actually imported by a model adapter."""
 import ast
 import hashlib
+from functools import lru_cache
 from pathlib import Path
+
+
+@lru_cache(maxsize=512)
+def _local_imports(relative, content):
+    # Reuse parsing by file contents, never a prior filesystem snapshot.
+    imports = []
+    tree = ast.parse(content)
+    for node in ast.walk(tree):
+        modules = []
+        if isinstance(node, ast.Import):
+            modules = [x.name for x in node.names]
+        elif isinstance(node, ast.ImportFrom) and node.module:
+            if node.level:
+                parent = list(Path(relative).parent.parts)
+                prefix = parent[:len(parent) - node.level + 1]
+                modules = ["egoworld." + ".".join(prefix + node.module.split("."))]
+            else:
+                modules = [node.module]
+        for module in modules:
+            if module.startswith("egoworld."):
+                candidate = module[len("egoworld."):].replace(".", "/")
+                imports.extend([candidate + ".py", candidate + "/__init__.py"])
+    return tuple(imports)
 
 
 def source_identity(stage):
@@ -17,22 +41,7 @@ def source_identity(stage):
             continue
         content = path.read_bytes()
         seen[relative] = hashlib.sha256(content).hexdigest()
-        tree = ast.parse(content)
-        for node in ast.walk(tree):
-            modules = []
-            if isinstance(node, ast.Import):
-                modules = [x.name for x in node.names]
-            elif isinstance(node, ast.ImportFrom) and node.module:
-                if node.level:
-                    parent = list(Path(relative).parent.parts)
-                    prefix = parent[:len(parent) - node.level + 1]
-                    modules = ["egoworld." + ".".join(prefix + node.module.split("."))]
-                else:
-                    modules = [node.module]
-            for module in modules:
-                if module.startswith("egoworld."):
-                    candidate = module[len("egoworld."):].replace(".", "/")
-                    pending.extend([candidate + ".py", candidate + "/__init__.py"])
+        pending.extend(_local_imports(relative, content))
     # Shared execution adapters also derive frame fields/tracks and can affect
     # output bytes. Include their content without pulling every model imported
     # by the registry into every other model's dependency closure.

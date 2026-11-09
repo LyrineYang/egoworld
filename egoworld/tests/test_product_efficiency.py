@@ -2,6 +2,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import time
 
 import numpy as np
 import pyarrow as pa
@@ -12,6 +13,24 @@ from test_product_recipes import recipe_case
 from test_product_geometry import world_case
 from egoworld.product.store import DerivedCache, inspect_cache
 from egoworld.utils.hashing import sha256_file, hash_session, register_assets
+
+
+def test_source_identity_tracks_import_changes_after_reusing_parser(tmp_path, monkeypatch):
+    from egoworld.product import identity
+
+    (tmp_path / "operators").mkdir()
+    source = tmp_path / "operators" / "sam2_op.py"
+    (tmp_path / "first.py").write_text("value = 1\n")
+    (tmp_path / "other.py").write_text("value = 2\n")
+    monkeypatch.setattr(identity, "__file__", str(tmp_path / "product" / "identity.py"))
+    source.write_text("import egoworld.first\n")
+    first = identity.source_identity("sam2")
+    assert first == identity.source_identity("sam2")
+    source.write_text("import egoworld.other\n")
+    changed = identity.source_identity("sam2")
+    assert set(first) == {"operators/sam2_op.py", "first.py"}
+    assert set(changed) == {"operators/sam2_op.py", "other.py"}
+    assert first["operators/sam2_op.py"] != changed["operators/sam2_op.py"]
 
 
 def test_rejected_inputs_never_reach_models(recipe_case):
@@ -79,7 +98,17 @@ def test_hash_session_and_registered_mutation(tmp_path):
     with hash_session(registry) as stats:
         old = sha256_file(file); assert sha256_file(file) == old
         assert stats["registered_hits"] == 1 and stats["files_hashed"] == 0
-        stamp = file.stat(); file.write_bytes(b"other"); os.utime(file, ns=(stamp.st_atime_ns, stamp.st_mtime_ns))
+        stamp = file.stat()
+        file.write_bytes(b"other")
+        times = stamp.st_atime_ns, stamp.st_mtime_ns
+        os.utime(file, ns=times)
+        # The registry observes stat changes. Let coarse filesystem clocks
+        # advance before asserting invalidation with a restored mtime.
+        deadline = time.monotonic() + 2
+        while file.stat().st_ctime_ns == stamp.st_ctime_ns and time.monotonic() < deadline:
+            time.sleep(.01)
+            os.utime(file, ns=times)
+        assert file.stat().st_ctime_ns != stamp.st_ctime_ns
         assert sha256_file(file) != old and stats["files_hashed"] == 1
     with hash_session() as stats:
         sha256_file(file); sha256_file(file)

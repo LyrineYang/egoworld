@@ -112,11 +112,19 @@ def prepare(args):
     xyz_data = member("evaluation_xyz.json")
     camera_data = member("evaluation_K.json")
     xyz, cameras = json.loads(xyz_data), json.loads(camera_data)
-    if not len(xyz) == len(cameras) == 3960 or not 1 <= args.samples <= len(xyz):
+    exclusions = {}
+    for filename in args.exclude_corpus:
+        path = Path(filename)
+        prior = json.loads(path.read_text())
+        exclusions[file_sha(path)] = prior["selection_indices"]
+    excluded = {index for indices in exclusions.values() for index in indices}
+    population = [index for index in range(len(xyz)) if index not in excluded]
+    if not len(xyz) == len(cameras) == 3960 or not 1 <= args.samples <= len(population):
         raise ValueError("Unexpected FreiHAND evaluation cardinality or sample count")
-    selected = sorted(rng.sample(range(len(xyz)), args.samples))
+    selected = sorted(rng.sample(population if excluded else range(len(xyz)), args.samples))
     (output / "selection.json").write_text(json.dumps({"seed": args.seed, "indices": selected,
-        "rule": "Python Random.sample without replacement over all 3960 evaluation images, before inference"}, indent=2) + "\n")
+        "excluded_corpora": exclusions,
+        "rule": "Python Random.sample without replacement from the eligible evaluation images, before inference"}, indent=2) + "\n")
     samples, truth = {}, []
     for index in selected:
         name = f"freihand-eval-{index:08d}"
@@ -146,7 +154,7 @@ def prepare(args):
     archive.close()
     corpus = {"version": 1, "dataset": "FreiHAND official evaluation v2", "terms_url": TERMS,
         "terms": "Research use only; commercial use prohibited; cite Zimmermann et al. ICCV2019",
-        "selection_seed": args.seed, "selection_indices": selected, "archive": archive_identity,
+        "selection_seed": args.seed, "selection_indices": selected, "excluded_corpora": exclusions, "archive": archive_identity,
         "archive_members": records, "range_requests": remote.requests if remote else [],
         "ground_truth_joint_order": "openpose21", "ground_truth_unit": "meters",
         "scope": "Small static image-pose pilot through real video interfaces; frame1 scored once per source image",
@@ -200,6 +208,7 @@ if __name__ == "__main__":
     parser.add_argument("--samples", type=int, default=12)
     parser.add_argument("--seed", type=int, default=20261102)
     parser.add_argument("--archive", help="Optional already-downloaded official evaluation ZIP")
+    parser.add_argument("--exclude-corpus", action="append", default=[], help="Exclude official indices from a previous corpus.json")
     parser.add_argument("--ffmpeg", default="ffmpeg")
     parser.add_argument("--from-corpus", help="Build one montage from a previously frozen per-image corpus")
     args = parser.parse_args()

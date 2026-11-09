@@ -98,12 +98,19 @@ def test_hamer_cross_frame_batches_boundaries_and_tail(monkeypatch):
     class Dataset:
         def __init__(self, cfg, image, boxes, rights, **kw): self.image, self.rights = image, rights
         def __getitem__(self, i): return {'img': self.image.copy(), 'right': self.rights[i]}
+
+    def default_collate(samples):
+        return {key: np.stack([sample[key] for sample in samples]) for key in samples[0]}
+
+    module(monkeypatch, 'torch.utils.data', default_collate=default_collate)
     module(monkeypatch, 'hamer.datasets.vitdet_dataset', ViTDetDataset=Dataset)
     op = target.HamerOperator(checkpoint='unused', frame_stride=1, batch_size=4, max_batch_crops=3)
     op.model_cfg = SimpleNamespace(EXTRA=SimpleNamespace(FOCAL_LENGTH=5000), MODEL=SimpleNamespace(IMAGE_SIZE=256))
     batches = list(op.prepare_batches({'frame_start': 10}, 'unused', {}, cross_frame=True))
     assert list(map(lambda b: len(b['metadata']), batches)) == [3, 3]
     assert [(m['index'], m['detection']['object_id'], m['side']) for b in batches for m in b['metadata']] == [(r['frame_index'], r['object_id'], r['label'].split()[0]) for r in rows]
+    np.testing.assert_array_equal(np.concatenate([b['batch']['img'][:, 0, 0, 0] for b in batches]), [0, 0, 1, 1, 2, 2])
+    np.testing.assert_array_equal(np.concatenate([b['batch']['right'] for b in batches]), [0, 1, 0, 1, 0, 1])
     op.params['max_batch_crops'] = 4
     assert [len(b['metadata']) for b in op.prepare_batches({'frame_start': 10}, 'unused', {}, True)] == [4, 2]
     op.params['max_crop_bytes'] = 1
@@ -226,6 +233,8 @@ def test_ray_split_overlap_retries_writer_drain_and_resume(tmp_path, monkeypatch
     vm, cm = tmp_path/'videos.jsonl', tmp_path/'clips.jsonl'
     vm.write_text(json.dumps({'video_id':'v','path':str(video),'fps':10})+'\n')
     cm.write_text(''.join(json.dumps({'clip_id':f'c{i}','video_id':'v','start_s':0.,'end_s':1.,'frame_start':0,'frame_end':10})+'\n' for i in range(3)))
+    # Pytest adds the fixture directory to the driver only. Ray starts fresh interpreters.
+    monkeypatch.setenv('PYTHONPATH', str(Path(__file__).resolve().parent), prepend=os.pathsep)
     import tempfile
     with tempfile.TemporaryDirectory(prefix='ew-phase-ray-', dir='/tmp') as ray_dir:
         ray.init(num_cpus=8, num_gpus=1, include_dashboard=False, object_store_memory=100*1024**2, _temp_dir=ray_dir)

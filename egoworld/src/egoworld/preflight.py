@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from concurrent.futures import ThreadPoolExecutor
 import importlib
 from pathlib import Path
 import shutil
@@ -132,6 +133,24 @@ def asset_report(config, *, videos=None, clips=None, stages=None) -> dict:
     return {"ok": all(c["ok"] for c in checks), "checks": checks}
 
 
+def _external_environment(config, stage, snapshot):
+    params = getattr(config.operators, stage).params
+    command = params["runner_command"]
+    try:
+        if (not isinstance(command, list) or not command
+                or not all(isinstance(arg, str) for arg in command) or shutil.which(command[0]) is None):
+            raise ValueError("runner_command must start with an available Python executable")
+        result = subprocess.run(command + ["--doctor", "--config", str(snapshot), "--stage", stage],
+            cwd=params.get("working_dir"), capture_output=True, text=True,
+            timeout=min(60, config.execution.stage_timeout_s))
+        report = json.loads(result.stdout)
+        return {"ok": bool(result.returncode == 0 and report["ok"]),
+                "detail": result.stderr[-2000:] or "native imports checked inside runner environment",
+                "report": report}
+    except (OSError, ValueError, KeyError, subprocess.TimeoutExpired) as exc:
+        return {"ok": False, "detail": str(exc)}
+
+
 def runtime_report(config_path: str, *, gpu: bool = False, stages: list[str] | None = None,
                    assets: bool = False, external: bool = True, coordinator: bool = True) -> dict:
     config = load_config(config_path).resolved()
@@ -195,25 +214,21 @@ def runtime_report(config_path: str, *, gpu: bool = False, stages: list[str] | N
             "dex_retarget": ["dex_retargeting.retargeting_config"],
             "fast3r": ["fast3r.models.fast3r", "fast3r.dust3r.inference_multiview", "fast3r.dust3r.cloud_opt.init_im_poses"],
         }
+        external_stages = [stage for stage in sorted(selected)
+                           if external and getattr(config.operators, stage).params.get("runner_command")]
+        external_checks = {}
+        if external_stages:
+            with tempfile.TemporaryDirectory(prefix="egoworld-doctor-") as folder:
+                snapshot = Path(folder) / "config.json"
+                snapshot.write_text(json.dumps(asdict(config)))
+                with ThreadPoolExecutor(max_workers=min(3, len(external_stages))) as pool:
+                    pending = {stage: pool.submit(_external_environment, config, stage, snapshot)
+                               for stage in external_stages}
+                    external_checks = {stage: future.result() for stage, future in pending.items()}
         for stage in sorted(selected):
             params = getattr(config.operators, stage).params
-            if external and (command := params.get("runner_command")):
-                valid = isinstance(command, list) and bool(command) and all(isinstance(arg, str) for arg in command)
-                try:
-                    if not valid or shutil.which(command[0]) is None:
-                        raise ValueError("runner_command must start with an available Python executable")
-                    with tempfile.TemporaryDirectory(prefix="egoworld-doctor-") as folder:
-                        snapshot = Path(folder) / "config.json"
-                        snapshot.write_text(json.dumps(asdict(config)))
-                        result = subprocess.run(command + ["--doctor", "--config", str(snapshot), "--stage", stage],
-                            cwd=params.get("working_dir"), capture_output=True, text=True,
-                            timeout=min(60, config.execution.stage_timeout_s))
-                    report = json.loads(result.stdout)
-                    check(f"{stage} external environment", result.returncode == 0 and report["ok"],
-                          result.stderr[-2000:] or "native imports checked inside runner environment")
-                    checks[-1]["report"] = report
-                except (OSError, ValueError, KeyError, subprocess.TimeoutExpired) as exc:
-                    check(f"{stage} external environment", False, str(exc))
+            if stage in external_checks:
+                checks.append({"name": f"{stage} external environment", **external_checks[stage]})
                 continue
             if stage == "foundationpose" and params.get("repo_path"):
                 sys.path.insert(0, str(Path(params["repo_path"]).resolve()))

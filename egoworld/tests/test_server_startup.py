@@ -7,6 +7,7 @@ import os
 import shutil
 import subprocess
 import sys
+from threading import Barrier
 import zipfile
 import numpy as np
 import pytest
@@ -116,6 +117,36 @@ def test_external_doctor_runs_inside_selected_environment(server_case, monkeypat
     report = preflight.runtime_report(str(path), gpu=True, stages=["hamer"])
     assert not report["ok"]
     assert any(c.get("report", {}).get("checks", [{}])[0].get("name") == "fixture missing native library" for c in report["checks"])
+
+
+def test_external_doctors_overlap_and_keep_ordered_failures(server_case, monkeypatch):
+    from egoworld import preflight
+
+    path, config = server_case
+    for stage in ("sam2", "hamer"):
+        config["operators"][stage]["params"]["runner_command"] = [sys.executable]
+    path.write_text(json.dumps(config))
+    torch = SimpleNamespace(cuda=SimpleNamespace(device_count=lambda: 0))
+    monkeypatch.setattr(preflight.importlib, "import_module",
+                        lambda name: torch if name == "torch" else SimpleNamespace())
+    ready = Barrier(2)
+
+    def check_runner(argv, **kwargs):
+        snapshot = Path(argv[argv.index("--config") + 1])
+        assert snapshot.is_file()
+        ready.wait(timeout=3)
+        stage = argv[argv.index("--stage") + 1]
+        ok = stage == "sam2"
+        return SimpleNamespace(returncode=0 if ok else 1, stdout=json.dumps({"ok": ok}), stderr="")
+
+    monkeypatch.setattr(preflight.subprocess, "run", check_runner)
+    report = preflight.runtime_report(str(path), gpu=True, stages=["sam2", "hamer"])
+    checks = [check for check in report["checks"] if check["name"].endswith(" external environment")]
+    assert [(check["name"], check["ok"]) for check in checks] == [
+        ("hamer external environment", False),
+        ("sam2 external environment", True),
+    ]
+    assert not report["ok"]
 
 
 def test_worker_doctor_protocol_reports_missing_runtime_as_json(server_case):

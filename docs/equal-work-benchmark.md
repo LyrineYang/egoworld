@@ -118,3 +118,40 @@ python -m venv .venv/datajuicer-bench
 最有价值的问题不是“哪个调度器单次最快”，而是：在固定模型和产出下，减少多少重复准备与换模，CPU/GPU 重叠是否带来真实 job 收益，长尾等待和峰值内存是否可控，失败后要重做多少工作。已有单卡研究中，成本策略尚未稳定优于简单驻留窗口；需要完整对照和置信区间决定是否值得增加复杂度。
 
 完成 B/C 层、留出集质量评估及恢复实验之后，才适合形成“同输入同输出下优于 Data-Juicer”的核心结果报告。现有 [单卡阶段与调度记录](throughput-validation.md) 是内部设计证据，可帮助挑选实验因素，不能替代外部框架对照。
+
+## V100 服务器对照与两卡长测
+
+2026-11-09 在同一台服务器完成 CPU 清洗、单卡同模型和两卡分档对照。GPU 两端锁定输入顺序、采样、模型资产、清洗、QC 和导出契约，关闭跨运行结果缓存。Data-Juicer 1.6.1 使用固定版本的两个 `DefaultExecutor`，统一筛选后分配互斥的 clip。EgoWorld 常驻原生阶段 worker 通过已提交的 receipt 连接准备、推理和写出。两卡实测包含冷启动、就绪检查和最终提交。
+
+| 实测组 | 冻结正例 | EgoWorld 墙钟 | Data-Juicer 墙钟 | 达标产出比 |
+| --- | ---: | ---: | ---: | ---: |
+| CPU 清洗，五轮中位数 | 12 段 | 33.04 s | 38.71 s | 1.17× |
+| 单卡同模型，五轮中位数 | 12 张 | 137.76 s | 138.62 s | 1.01× |
+| 原生双 worker 对照，试跑 | 12 张 | 129.29 s | 129.85 s | 1.00× |
+| 两卡常驻阶段，小批量 | 12 张 | 52.81 s | 99.56 s | 1.89× |
+| 两卡常驻阶段，大批量 | 96 张 | 109.09 s | 178.26 s | 1.63× |
+| 两卡长测 | 864 张 | 624.38 s | 921.29 s | 1.48× |
+
+CPU 使用带官方相机与手部标签的 EgoDex 视频，逐段核对标签长度与解码帧数。五轮判定逐条一致，误拒 0/12，漏拒 4/16，均为像素相同的改封装副本。包级去重原型在三轮交替对照中将中位耗时从 31.27 s 降到 28.97 s，并拦下全部四个副本，保留全部 12 段正例。[EgoDex 数据与条款](https://github.com/apple-aiml-research/ml-egodex) · [CPU 原始记录](benchmarks/v100-2026-11-09/cpu.json)
+
+GPU 使用 FreiHAND 官方评估标签。每张图像编码为 3 帧，评分取中间帧。达标手要求手侧正确且腕部相对 MPJPE 不高于 20 mm。单卡 12/12 达标，独立留出集 10/12 达标。正式两卡大批量两端均为 93/96 达标，MPJPE 12.12 mm，阶段表、数组、QC 和导出逐值相同。含外部 CUDA 作业的试跑保留在诊断记录。每个有效两卡档位的比值来自一对运行，适用于冻结的静态姿态负载。[Zimmermann 等，ICCV 2019，FreiHAND 数据与条款](https://lmb.informatik.uni-freiburg.de/resources/datasets/FreihandDataset.en.html) · [冻结样本与来源哈希](benchmarks/v100-2026-11-09/corpora.json) · [两卡逐轮记录](benchmarks/v100-2026-11-09/two-gpu.json)
+
+大批量的模型流水线用时 85.59 s 对 154.21 s，贡献约 69 s 总差距。按内容复用源码导入解析后，两端导出分别用时 8.24 s 和 8.13 s。SAM2 是 EgoWorld 当前排队最集中的阶段，中位等待 4.07 s，HaMeR 和 DexRetarget 中位等待约 1 ms。可信资产登记适用于已核验且由实验方控制的固定权重，首次登记成本单列。[单卡与留出记录](benchmarks/v100-2026-11-09/single-gpu.json) · [Nsight 与阶段分解](benchmarks/v100-2026-11-09/profiling.json)
+
+长测合计预算窗口为 **1631 s**，两端各跑一次。两端均有 **785/864** 达标，MPJPE 为 **12.57 mm**，清洗误拒 0/864、漏拒 0/6。EgoWorld 与 Data-Juicer 分别产出 **1.257** 和 **0.852** 只达标手每秒。逐值审计覆盖 864 个 clip。两臂采样期间均未观察到外部 CUDA 作业。 [长测机器可读结果](benchmarks/v100-2026-11-09/endurance.json)
+
+### 复现入口
+
+使用相同模型环境、两张空闲 V100 和本地冻结 recipe。配置中 `num_gpus` 设为 2，模型 runner 指向各自的原生解释器。按发布的种子、排除集合和样本 SHA-256 准备 FreiHAND 语料。小批量使用 `stream-checked-pinned`，较大批次使用 `stream-checked-dual`。下列命令假设在包含 Python、FFmpeg、CUDA、NVML 和模型依赖的环境中从仓库根目录运行。
+
+```bash
+python egoworld/scripts/benchmark_two_gpu.py --study output/two-gpu-rerun freeze \
+  --recipe config.local/two-gpu-recipe.json --corpus output/freihand-frozen/corpus.json \
+  --devices 1,2
+timeout --signal=INT --kill-after=15s 1780s \
+  python egoworld/scripts/benchmark_two_gpu.py --study output/two-gpu-rerun run \
+    --coordinator .venv/sam2/bin/python --dj-python .venv/dj-jammy/bin/python \
+    --layout stream-checked-dual --budget-seconds 1765
+```
+
+发布记录包含配置、语料身份、每轮指标、分支判定、导出哈希、匿名化 GPU 采样和 Nsight 聚合表。原始图像、视频、关节坐标、权重、完整 profiler 二进制和机器日志保存在服务器实验目录。[GPU 采样](benchmarks/v100-2026-11-09/gpu-observations.jsonl.gz) · [长测预算和逐项审计](benchmarks/v100-2026-11-09/endurance.json)
