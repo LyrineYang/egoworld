@@ -12,6 +12,8 @@ The primary deployment target is a single Linux server with **2–16 GPUs**. RTX
 
 [Overview](#from-video-to-usable-data) · [Quick start](#quick-start) · [Insights](docs/en/insights.md) · [Research plan](docs/en/research-plan.md) · [Documentation](docs/en/README.md)
 
+[技术迭代交接 · 设计决策、V100 实验与本地接手](docs/technical-iteration-handoff-20261110.md)
+
 </div>
 
 ![EgoWorld — From human experience to structured data. An abstract hand, object, and scene share an observation field.](docs/assets/hero.svg)
